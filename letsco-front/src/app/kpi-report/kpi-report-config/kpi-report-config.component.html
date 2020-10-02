@@ -1,0 +1,125 @@
+<!-- Copyright (c) 2018-2020, RTE (https://www.rte-france.com)                     -->
+<!-- Copyright (c) 2019-2020 RTE international (https://www.rte-international.com) -->
+<!-- See AUTHORS.txt                                                               -->
+<!-- This Source Code Form is subject to the terms of the Mozilla Public           -->
+<!-- License, v. 2.0. If a copy of the MPL was not distributed with this           -->
+<!-- file, You can obtain one at http://mozilla.org/MPL/2.0/.                      -->
+<!-- SPDX-License-Identifier: MPL-2.0                                              -->
+<!-- This file is part of the Let’s Coordinate project.                            -->
+
+<div class="container">
+
+    <h4 class="mt-5 mb-4" style="text-align: center;"><b>RSC KPI report configuration</b></h4>
+
+    <div class="mt-5">
+        <p>Period</p>
+
+        <form (ngSubmit)="onSubmit()" #reportForm="ngForm">
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10 row">
+                    <div class="col-sm-12 row">
+                        <div class="col-sm-3">
+                            From
+                        </div>
+                        <div class="col-sm-3">
+                            To
+                        </div>
+                    </div>
+                    <div class="col-sm-12 row">
+                        <div class="col-sm-3">
+                            <div class="input-group">
+                                <input class="form-control" placeholder="yyyy-mm-dd"
+                                       name="dpStart" [(ngModel)]="startModel" ngbDatepicker #dStart="ngbDatepicker" required>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" (click)="dStart.toggle()" type="button">
+                                        <!--<img src="img/calendar-icon.svg" style="width: 1.2rem; height: 1rem; cursor: pointer;"/>-->
+                                        <i class="fa fa-calendar" style="font-size: 1.3em;"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="input-group">
+                                <input class="form-control" placeholder="yyyy-mm-dd"
+                                       name="dpEnd" [(ngModel)]="endModel" ngbDatepicker #dEnd="ngbDatepicker" required>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" (click)="dEnd.toggle()" type="button">
+                                        <!--<img src="img/calendar-icon.svg" style="width: 1.2rem; height: 1rem; cursor: pointer;"/>-->
+                                        <i class="fa fa-calendar" style="font-size: 1.3em;"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <hr class="my-4">
+
+            <p>RSC</p>
+
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    <div class="form-check form-check-inline" *ngFor="let rsc of rscs">
+                        <input class="form-check-input"
+                               [(ngModel)]="selectedRsc"
+                               type="radio"
+                               name="radioRSCs"
+                               [id]="rsc.eicCode"
+                               [value]="rsc"
+                               required >
+                        <label class="form-check-label" [for]="rsc.eicCode">{{rsc.name}}</label>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <p>RSC Service</p>
+
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    <div class="form-check form-check-inline" *ngFor="let rscService of rscServices">
+                        <input class="form-check-input"
+                               [(ngModel)]="selectedRscService"
+                               type="radio"
+                               name="radioRSCServices"
+                               [id]="rscService.code"
+                               [value]="rscService"
+                               required>
+                        <label class="form-check-label" [for]="rscService.code">{{rscService.name}}</label>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <p>Data type</p>
+
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    <div class="form-check form-check-inline" *ngFor="let dataType of kpiDataTypes">
+                        <input class="form-check-input"
+                               [(ngModel)]="selectedKpiDataType"
+                               type="radio"
+                               name="radioDataTypes"
+                               [id]="dataType.code"
+                               [value]="dataType"
+                               required>
+                        <label class="form-check-label" [for]="dataType.code">{{dataType.name}}</label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="mt-4 btn btn-success" [disabled]="isValidForm()">Submit</button>
+
+        </form>
+
+    </div>
+
+</div>
