@@ -1,0 +1,7 @@
+Authors (GitHub usernames) in alphabetical order
+
+We decided to use them against emails and first/last names in order not to make that information easily available to robots.
+
+gtrimbach-RTE
+samichehade
+woueslati

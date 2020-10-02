@@ -1,0 +1,22 @@
+# Copyright (c) 2018-2020, RTE (https://www.rte-france.com)
+# Copyright (c) 2019-2020 RTE international (https://www.rte-international.com)
+# See AUTHORS.txt
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+# SPDX-License-Identifier: MPL-2.0
+# This file is part of the Let’s Coordinate project.
+
+databaseChangeLog:
+  - include:
+      file: db/changelog/version/1.0.0/001_create_table_event_message.sql
+  - include:
+      file: db/changelog/version/1.0.0/002_create_table_rsc_kpi.sql
+  - include:
+      file: db/changelog/version/1.0.0/003_create_monitoring_tables.sql
+  - include:
+      file: db/changelog/version/1.0.0/004_create_table_text.sql
+  - include:
+      file: db/changelog/version/1.0.0/005_create_table_link.sql
+  - include:
+      file: db/changelog/version/1.0.0/006_create_table_timeserie.sql
