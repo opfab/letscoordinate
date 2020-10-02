@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright (c) 2020, RTE (https://www.rte-france.com)                     -->
+<!-- Copyright (c) 2020 RTE international (https://www.rte-international.com) -->
+<!-- See AUTHORS.txt                                                          -->
+<!-- This Source Code Form is subject to the terms of the Mozilla Public      -->
+<!-- License, v. 2.0. If a copy of the MPL was not distributed with this      -->
+<!-- file, You can obtain one at http://mozilla.org/MPL/2.0/.                 -->
+<!-- SPDX-License-Identifier: MPL-2.0                                         -->
+<!-- This file is part of the Let’s Coordinate project.                       -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.2.5.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>org.lfenergy.letscoordinate</groupId>
+    <artifactId>letsco-core</artifactId>
+    <version>1.0.0-RELEASE</version>
+    <name>letsco-core</name>
+    <packaging>pom</packaging>
+
+    <licenses>
+        <license>
+            <name>MPL-2.0</name>
+            <url>http://mozilla.org/MPL/2.0/</url>
+        </license>
+    </licenses>
+
+    <modules>
+        <module>letsco-common</module>
+        <module>letsco-api</module>
+        <module>letsco-scanner</module>
+        <module>letsco-data-provider</module>
+    </modules>
+
+</project>

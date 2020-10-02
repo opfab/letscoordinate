@@ -1,0 +1,42 @@
+{
+  "eventMessage": {
+    "xmlns": "http://iec.ch/TC57/2011/schema/message",
+    "header": {
+      "verb": "created",
+      "noun": "DfgMessageValidated",
+      "timestamp": "2020-09-18T10:00:16Z",
+      "source": "ServiceA",
+      "messageId": "d51b25b7ac1e41e1aeff404c1827ef84",
+      "properties": {
+        "format": "JSON",
+        "businessDataIdentifier": {
+          "messageType": "101",
+          "messageTypeName": "MessageValidated",
+          "businessDayFrom": "2020-09-19T00:00:00Z",
+          "businessDayTo": "2020-12-31T23:59:00Z",
+          "sendingUser": "10X1001A1001A345",
+          "filename": "20200318_0950_ServiceA_0_CZ.xlsx",
+          "tso": "10X1001A1001A345"
+        }
+      }
+    },
+    "payload": {
+      "validation": {
+        "validationType": "BUSINESS",
+        "status": "ACCEPTED",
+        "result": "OK",
+        "validationMessages": []
+      },
+      "links": [
+        {
+          "name": "file1_link",
+          "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf"
+        },
+        {
+          "name": "file2_link",
+          "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf"
+        }
+      ]
+    }
+  }
+}
