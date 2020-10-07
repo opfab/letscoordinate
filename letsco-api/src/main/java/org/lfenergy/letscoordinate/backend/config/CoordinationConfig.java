@@ -19,7 +19,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,6 +31,7 @@ public class CoordinationConfig {
 
     private Map<String, Tso> tsos;
     private Map<String, Rsc> rscs;
+    private Map<String, Service> services;
     private Map<String, KpiDataType> kpiDataTypes;
     private Map<String, Map<String, KpiDataSubtype>> kpiDataSubtypes;
 
@@ -40,6 +40,10 @@ public class CoordinationConfig {
     }
 
     public Set<String> getTsoEicCodes() {
+        return Collections.unmodifiableSet(tsos.keySet());
+    }
+
+    public Set<String> getServiceCodes() {
         return Collections.unmodifiableSet(tsos.keySet());
     }
 
@@ -54,10 +58,12 @@ public class CoordinationConfig {
     }
 
     public Map<KpiDataTypeEnum, List<KpiDataSubtypeEnum>> getKpiDataTypeMapByServiceCode(String serviceCode) {
-        return getKpiDataSubtypesByServiceCode(serviceCode).keySet().stream()
-                .sorted()
-                .map(KpiDataSubtypeEnum::getByNameIgnoreCase)
-                .collect(Collectors.groupingBy(KpiDataSubtypeEnum::getKpiDataType));
+        return Optional.ofNullable(getKpiDataSubtypesByServiceCode(serviceCode))
+                .map(map -> map.keySet().stream()
+                        .sorted()
+                        .map(KpiDataSubtypeEnum::getByNameIgnoreCase)
+                        .collect(Collectors.groupingBy(KpiDataSubtypeEnum::getKpiDataType)))
+                .orElseGet(HashMap::new);
     }
 
     public Rsc getRscByEicCode(String eicCode) {
@@ -68,16 +74,14 @@ public class CoordinationConfig {
         return Optional.ofNullable(eicCode).map(tsos::get).orElse(null);
     }
 
-    private Map<String, Rsc.Service> getServices() {
-        return rscs.values().stream()
-                .map(Rsc::getServices)
-                .map(Map::values)
-                .flatMap(Collection::stream)
-                .distinct()
-                .collect(Collectors.toMap(Rsc.Service::getCode, Function.identity()));
+    public List<Service> getServicesByCodes(List<String> serviceCodes) {
+        if (serviceCodes == null) return null;
+        return services.values().stream()
+                .filter(s -> serviceCodes.contains(s.code))
+                .collect(Collectors.toList());
     }
 
-    public Rsc.Service getServiceByCode(String code) {
+    public Service getServiceByCode(String code) {
         return Optional.ofNullable(code).map(c -> getServices().get(c)).orElse(null);
     }
 
@@ -86,15 +90,14 @@ public class CoordinationConfig {
     public static class Rsc {
         private String eicCode;
         private String name;
-        private Map<String, Service> services;
+    }
 
-        @Setter
-        @Getter
-        @EqualsAndHashCode
-        public static class Service {
-            private String code;
-            private String name;
-        }
+    @Setter
+    @Getter
+    @EqualsAndHashCode
+    public static class Service {
+        private String code;
+        private String name;
     }
 
     @Setter

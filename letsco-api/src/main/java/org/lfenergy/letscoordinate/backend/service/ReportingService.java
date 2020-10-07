@@ -11,23 +11,27 @@
 
 package org.lfenergy.letscoordinate.backend.service;
 
+import io.vavr.control.Validation;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.dto.reporting.*;
 import org.lfenergy.letscoordinate.backend.enums.ReportTypeEnum;
 import org.lfenergy.letscoordinate.backend.mapper.RscKpiReportMapper;
 import org.lfenergy.letscoordinate.backend.model.RscKpi;
+import org.lfenergy.letscoordinate.backend.model.User;
+import org.lfenergy.letscoordinate.backend.model.UserService;
 import org.lfenergy.letscoordinate.backend.processor.ExcelDataProcessor;
 import org.lfenergy.letscoordinate.backend.repository.RscKpiRepository;
+import org.lfenergy.letscoordinate.backend.repository.UserRepository;
+import org.lfenergy.letscoordinate.backend.util.SecurityUtil;
+import org.lfenergy.letscoordinate.common.exception.AuthorizationException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,19 +41,29 @@ public class ReportingService {
     private final CoordinationConfig coordinationConfig;
     private final RscKpiRepository rscKpiRepository;
     private final ExcelDataProcessor excelDataProcessor;
+    private final UserRepository userRepository;
 
-    public RscKpiReportInitialFormDataDto initRscKpiReportFormDto() {
-        return RscKpiReportInitialFormDataDto.builder()
+    public Validation<String, RscKpiReportInitialFormDataDto> initRscKpiReportFormDto() {
+        final String username;
+        try {
+            username = SecurityUtil.getUsernameFromToken();
+        } catch (AuthorizationException authEx) {
+            return Validation.invalid(authEx.getMessage());
+        }
+        Optional<User> user = userRepository.findByUsername(username);
+
+        return user.map(u -> Validation.<String, RscKpiReportInitialFormDataDto>valid(RscKpiReportInitialFormDataDto.builder()
                 .rscs(coordinationConfig.getRscs().values().stream()
                         .map(RscKpiReportMapper::toDto)
                         .sorted(Comparator.comparing(RscDto::getName))
                         .collect(Collectors.toList()))
-                .rscServices(getCurrentUserRcsServices())
+                .rscServices(getCurrentUserRcsServices(u.getUserServices()))
                 .kpiDataTypes(coordinationConfig.getKpiDataTypes().values().stream()
                         .map(RscKpiReportMapper::toDto)
                         .sorted(Comparator.comparing(KpiDataTypeDto::getName))
                         .collect(Collectors.toList()))
-                .build();
+                .build()))
+                .orElseGet(() -> Validation.invalid("User \"" + username + "\" not found!"));
     }
 
     public RscKpiReportDataDto getRscKpiReportData(RscKpiReportSubmittedFormDataDto submittedFormDataDto) {
@@ -66,15 +80,16 @@ public class ReportingService {
                 .build();
     }
 
-    private List<RscServiceDto> getCurrentUserRcsServices() {
-        // FIXME just for testing! to be changed by real currentUser's services from keyclock
-        return coordinationConfig.getRscs().values().stream()
-                .map(rsc -> rsc.getServices().values())
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet())
-                .stream()
+    private List<UserServiceDto> getCurrentUserRcsServices(List<UserService> services) {
+        if (CollectionUtils.isEmpty(services))
+            return new ArrayList<>();
+        List<String> userServicesCodes = services.stream()
+                .map(UserService::getServiceCode)
+                .collect(Collectors.toList());
+        return coordinationConfig.getServices().values().stream()
+                .filter(s -> userServicesCodes.contains(s.getCode()))
                 .map(RscKpiReportMapper::toDto)
-                .sorted(Comparator.comparing(RscServiceDto::getName))
+                .sorted(Comparator.comparing(UserServiceDto::getName))
                 .collect(Collectors.toList());
     }
 
@@ -86,7 +101,7 @@ public class ReportingService {
         if(submittedFormDataDto == null)
             return null;
         StringBuilder fileNameBuilder = new StringBuilder();
-        CoordinationConfig.Rsc.Service service = coordinationConfig.getServiceByCode(submittedFormDataDto.getRscServiceCode());
+        CoordinationConfig.Service service = coordinationConfig.getServiceByCode(submittedFormDataDto.getRscServiceCode());
         CoordinationConfig.Rsc rsc = coordinationConfig.getRscByEicCode(submittedFormDataDto.getRscCode());
         fileNameBuilder.append(toCamelCase(service != null ? service.getName() : submittedFormDataDto.getRscServiceCode()))
                 .append("_")
@@ -111,10 +126,6 @@ public class ReportingService {
             result += StringUtils.capitalize(token.toLowerCase());
         }
         return StringUtils.uncapitalize(result);
-    }
-
-    public static void main(String[] args) {
-        System.out.println(toCamelCase("  AzErty wyEm-Fer_dawS "));
     }
 
 }

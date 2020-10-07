@@ -12,6 +12,7 @@
 package org.lfenergy.letscoordinate.backend.controller;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
@@ -34,6 +35,7 @@ public class EventMessageController {
 
     @PostMapping(value = "/upload/validate")
     @ApiOperation(value = "Validate uploaded file (Excel or JSON) and generate JSON from validated data")
+    @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
     public ResponseEntity uploadedExcelToJson(@RequestParam("file") MultipartFile multipartFile) {
         return inputFileToPojoService.uploadedFileToPojo(multipartFile).fold(
                 invalid -> ResponseEntity.status(invalid.getStatus()).body(invalid),
@@ -48,6 +50,7 @@ public class EventMessageController {
                     "MultipartFile[] doesn't show correctly: https://github.com/swagger-api/swagger-ui/issues/2617",
             hidden = true
     )
+    @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
     public ResponseEntity uploadedExcelsToJson(@RequestBody MultipartFile[] multipartFiles) {
         return inputFileToPojoService.uploadedExcelsToPojo(multipartFiles).fold(
                 invalid -> ResponseEntity.status(invalid.getStatus()).body(invalid),
@@ -57,6 +60,7 @@ public class EventMessageController {
 
     @PostMapping(value = "/upload/save", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     @ApiOperation(value = "Validate uploaded file (Excel or JSON) and save validated data into database")
+    @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
     public ResponseEntity saveUploadedExcelFile(@RequestParam("file") MultipartFile multipartFile) {
         return inputFileToPojoService.uploadExcelFileAndSaveGeneratedData(multipartFile).fold(
                 invalid -> ResponseEntity.status(invalid.getStatus()).body(invalid),
@@ -75,6 +79,7 @@ public class EventMessageController {
                     "MultipartFile[] doesn't show correctly: https://github.com/swagger-api/swagger-ui/issues/2617",
             hidden = true
     )
+    @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
     public ResponseEntity saveUploadedExcelFiles(@RequestParam("file") MultipartFile[] multipartFiles) {
         return inputFileToPojoService.uploadExcelFilesAndSaveGeneratedData(multipartFiles).fold(
                 invalid -> ResponseEntity.status(invalid.getStatus()).body(invalid),
@@ -84,6 +89,7 @@ public class EventMessageController {
 
     @DeleteMapping("/eventmessages/{id}")
     @ApiOperation(value = "Delete event_message data (with its dependencies) by id")
+    @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
     public ResponseEntity deleteEventMessageById(@PathVariable long id) {
         return inputFileToPojoService.deleteEventMessageById(id).fold(
                 invalid -> ResponseEntity.status(invalid.getStatus()).body(invalid),
@@ -93,6 +99,7 @@ public class EventMessageController {
 
     @DeleteMapping("/eventmessages")
     @ApiOperation(value = "Delete all event_message data (with their dependencies)")
+    @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
     public ResponseEntity deleteAllEventMessages() {
         return inputFileToPojoService.deleteAllEventMessages().fold(
                 invalid -> ResponseEntity.status(invalid.getStatus()).body(invalid),

@@ -7,36 +7,6 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of the Let’s Coordinate project.
 
-HELP.md
-**/target/
-.mvn/**
-!**/src/main/**
-!**/src/test/**
-**/bundle.tar.gz
-**/karate.jar
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-
-### VS Code ###
-.vscode/
+databaseChangeLog:
+  - include:
+      file: db/changelog/version/1.1.0/001_create_table_user.sql

@@ -20,7 +20,7 @@ import java.io.Serializable;
 @Builder
 @Getter
 @Setter
-public class RscServiceDto implements Serializable {
+public class UserServiceDto implements Serializable {
     private String name;
     private String code;
 }

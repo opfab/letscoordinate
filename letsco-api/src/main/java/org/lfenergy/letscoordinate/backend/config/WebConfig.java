@@ -42,6 +42,7 @@ public class WebConfig {
                 registry.addMapping("/letsco/api/**")
                         .allowedOrigins("http://localhost:4200")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD")
+                        .allowedHeaders("authorization", "content-type", "x-auth-token")
                         .allowCredentials(true);
             }
         };

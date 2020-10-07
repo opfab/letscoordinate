@@ -24,5 +24,4 @@ import java.util.List;
 public class RscDto implements Serializable {
     private String name;
     private String eicCode;
-    private List<RscServiceDto> rscServiceDtos;
 }
