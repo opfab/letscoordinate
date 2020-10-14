@@ -41,6 +41,12 @@
         {{/if}}
       {{/if}}
 
+    {{#if sendingUser}}
+    <h6>
+    Sent by {{sendingUser}}
+    </h6>
+    {{/if}}
+
       <div id="divErrors">
         {{#if (bool errors.length '>' 0)}}
           <p class="mt-4 mb-3">

@@ -304,6 +304,13 @@ public class OpfabPublisherComponent {
             data.setWarnings(warnings);
             data.setErrors(errors);
         });
+        if (eventMessageDto != null && eventMessageDto.getHeader() != null && eventMessageDto.getHeader().getProperties() != null
+                && eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier() != null
+                && eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getSendingUser().isPresent()) {
+            String sendingUserEicCode = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getSendingUser().get();
+            if (tsos.get(sendingUserEicCode) != null)
+                data.setSendingUser(tsos.get(sendingUserEicCode).getName());
+        }
         card.setData(data);
     }
 
