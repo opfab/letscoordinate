@@ -70,6 +70,21 @@ public class OpfabPublisherComponent {
         return card;
     }
 
+    String getValidationName(EventMessageDto eventMessageDto) {
+        ValidationSeverityEnum result = eventMessageDto.getPayload().getValidation().getResult();
+
+        switch (result) {
+            case OK:
+                return POSITIVE_ACK;
+            case WARNING:
+                return POSITIVE_ACK_WITH_WARNINGS;
+            case ERROR:
+                return NEGATIVE_ACK;
+            default:
+                return "";
+        }
+    }
+
     void setCardHeadersAndTags(Card card, EventMessageDto eventMessageDto, Long id) {
 
         String source = eventMessageDto.getHeader().getSource();
@@ -184,7 +199,7 @@ public class OpfabPublisherComponent {
     }
 
     private String generateFeedTitle(String source, String messageTypeName, String titleProcessType,
-                                   Optional<String> processStep, EventMessageDto eventMessageDto) {
+                                     Optional<String> processStep, EventMessageDto eventMessageDto) {
 
         String key = source + "_" + messageTypeName;
         if (opfabConfig.getFeed().containsKey(key)) {
@@ -232,7 +247,7 @@ public class OpfabPublisherComponent {
             while (m.find()) {
                 allMatches.put(m.group(), null);
             }
-            allMatches = allMatches.entrySet().stream().map(e -> generatePlaceholderValue(e, bdiMap))
+            allMatches = allMatches.entrySet().stream().map(e -> generatePlaceholderValue(e, bdiMap,eventMessageDto))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
             for (Map.Entry<String, String> entry : allMatches.entrySet())
@@ -242,7 +257,7 @@ public class OpfabPublisherComponent {
         }
     }
 
-    Map.Entry<String, String> generatePlaceholderValue(Map.Entry<String, String> entry, Map<String, Object> bdiMap) {
+    Map.Entry<String, String> generatePlaceholderValue(Map.Entry<String, String> entry, Map<String, Object> bdiMap, EventMessageDto eventMessageDto) {
 
         String placeholder = entry.getKey();
         String placeholderValue = null;
@@ -266,7 +281,10 @@ public class OpfabPublisherComponent {
             } if ("eicToName".equals(formatMethod)) {
                 placeholderValue = tsos.get(bdiMap.get(placeholderNoDelimiters)).getName();
                 return new AbstractMap.SimpleEntry(placeholder, placeholderValue);
-            } else {
+            } else if ("notificationTitle".equals(formatMethod)) {
+                placeholderValue = getValidationName(eventMessageDto);
+                return new AbstractMap.SimpleEntry(placeholder, placeholderValue);
+            }else{
                 log.error("The placeholder method " + formatMethod + "is not valid!");
                 placeholderValue = bdiMap.get(placeholderNoDelimiters) != null ?
                         bdiMap.get(placeholderNoDelimiters).toString() : "";
