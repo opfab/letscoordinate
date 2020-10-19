@@ -54,7 +54,7 @@
       "time": {
         "display": "PUBLICATION"
       },
-      "hideAckFilter": true
+      "hideAckFilter": false
     },
     "notify": false,
     "subscription": {
@@ -133,7 +133,7 @@
       },
       "letscoordinate": {
         "name": "Let's Coordinate OS",
-        "version": "1.0.0-RELEASE"
+        "version": "1.1.0.RELEASE"
       }
     },
     "infos": {
@@ -144,10 +144,10 @@
       "language": true,
       "tags": true,
       "timeformat": true,
-      "sounds": true
+      "sounds": false
     },
     "locale": "en",
-    "nightDayMode": false,
+    "nightDayMode": true,
     "styleWhenNightDayModeDesactivated" : "NIGHT",
     "timeFormat": "HH:mm",
     "dateFormat": "DD/MM/YYYY",

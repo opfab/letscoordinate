@@ -59,7 +59,9 @@
                                                   [id]="'comment-'+rscKpi.code+'-'+k"
                                                   maxlength="255"
                                                   rows="4"
-                                                  [(ngModel)]="rscKpiDatum.comment"></textarea>
+                                                  [(ngModel)]="rscKpiDatum.comment"
+                                                  [style.background-color]='textareaBgColor'
+                                                  [style.color]='textareaColor'></textarea>
                                     </div>
 
                                 </div>

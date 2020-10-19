@@ -21,6 +21,7 @@ import {RomanNumeralPipe} from "../../core/pipes/roman-numeral.pipe";
 import {KpiDataTypeFullNamePipe} from "../../core/pipes/kpi-data-type-full-name.pipe";
 import {KpiSubmittedForm} from "../../core/models/kpi-submitted-form.model";
 import * as jsPDF from 'jspdf';
+import {ThemeService} from "../../core/services/theme.service";
 
 const pdfConstants = {
   logoLetsco: {
@@ -63,12 +64,21 @@ export class KpiReportComponent implements OnInit {
               private datePipe: DatePipe,
               private romanNumeral: RomanNumeralPipe,
               private kpiDataTypeFullName: KpiDataTypeFullNamePipe,
-              private router: Router) {}
+              private router: Router,
+              private themeService: ThemeService) {}
 
   ngOnInit() {
     this.rscKpiReportData = this.kpiReportService.rscKpiReportData;
     if (!this.rscKpiReportData)
       this.router.navigate(['/kpi-report-config']);
+  }
+
+  get textareaBgColor() {
+    return this.themeService.currentTheme.textComponentBgColor;
+  }
+
+  get textareaColor() {
+    return this.themeService.currentTheme.textComponentColor;
   }
 
   generateExcel() {

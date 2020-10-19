@@ -9,15 +9,23 @@
  * This file is part of the Let’s Coordinate project.
  */
 
-import {Component, Input} from '@angular/core';
+import {AfterViewChecked, Component, Input} from '@angular/core';
 import {KpiChartOptions} from "../../core/models/kpi-chart-options.model";
+import {ThemeService} from "../../core/services/theme.service";
 
 @Component({
   selector: 'app-bar-chart',
   templateUrl: './bar-chart.component.html',
   styleUrls: ['./bar-chart.component.scss'],
 })
-export class BarChartComponent {
+export class BarChartComponent implements AfterViewChecked{
   @Input() public kpiChartId: string;
   @Input() public kpiChartOptions: KpiChartOptions;
+
+  constructor(private themeService: ThemeService) {
+  }
+
+  ngAfterViewChecked() {
+    this.themeService.updateChartColors(this.kpiChartOptions.chartOptions)
+  }
 }
