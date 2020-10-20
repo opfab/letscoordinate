@@ -70,6 +70,21 @@ public class OpfabPublisherComponent {
         return card;
     }
 
+    String getValidationName(EventMessageDto eventMessageDto) {
+        ValidationSeverityEnum result = eventMessageDto.getPayload().getValidation().getResult();
+
+        switch (result) {
+            case OK:
+                return POSITIVE_ACK;
+            case WARNING:
+                return POSITIVE_ACK_WITH_WARNINGS;
+            case ERROR:
+                return NEGATIVE_ACK;
+            default:
+                return "";
+        }
+    }
+
     void setCardHeadersAndTags(Card card, EventMessageDto eventMessageDto, Long id) {
 
         String source = eventMessageDto.getHeader().getSource();
@@ -111,21 +126,28 @@ public class OpfabPublisherComponent {
 
         card.setRecipient(new Recipient().type(RecipientEnum.GROUP).identity(source));
 
-        Set<String> entityRecipients = new HashSet<>();
-        tso.ifPresent(entityRecipients::add);
-        if (opfabConfig.getEntityRecipientsNotAllowed().containsKey(processKey)) {
-            List<String> recipientsNotAllowed = opfabConfig.getEntityRecipientsNotAllowed().get(processKey);
-            if (!recipientsNotAllowed.contains("sendingUser")) {
-                sendingUser.ifPresent(entityRecipients::add);
+        Set<String> entityRecipientList = new HashSet<>();
+        tso.ifPresent(entityRecipientList::add);
+        if (opfabConfig.getEntityRecipients().containsKey(processKey)) {
+            OpfabConfig.OpfabEntityRecipients entityRecipients = opfabConfig.getEntityRecipients().get(processKey);
+            if (!entityRecipients.getNotAllowed().equals("sendingUser")) {
+                sendingUser.ifPresent(entityRecipientList::add);
             }
-            if (!recipientsNotAllowed.contains("recipient")) {
-                recipient.ifPresent(entityRecipients::addAll);
+            if (!entityRecipients.getNotAllowed().equals("recipient")) {
+                recipient.ifPresent(entityRecipientList::addAll);
             }
-        } else {
-            sendingUser.ifPresent(entityRecipients::add);
-            recipient.ifPresent(entityRecipients::addAll);
+            if (entityRecipients.isAddRscs()) {
+                entityRecipientList.addAll(tsos.entrySet().stream()
+                        .filter(t -> entityRecipientList.contains(t.getKey()))
+                        .map(Map.Entry::getValue)
+                        .map(CoordinationConfig.Tso::getRsc).collect(Collectors.toList()));
+            }
+        }else {
+            sendingUser.ifPresent(entityRecipientList::add);
+            recipient.ifPresent(entityRecipientList::addAll);
         }
-        card.setEntityRecipients(new ArrayList<>(entityRecipients));
+        card.setEntityRecipients(new ArrayList<>(entityRecipientList));
+
     }
 
     void specificCardTreatment(Card opfabCard, EventMessageDto eventMessageDto, Long cardId) {
@@ -184,7 +206,7 @@ public class OpfabPublisherComponent {
     }
 
     private String generateFeedTitle(String source, String messageTypeName, String titleProcessType,
-                                   Optional<String> processStep, EventMessageDto eventMessageDto) {
+                                     Optional<String> processStep, EventMessageDto eventMessageDto) {
 
         String key = source + "_" + messageTypeName;
         if (opfabConfig.getFeed().containsKey(key)) {
@@ -232,7 +254,7 @@ public class OpfabPublisherComponent {
             while (m.find()) {
                 allMatches.put(m.group(), null);
             }
-            allMatches = allMatches.entrySet().stream().map(e -> generatePlaceholderValue(e, bdiMap))
+            allMatches = allMatches.entrySet().stream().map(e -> generatePlaceholderValue(e, bdiMap,eventMessageDto))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
             for (Map.Entry<String, String> entry : allMatches.entrySet())
@@ -242,7 +264,7 @@ public class OpfabPublisherComponent {
         }
     }
 
-    Map.Entry<String, String> generatePlaceholderValue(Map.Entry<String, String> entry, Map<String, Object> bdiMap) {
+    Map.Entry<String, String> generatePlaceholderValue(Map.Entry<String, String> entry, Map<String, Object> bdiMap, EventMessageDto eventMessageDto) {
 
         String placeholder = entry.getKey();
         String placeholderValue = null;
@@ -266,7 +288,10 @@ public class OpfabPublisherComponent {
             } if ("eicToName".equals(formatMethod)) {
                 placeholderValue = tsos.get(bdiMap.get(placeholderNoDelimiters)).getName();
                 return new AbstractMap.SimpleEntry(placeholder, placeholderValue);
-            } else {
+            } else if ("notificationTitle".equals(formatMethod)) {
+                placeholderValue = getValidationName(eventMessageDto);
+                return new AbstractMap.SimpleEntry(placeholder, placeholderValue);
+            }else{
                 log.error("The placeholder method " + formatMethod + "is not valid!");
                 placeholderValue = bdiMap.get(placeholderNoDelimiters) != null ?
                         bdiMap.get(placeholderNoDelimiters).toString() : "";
@@ -304,6 +329,13 @@ public class OpfabPublisherComponent {
             data.setWarnings(warnings);
             data.setErrors(errors);
         });
+        if (eventMessageDto != null && eventMessageDto.getHeader() != null && eventMessageDto.getHeader().getProperties() != null
+                && eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier() != null
+                && eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getSendingUser().isPresent()) {
+            String sendingUserEicCode = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getSendingUser().get();
+            if (tsos.get(sendingUserEicCode) != null)
+                data.setSendingUser(tsos.get(sendingUserEicCode).getName());
+        }
         card.setData(data);
     }
 

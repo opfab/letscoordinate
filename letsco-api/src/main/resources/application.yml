@@ -57,11 +57,19 @@ opfab:
     cardsPub: http://localhost:2102/cards
   feed:
     sourceA_messageTypeNameA:
-      title: "SOURCE A - custom title"
-      summary: "Source A - custom summary - {{businessDayFrom::dateFormat(dd/MM/yyyy HH:mm)}} - {{sendingUser::eicToName()}}"
-  entityRecipientsNotAllowed:
+      title: " STA - Generation Tripping Validation - {{result::notificationTitle()}}"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy HH:mm)}}  - {{businessDayTo::dateFormat(dd/MM/yyyy HH:mm)}}  (CET/CEST) - {{sendingUser::eicToName()}}"
+    sourceA_messageTypeNameB:
+      title: " STA - HVDC Tripping information Validation - {{result::notificationTitle()}}"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy HH:mm)}}  - {{businessDayTo::dateFormat(dd/MM/yyyy HH:mm)}}  (CET/CEST) - {{sendingUser::eicToName()}}"
+
+  entityRecipients:
     sourceA_messageTypeNameA:
-      - sendingUser
+      notAllowed: sendingUser
+      addRscs: true
+    sourceA_messageTypeNameB:
+      notAllowed: sendingUser
+      addRscs: true
 
 third-app:
   url: http://localhost:8081

@@ -33,6 +33,10 @@ public final class StringUtil {
     public static final String PROCESS_INFORMATION = "ProcessInformation";
     public static final String MESSAGE_VALIDATED = "DfgMessageValidated";
 
+    public static final String POSITIVE_ACK = "Positive ACK";
+    public static final String POSITIVE_ACK_WITH_WARNINGS = "Positive ACK with warnings";
+    public static final String NEGATIVE_ACK = "Negative ACK";
+
     /**
      * <p>This function allows to split an input string according to a separator after removing all spaces from it
      * if and only if the input string contains the separator</p>
