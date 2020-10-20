@@ -126,21 +126,28 @@ public class OpfabPublisherComponent {
 
         card.setRecipient(new Recipient().type(RecipientEnum.GROUP).identity(source));
 
-        Set<String> entityRecipients = new HashSet<>();
-        tso.ifPresent(entityRecipients::add);
-        if (opfabConfig.getEntityRecipientsNotAllowed().containsKey(processKey)) {
-            List<String> recipientsNotAllowed = opfabConfig.getEntityRecipientsNotAllowed().get(processKey);
-            if (!recipientsNotAllowed.contains("sendingUser")) {
-                sendingUser.ifPresent(entityRecipients::add);
+        Set<String> entityRecipientList = new HashSet<>();
+        tso.ifPresent(entityRecipientList::add);
+        if (opfabConfig.getEntityRecipients().containsKey(processKey)) {
+            OpfabConfig.OpfabEntityRecipients entityRecipients = opfabConfig.getEntityRecipients().get(processKey);
+            if (!entityRecipients.getNotAllowed().equals("sendingUser")) {
+                sendingUser.ifPresent(entityRecipientList::add);
             }
-            if (!recipientsNotAllowed.contains("recipient")) {
-                recipient.ifPresent(entityRecipients::addAll);
+            if (!entityRecipients.getNotAllowed().equals("recipient")) {
+                recipient.ifPresent(entityRecipientList::addAll);
             }
-        } else {
-            sendingUser.ifPresent(entityRecipients::add);
-            recipient.ifPresent(entityRecipients::addAll);
+            if (entityRecipients.isAddRscs()) {
+                entityRecipientList.addAll(tsos.entrySet().stream()
+                        .filter(t -> entityRecipientList.contains(t.getKey()))
+                        .map(Map.Entry::getValue)
+                        .map(CoordinationConfig.Tso::getRsc).collect(Collectors.toList()));
+            }
+        }else {
+            sendingUser.ifPresent(entityRecipientList::add);
+            recipient.ifPresent(entityRecipientList::addAll);
         }
-        card.setEntityRecipients(new ArrayList<>(entityRecipients));
+        card.setEntityRecipients(new ArrayList<>(entityRecipientList));
+
     }
 
     void specificCardTreatment(Card opfabCard, EventMessageDto eventMessageDto, Long cardId) {

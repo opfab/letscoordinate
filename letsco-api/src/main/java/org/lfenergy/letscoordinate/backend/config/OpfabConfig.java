@@ -29,12 +29,19 @@ public class OpfabConfig {
     private String publisher;
     private OpfabUrls url;
     private Map<String, OpfabFeed> feed = new HashMap<>();
-    private Map<String, List<String>> entityRecipientsNotAllowed = new HashMap<>();
+    private Map<String, OpfabEntityRecipients> entityRecipients = new HashMap<>();
 
     @Getter
     @Setter
     public static class OpfabUrls {
         private String cardsPub;
+    }
+
+    @Getter
+    @Setter
+    public static class OpfabEntityRecipients {
+        private boolean addRscs;
+        private String notAllowed;
     }
 
     @Getter
