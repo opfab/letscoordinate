@@ -129,7 +129,7 @@
       "operatorfabric": {
         "name": "OperatorFabric",
         "rank": 0,
-        "version": "1.5.0.RELEASE"
+        "version": "1.7.0.RELEASE"
       },
       "letscoordinate": {
         "name": "Let's Coordinate OS",
