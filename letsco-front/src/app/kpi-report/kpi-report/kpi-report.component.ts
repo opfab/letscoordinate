@@ -68,6 +68,7 @@ export class KpiReportComponent implements OnInit {
               private themeService: ThemeService) {}
 
   ngOnInit() {
+    this.themeService.initWithTheme(this.themeService.currentThemeCode);
     this.rscKpiReportData = this.kpiReportService.rscKpiReportData;
     if (!this.rscKpiReportData)
       this.router.navigate(['/kpi-report-config']);
@@ -167,8 +168,13 @@ export class KpiReportComponent implements OnInit {
           for (let [k,rscKpiDatum] of rscKpi.data.entries()) {
             // drawing graph
             let kpiGraphId = rscKpi.code + '-graph' + k;
+            _y += pdfConstants.layout.textLineHeight;
             let dataUrl = (document.getElementById(kpiGraphId) as HTMLCanvasElement).toDataURL();
-            pdf.addImage(dataUrl, 'PNG', pdfConstants.graph._x, _y += pdfConstants.layout.textLineHeight, pdfConstants.graph.width, pdfConstants.graph.height, '', 'FAST');
+            if (this.themeService.currentThemeCode === 'NIGHT') {
+              pdf.setFillColor(52, 57, 64);
+              pdf.rect(pdfConstants.graph._x, _y, pdfConstants.graph.width, pdfConstants.graph.height, 'F');
+            }
+            pdf.addImage(dataUrl, 'PNG', pdfConstants.graph._x, _y, pdfConstants.graph.width, pdfConstants.graph.height, '', 'FAST');
 
             // drawing comment
             _y += pdfConstants.graph.height;

@@ -29,7 +29,7 @@
 
     <div *ngFor="let rscKpiTypedDatum of rscKpiReportData.rscKpiTypedData; let i = index">
 
-        <h4><b>{{(i + 1) | romanNumeral}}. {{ rscKpiTypedDatum.type | kpiDataTypeFullName}}</b></h4>
+        <h4 class="mt-3"><b>{{(i + 1) | romanNumeral}}. {{ rscKpiTypedDatum.type | kpiDataTypeFullName}}</b></h4>
 
         <ng-container *ngIf="rscKpiTypedDatum.rscKpis.length !== 0">
             <div *ngFor="let rscKpi of rscKpiTypedDatum.rscKpis; let j = index">
