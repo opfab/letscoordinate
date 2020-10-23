@@ -43,8 +43,8 @@
             "tsConfig": "tsconfig.app.json",
             "aot": false,
             "assets": [
-              "src/assets",
-              "src/assets/favicon.ico",
+              "src/letsco/assets",
+              "src/letsco/assets/favicon.ico",
               "src/letsco-env/env.js"
             ],
             "styles": [
