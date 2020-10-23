@@ -14,7 +14,7 @@
           "messageTypeName": "MessageValidated",
           "businessDayFrom": "2020-09-19T00:00:00Z",
           "businessDayTo": "2020-12-31T23:59:00Z",
-          "sendingUser": "10X1001A1001A345",
+          "sendingUser": "10XCZ-CEPS-GRIDE",
           "filename": "20200318_0950_ServiceA_0_CZ.xlsx",
           "tso": "10X1001A1001A345"
         }

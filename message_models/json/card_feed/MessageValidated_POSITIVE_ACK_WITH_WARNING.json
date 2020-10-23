@@ -12,11 +12,11 @@
         "businessDataIdentifier": {
           "messageType": "101",
           "messageTypeName": "MessageValidated",
-	  "businessDayFrom": "2020-08-29T00:00:00Z",
+          "businessDayFrom": "2020-08-29T00:00:00Z",
           "businessDayTo": "2020-12-31T23:59:00Z",
-          "sendingUser": "10X1001A1001A345",
+          "sendingUser": "10XPT-REN------9",
           "filename": "20200317_1230_ServiceA_2_PT.xlsx",
-	  "tso": "10X1001A1001A345"
+          "tso": "10X1001A1001A345"
         }
       }
     },
@@ -56,7 +56,7 @@
           "name": "file3_link",
           "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf"
         },
-		{
+        {
           "name": "file 4_link",
           "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf"
         }

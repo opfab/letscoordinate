@@ -25,6 +25,18 @@
     display: block;
 }
 
-tr {
-    color: white;
+.card-table {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.card-table td, .card-table th {
+    padding: .75rem;
+    vertical-align: top;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.card-table thead {
+    color: #fff;
+    background-color: #52585487;
 }
