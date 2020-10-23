@@ -20,16 +20,20 @@
     "payload": {
       "text": [
         {
-          "name": "failureReason",
-          "value": "Process delayed because of the calculation input data preparation"
-        },
-        {
-          "name": "delayReason",
-          "value": "Delay of 6 min"
+          "name": "Reason of failure",
+          "value": "Computation failed"
         },
         {
           "name": "Comment",
           "value": "Some issues during the process"
+        },
+        {
+          "name": "Delay",
+          "value": "6 min"
+        },
+        {
+          "name": "Reason of delay",
+          "value": "Calculation delayed"
         }
       ],
       "rscKpi": [
