@@ -4,15 +4,15 @@
     "header": {
       "verb": "created",
       "noun": "ProcessSuccess",
-      "timestamp": "2020-09-22T08:13:15Z",
+      "timestamp": "2020-06-16T08:13:15Z",
       "source": "ServiceA",
       "messageId": "134654a095714812ba74323b021f23b5",
       "properties": {
         "format": "JSON",
         "businessDataIdentifier": {
           "messageTypeName": "NotificationTypeA",
-          "businessDayFrom": "2020-09-22T23:00:00Z",
-          "businessDayTo": "2020-09-23T23:00:00Z",
+          "businessDayFrom": "2020-09-22T00:00:00Z",
+          "businessDayTo": "2020-09-29T00:00:00Z",
           "processStep": "Initial Calculation"
         }
       }
@@ -20,11 +20,11 @@
     "payload": {
       "text": [
         {
-          "name": "comment",
+          "name": "Comment",
           "value": "The process calculation was performed on time"
         },
         {
-          "name": "conclusion",
+          "name": "Conclusion",
           "value": "Results are ok"
         }
       ],
