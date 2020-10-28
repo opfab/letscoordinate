@@ -18,6 +18,7 @@ import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.config.OpfabConfig;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
+import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationMessageDto;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 import org.lfenergy.letscoordinate.backend.model.opfab.ValidationData;
@@ -108,7 +109,21 @@ public class OpfabPublisherComponent {
         Instant businessDayTo = businessDataIdentifierDto.getBusinessDayTo()
                 .orElse(businessDayFrom.plus(Duration.ofHours(24)));
 
-        card.setTimeSpans(Collections.singletonList(new TimeSpan().start(businessDayFrom).end(businessDayTo)));
+        List<TimeSpan> timeSpans = new ArrayList<>();
+        ValidationDto validation = eventMessageDto.getPayload().getValidation();
+        if (validation != null && validation.getValidationMessages().isPresent() && !validation.getValidationMessages().get().isEmpty()) {
+            // LC-208 MR-1: If the card contains validation errors and/or warnings, we display a bubble in the timeline
+            // for each error and/or warning found. No bubble to display for the card’s arrival time in this case.
+            timeSpans = validation.getValidationMessages().get().stream()
+                    .map(validationMessage -> new TimeSpan().start(validationMessage.getTimestamp()))
+                    .collect(Collectors.toList());
+        } else {
+            // LC-207 MR-1 & LC-208 MR-2: If the card does not contain any validation error or warning, we display only
+            // one bubble for the card’s arrival time in feed
+            timeSpans.add(new TimeSpan().start(timestamp));
+        }
+
+        card.setTimeSpans(timeSpans);
         card.setPublishDate(timestamp);
         card.setStartDate(businessDayFrom);
         card.setEndDate(businessDayTo);
