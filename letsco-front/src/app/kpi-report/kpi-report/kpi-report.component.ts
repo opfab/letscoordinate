@@ -21,6 +21,7 @@ import {RomanNumeralPipe} from "../../core/pipes/roman-numeral.pipe";
 import {KpiDataTypeFullNamePipe} from "../../core/pipes/kpi-data-type-full-name.pipe";
 import {KpiSubmittedForm} from "../../core/models/kpi-submitted-form.model";
 import * as jsPDF from 'jspdf';
+import {ThemeService} from "../../core/services/theme.service";
 
 const pdfConstants = {
   logoLetsco: {
@@ -63,12 +64,22 @@ export class KpiReportComponent implements OnInit {
               private datePipe: DatePipe,
               private romanNumeral: RomanNumeralPipe,
               private kpiDataTypeFullName: KpiDataTypeFullNamePipe,
-              private router: Router) {}
+              private router: Router,
+              private themeService: ThemeService) {}
 
   ngOnInit() {
+    this.themeService.initWithTheme(this.themeService.currentThemeCode);
     this.rscKpiReportData = this.kpiReportService.rscKpiReportData;
     if (!this.rscKpiReportData)
       this.router.navigate(['/kpi-report-config']);
+  }
+
+  get textareaBgColor() {
+    return this.themeService.currentTheme.textComponentBgColor;
+  }
+
+  get textareaColor() {
+    return this.themeService.currentTheme.textComponentColor;
   }
 
   generateExcel() {
@@ -157,8 +168,13 @@ export class KpiReportComponent implements OnInit {
           for (let [k,rscKpiDatum] of rscKpi.data.entries()) {
             // drawing graph
             let kpiGraphId = rscKpi.code + '-graph' + k;
+            _y += pdfConstants.layout.textLineHeight;
             let dataUrl = (document.getElementById(kpiGraphId) as HTMLCanvasElement).toDataURL();
-            pdf.addImage(dataUrl, 'PNG', pdfConstants.graph._x, _y += pdfConstants.layout.textLineHeight, pdfConstants.graph.width, pdfConstants.graph.height, '', 'FAST');
+            if (this.themeService.currentThemeCode === 'NIGHT') {
+              pdf.setFillColor(52, 57, 64);
+              pdf.rect(pdfConstants.graph._x, _y, pdfConstants.graph.width, pdfConstants.graph.height, 'F');
+            }
+            pdf.addImage(dataUrl, 'PNG', pdfConstants.graph._x, _y, pdfConstants.graph.width, pdfConstants.graph.height, '', 'FAST');
 
             // drawing comment
             _y += pdfConstants.graph.height;

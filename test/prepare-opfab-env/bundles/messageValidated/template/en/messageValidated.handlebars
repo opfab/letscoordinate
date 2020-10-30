@@ -41,6 +41,12 @@
         {{/if}}
       {{/if}}
 
+    {{#if sendingUser}}
+    <h6>
+    Sent by {{sendingUser}}
+    </h6>
+    {{/if}}
+
       <div id="divErrors">
         {{#if (bool errors.length '>' 0)}}
           <p class="mt-4 mb-3">
@@ -49,8 +55,8 @@
           </p>
 
           <div class="detected-errors-div visible">
-            <table class="table col-sm-10" style="margin-left: auto; margin-right: auto;">
-              <thead class="thead-dark">
+            <table class="card-table col-sm-10" style="margin-left: auto; margin-right: auto;">
+              <thead>
               <tr>
                 <th scope="col">#</th>
                 <th scope="col">Date</th>
@@ -81,12 +87,12 @@
         {{#if (bool warnings.length '>' 0)}}
           <p class="mt-4 mb-3">
             Detected warnings ({{warnings.length}})&nbsp;
-            <a class="detected-severes" href="javascript:void(0)"><i class="fas fa-chevron-circle-up"></i></a>
+            <a class="detected-warnings" href="javascript:void(0)"><i class="fas fa-chevron-circle-up"></i></a>
           </p>
 
           <div class="detected-warnings-div visible">
-            <table class="table col-sm-10" style="margin-left: auto; margin-right: auto;">
-              <thead class="thead-dark">
+            <table class="card-table col-sm-10" style="margin-left: auto; margin-right: auto;">
+              <thead>
               <tr>
                 <th scope="col">#</th>
                 <th scope="col">Date</th>
@@ -117,3 +123,38 @@
 
   </div>
 {{/with}}
+
+<script type="text/javascript">
+
+    // Hide/Show the errors/warnings
+    var detectedErrors = document.querySelector('.detected-errors');
+    if (detectedErrors) {
+        detectedErrors.onclick =
+                function () {
+                    var detectedErrorsDiv = document.querySelector('.detected-errors-div');
+                    if (detectedErrorsDiv.classList.contains('visible')) {
+                        this.innerHTML = "<i class=\"fas fa-chevron-circle-down\"></i>";
+                        detectedErrorsDiv.className = 'detected-errors-div hidden';
+                    } else {
+                        this.innerHTML = "<i class=\"fas fa-chevron-circle-up\"></i>";
+                        detectedErrorsDiv.className = 'detected-errors-div visible';
+                    }
+                };
+    }
+
+    var detectedWarnings = document.querySelector('.detected-warnings');
+    if (detectedWarnings) {
+        detectedWarnings.onclick =
+                function () {
+                    var detectedErrorsDiv = document.querySelector('.detected-warnings-div');
+                    if (detectedErrorsDiv.classList.contains('visible')) {
+                        this.innerHTML = "<i class=\"fas fa-chevron-circle-down\"></i>";
+                        detectedErrorsDiv.className = 'detected-warnings-div hidden';
+                    } else {
+                        this.innerHTML = "<i class=\"fas fa-chevron-circle-up\"></i>";
+                        detectedErrorsDiv.className = 'detected-warnings-div visible';
+                    }
+                };
+    }
+
+</script>

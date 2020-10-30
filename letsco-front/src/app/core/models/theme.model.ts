@@ -9,34 +9,11 @@
  * This file is part of the Let’s Coordinate project.
  */
 
-.hidden {
-    display: none;
-}
-
-.inline-block {
-    display: inline-block;
-}
-
-.bold {
-    font-weight: bold;
-}
-
-.visible {
-    display: block;
-}
-
-.card-table {
-    width: 100%;
-    margin-bottom: 1rem;
-}
-
-.card-table td, .card-table th {
-    padding: .75rem;
-    vertical-align: top;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.card-table thead {
-    color: #fff;
-    background-color: #52585487;
+export class Theme {
+    constructor(public color: string,
+                public bgColor: string,
+                public gridLinesColor: string,
+                public textComponentColor: string,
+                public textComponentBgColor: string) {
+    }
 }

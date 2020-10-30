@@ -9,13 +9,33 @@
  * This file is part of the Let’s Coordinate project.
  */
 
-import { Component } from '@angular/core';
+import {AfterViewChecked, Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from "@angular/router";
+import {ThemeService} from "./core/services/theme.service";
 
 @Component({
   selector: 'app-root',
   template: `<router-outlet></router-outlet>`,
   styles: []
 })
-export class AppComponent {
-  title = 'letsco-front';
+export class AppComponent implements AfterViewChecked {
+
+  constructor(private route: ActivatedRoute,
+              private themeService: ThemeService) {
+  }
+
+  ngAfterViewChecked() {
+    const opfabTheme = localStorage.getItem('opfab_theme');
+    if (opfabTheme && !location.pathname.includes('login')) {
+      localStorage.removeItem('opfab_theme');
+    } else {
+      this.route.queryParams.subscribe(params => {
+        const opfabTheme = params.opfab_theme;
+        if (opfabTheme) {
+          this.themeService.initWithTheme(opfabTheme);
+        }
+      });
+    }
+  }
+
 }

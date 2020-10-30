@@ -7,6 +7,7 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0                                                                   -->
 
 # Let's Coordinate - Getting started
+<br/>
 
 ## 1. Prerequisites
 
@@ -30,12 +31,14 @@ git clone https://github.com/opfab/letscoordinate.git
 
 #### 2.2. Run Operator Fabric
 
+> /!\ The minimal required version of OperatorFabric is: **1.7.0.RELEASE**
+
 Clone the *operatorfabric-getting-started* git project:
 ```
 git clone https://github.com/opfab/operatorfabric-getting-started.git
 ```
 
-Copy files "*web-ui.json*", "*docker-compose.yml*" and "*favicon.ico*" from "*letscoordinate/test/prepare-opfab-env/opfab-config*" directory and past them into "*operatorfabric-getting-started/server*". Overwrite the existing files when asked!
+Copy files "*docker-compose.yml*", "*favicon.ico*", "*ngnix.conf*" and "*web-ui.json*" from "*letscoordinate/test/prepare-opfab-env/opfab-config*" directory and past them into "*operatorfabric-getting-started/server*". Overwrite the existing files when asked!
 
 In the directory "*operatorfabric-getting-started/server*" launch the following command:
 ```

@@ -37,7 +37,7 @@ services:
     - "90:9990"
   users:
     container_name: users
-    image: "lfeoperatorfabric/of-users-business-service:1.5.0.RELEASE"
+    image: "lfeoperatorfabric/of-users-business-service:1.7.0.RELEASE"
     user: ${USER_ID}:${USER_GID}
     ports:
      - "2103:8080"
@@ -52,7 +52,7 @@ services:
       - "./docker-configurations/common.yml:/config/common-docker.yml"
   businessconfig:
     container_name: businessconfig
-    image: "lfeoperatorfabric/of-businessconfig-business-service:1.5.0.RELEASE"
+    image: "lfeoperatorfabric/of-businessconfig-business-service:1.7.0.RELEASE"
     depends_on:
       - mongodb
     user: ${USER_ID}:${USER_GID}
@@ -70,7 +70,7 @@ services:
       - "./docker-configurations/businessconfig.yml:/config/application-docker.yml"
   cards-publication:
     container_name: cards-publication
-    image: "lfeoperatorfabric/of-cards-publication-business-service:1.5.0.RELEASE"
+    image: "lfeoperatorfabric/of-cards-publication-business-service:1.7.0.RELEASE"
     depends_on:
       - mongodb
     user: ${USER_ID}:${USER_GID}
@@ -87,7 +87,7 @@ services:
       - "./docker-configurations/cards-publication.yml:/config/application-docker.yml"
   cards-consultation:
     container_name: cards-consultation
-    image: "lfeoperatorfabric/of-cards-consultation-business-service:1.5.0.RELEASE"
+    image: "lfeoperatorfabric/of-cards-consultation-business-service:1.7.0.RELEASE"
     user: ${USER_ID}:${USER_GID}
     ports:
      - "2104:8080"
@@ -101,7 +101,7 @@ services:
       - "./docker-configurations/common.yml:/config/common-docker.yml"
       - "./docker-configurations/cards-consultation.yml:/config/application-docker.yml"
   web-ui:
-    image: "lfeoperatorfabric/of-web-ui:1.5.0.RELEASE"
+    image: "lfeoperatorfabric/of-web-ui:1.7.0.RELEASE"
     ports:
     - "2002:80"
     depends_on:
