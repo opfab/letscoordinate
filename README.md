@@ -7,6 +7,7 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0                                                                   -->
 
 # Let's Coordinate - Getting started
+<br/>
 
 ## 1. Prerequisites
 
@@ -29,6 +30,8 @@ git clone https://github.com/opfab/letscoordinate.git
 ```
 
 #### 2.2. Run Operator Fabric
+
+> /!\ The minimal required version of OperatorFabric is: **1.7.0.RELEASE**
 
 Clone the *operatorfabric-getting-started* git project:
 ```
