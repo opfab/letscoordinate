@@ -32,6 +32,11 @@ spring:
     enabled: true
     drop-first: false
     contexts: local
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:89/auth/realms/dev
 
 logging:
   level:

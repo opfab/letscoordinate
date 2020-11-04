@@ -21,10 +21,12 @@ import {EnvServiceProvider} from "./core/services/env.service.provider";
 import {DatePipe} from "@angular/common";
 import {RomanNumeralPipe} from "./core/pipes/roman-numeral.pipe";
 import {KpiDataTypeFullNamePipe} from "./core/pipes/kpi-data-type-full-name.pipe";
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    LoginComponent
   ],
   imports: [
       BrowserModule,

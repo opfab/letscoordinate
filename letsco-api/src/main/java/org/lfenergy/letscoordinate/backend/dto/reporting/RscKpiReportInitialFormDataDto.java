@@ -22,6 +22,6 @@ import java.util.List;
 @Setter
 public class RscKpiReportInitialFormDataDto {
     private List<RscDto> rscs;
-    private List<RscServiceDto> rscServices;
+    private List<UserServiceDto> rscServices;
     private List<KpiDataTypeDto> kpiDataTypes;
 }

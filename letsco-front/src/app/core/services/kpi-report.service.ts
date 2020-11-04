@@ -21,6 +21,7 @@ import {RscKpiTypedData, RscKpiTypedDataAdapter} from "../models/rsc-kpi-typed-d
 import {EnvService} from "./env.service";
 import {KpiSubmittedForm} from "../models/kpi-submitted-form.model";
 import {ReportTypeEnum} from "../enums/report-type-enum";
+import {AuthService} from "./auth.service";
 
 
 @Injectable({
@@ -28,7 +29,8 @@ import {ReportTypeEnum} from "../enums/report-type-enum";
 })
 export class KpiReportService {
 
-    constructor(private envService: EnvService,
+    constructor(private authService: AuthService,
+                private envService: EnvService,
                 private httpClient: HttpClient,
                 private rscAdapter: RscAdapter,
                 private rscServiceAdapter: RscServiceAdapter,
@@ -68,7 +70,7 @@ export class KpiReportService {
         this.rscs = [];
         this.rscServices = [];
         this.kpiDataTypes = [];
-        this.httpClient.get(this.URL_REPORTING_CONFIG_DATA)
+        this.httpClient.get(this.URL_REPORTING_CONFIG_DATA, this.authService.tokenHeader)
             .subscribe(
                 (res: any) => {
                     res.rscs.forEach(item => this.rscs.push(this.rscAdapter.adapt(item)));
@@ -92,7 +94,7 @@ export class KpiReportService {
             rscServiceCode: rscService.code,
             kpiDataTypeCode: kpiDataType.code
         };
-        this.httpClient.post(this.URL_REPORTING_DATA, requestBody)
+        this.httpClient.post(this.URL_REPORTING_DATA, requestBody, this.authService.tokenHeader)
             .subscribe(
             (res: any) => {
                 if (kpiDataType.code === 'ALL' || kpiDataType.code === 'GP')
@@ -117,7 +119,7 @@ export class KpiReportService {
         };
         return new Promise((resolve, reject) => {
             this.httpClient.post(reportTypeEnum === ReportTypeEnum.EXCEL? this.URL_DOWNLOAD_EXCEL_REPORT : this.URL_DOWNLOAD_PDF_REPORT,
-                requestBody, {responseType: 'blob', observe: 'response'})
+                requestBody, {headers: this.authService.tokenHeader.headers, responseType: 'blob', observe: 'response'})
                     .subscribe((response: any) => {resolve(response)}, reject)
             }
         );

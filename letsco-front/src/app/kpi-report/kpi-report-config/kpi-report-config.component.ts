@@ -47,7 +47,7 @@ export class KpiReportConfigComponent implements OnInit {
     this.kpiReportService.rscSubject.subscribe(
         (data) => {
           if (data && data.length > 0) {
-            this.rscs.push(new Rsc("ALL", "All", []));
+            this.rscs.push(new Rsc("ALL", "All"));
             data.forEach(datum => this.rscs.push(datum));
             this.selectedRsc = this.rscs[0];
           }

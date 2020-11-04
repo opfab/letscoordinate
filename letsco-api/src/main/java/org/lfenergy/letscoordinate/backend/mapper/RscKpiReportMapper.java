@@ -15,7 +15,7 @@ import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.dto.reporting.KpiDataTypeDto;
 import org.lfenergy.letscoordinate.backend.dto.reporting.RscDto;
 import org.lfenergy.letscoordinate.backend.dto.reporting.RscKpiDto;
-import org.lfenergy.letscoordinate.backend.dto.reporting.RscServiceDto;
+import org.lfenergy.letscoordinate.backend.dto.reporting.UserServiceDto;
 import org.lfenergy.letscoordinate.backend.enums.KpiDataSubtypeEnum;
 import org.lfenergy.letscoordinate.backend.enums.KpiDataTypeEnum;
 import org.lfenergy.letscoordinate.backend.model.RscKpi;
@@ -32,19 +32,13 @@ public class RscKpiReportMapper {
                 .map(rsc -> RscDto.builder()
                         .eicCode(rsc.getEicCode())
                         .name(rsc.getName())
-                        .rscServiceDtos(Optional.ofNullable(rsc.getServices())
-                                .map(serviceMap -> serviceMap.values().stream()
-                                        .map(RscKpiReportMapper::toDto)
-                                        .sorted(Comparator.comparing(RscServiceDto::getName))
-                                        .collect(Collectors.toList()))
-                                .orElse(null))
                         .build())
                 .orElse(null);
     }
 
-    public static RscServiceDto toDto(CoordinationConfig.Rsc.Service entity) {
+    public static UserServiceDto toDto(CoordinationConfig.Service entity) {
         return Optional.ofNullable(entity)
-                .map(rscService -> RscServiceDto.builder()
+                .map(rscService -> UserServiceDto.builder()
                         .code(rscService.getCode())
                         .name(rscService.getName())
                         .build())
