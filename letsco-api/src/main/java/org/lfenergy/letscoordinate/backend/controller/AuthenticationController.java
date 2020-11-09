@@ -13,33 +13,37 @@ package org.lfenergy.letscoordinate.backend.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
-import org.lfenergy.letscoordinate.backend.mapper.RscKpiReportMapper;
+import org.lfenergy.letscoordinate.backend.client.KeycloakClient;
 import org.lfenergy.letscoordinate.backend.model.User;
 import org.lfenergy.letscoordinate.backend.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/letsco/api/v1")
 @RequiredArgsConstructor
-@Api(description = "Controller providing APIs to manage users")
-public class UserController {
+@Api(description = "Controller providing APIs to manage authentication")
+public class AuthenticationController {
 
     private final UserService userService;
-    private final CoordinationConfig coordinationConfig;
+    private final KeycloakClient keycloakClient;
 
-    @PostMapping("/user/login")
-    @ApiOperation(value = "Authenticate user using JWT token")
+    @GetMapping("/auth/token")
+    @ApiOperation(value = "Generate bearer access token by username and password")
+    public ResponseEntity getToken(@RequestParam String username, @RequestParam String password) {
+        return keycloakClient.getToken(username, password).fold(
+                invalid -> ResponseEntity.status(invalid.getStatus()).body(invalid),
+                valid -> ResponseEntity.ok("Bearer " + valid)
+        );
+    }
+
+    @PostMapping("/auth/login")
+    @ApiOperation(value = "Authenticate user using access token", hidden = true)
     @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
     public ResponseEntity<Map> login() {
         User user = userService.getUserByUsername();
