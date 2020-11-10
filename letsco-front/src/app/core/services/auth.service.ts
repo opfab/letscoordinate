@@ -41,7 +41,7 @@ export class AuthService {
     }
 
     login(): Observable<string> {
-        return this.http.post<string>(this.envService.serverUrl + '/v1/user/login', null, this.tokenHeader);
+        return this.http.post<string>(this.envService.serverUrl + '/v1/auth/login', null, this.tokenHeader);
     }
 
 

@@ -11,6 +11,7 @@
 
 package org.lfenergy.letscoordinate.backend;
 
+import org.lfenergy.letscoordinate.backend.config.KeycloakConfig;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
 import org.lfenergy.letscoordinate.backend.config.OpfabConfig;
 import org.springframework.boot.SpringApplication;
@@ -20,7 +21,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.kafka.annotation.EnableKafka;
 
 @SpringBootApplication
-@EnableConfigurationProperties({LetscoProperties.class, OpfabConfig.class})
+@EnableConfigurationProperties({LetscoProperties.class, OpfabConfig.class, KeycloakConfig.class})
 @EnableJpaRepositories
 @EnableKafka
 public class LetscoApiApplication {

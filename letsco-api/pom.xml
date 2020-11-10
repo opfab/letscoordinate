@@ -15,7 +15,7 @@
 	<parent>
 		<groupId>org.lfenergy.letscoordinate</groupId>
 		<artifactId>letsco-core</artifactId>
-		<version>1.0.0-RELEASE</version>
+		<version>1.2.0.RELEASE</version>
 	</parent>
 
 	<artifactId>letsco-api</artifactId>
@@ -32,6 +32,7 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<mariadb.version>2.4.4</mariadb.version>
+		<keycloak.version>11.0.3</keycloak.version>
 	</properties>
 
 	<dependencies>
@@ -54,20 +55,11 @@
 		</dependency>
 
 		<!-- Spring Security -->
-		<!--
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-oauth2-client</artifactId>
-		</dependency>
-		-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
 		</dependency>
+
 		<!-- Liquibase -->
 		<dependency>
 			<groupId>org.liquibase</groupId>
@@ -86,12 +78,6 @@
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka</artifactId>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.springframework.kafka</groupId>
-			<artifactId>spring-kafka-generateRscKpiExcelReport</artifactId>
-			<version>2.2.2.RELEASE</version>
-			<scope>generateRscKpiExcelReport</scope>
-		</dependency> -->
 
 		<!-- Swagger 2 -->
 		<dependency>
@@ -164,6 +150,13 @@
 			<groupId>org.lfenergy.operatorfabric</groupId>
 			<artifactId>cards-client</artifactId>
 			<version>SNAPSHOT</version>
+		</dependency>
+
+		<!-- Keycloak -->
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-admin-client</artifactId>
+			<version>${keycloak.version}</version>
 		</dependency>
 
 	</dependencies>

@@ -78,3 +78,10 @@ opfab:
 
 third-app:
   url: http://localhost:8081
+
+keycloak:
+  server:
+    url: http://localhost:89/auth
+    realm: dev
+    client-id: opfab-client
+    client-secret: opfab-keycloak-secret
