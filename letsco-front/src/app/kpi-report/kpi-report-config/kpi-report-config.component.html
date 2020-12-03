@@ -12,73 +12,10 @@
     <h4 class="mt-5 mb-4" style="text-align: center;"><b>RSC KPI report configuration</b></h4>
 
     <div class="mt-5">
-        <p>Period</p>
-
         <form (ngSubmit)="onSubmit()" #reportForm="ngForm">
             <div class="row">
-                <div class="col-sm-2"></div>
-                <div class="col-sm-10 row">
-                    <div class="col-sm-12 row">
-                        <div class="col-sm-3">
-                            From
-                        </div>
-                        <div class="col-sm-3">
-                            To
-                        </div>
-                    </div>
-                    <div class="col-sm-12 row">
-                        <div class="col-sm-3">
-                            <div class="input-group">
-                                <input class="form-control" placeholder="yyyy-mm-dd"
-                                       name="dpStart" [(ngModel)]="startModel" ngbDatepicker #dStart="ngbDatepicker" required>
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" (click)="dStart.toggle()" type="button">
-                                        <!--<img src="img/calendar-icon.svg" style="width: 1.2rem; height: 1rem; cursor: pointer;"/>-->
-                                        <i class="fa fa-calendar" style="font-size: 1.3em;"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                            <div class="input-group">
-                                <input class="form-control" placeholder="yyyy-mm-dd"
-                                       name="dpEnd" [(ngModel)]="endModel" ngbDatepicker #dEnd="ngbDatepicker" required>
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" (click)="dEnd.toggle()" type="button">
-                                        <!--<img src="img/calendar-icon.svg" style="width: 1.2rem; height: 1rem; cursor: pointer;"/>-->
-                                        <i class="fa fa-calendar" style="font-size: 1.3em;"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                <div class="col-sm-2"><b>RSC Service</b></div>
             </div>
-
-            <hr class="my-4">
-
-            <p>RSC</p>
-
-            <div class="row">
-                <div class="col-sm-2"></div>
-                <div class="col-sm-10">
-                    <div class="form-check form-check-inline" *ngFor="let rsc of rscs">
-                        <input class="form-check-input"
-                               [(ngModel)]="selectedRsc"
-                               type="radio"
-                               name="radioRSCs"
-                               [id]="rsc.eicCode"
-                               [value]="rsc"
-                               required >
-                        <label class="form-check-label" [for]="rsc.eicCode">{{rsc.name}}</label>
-                    </div>
-                </div>
-            </div>
-
-            <hr class="my-4">
-
-            <p>RSC Service</p>
 
             <div class="row">
                 <div class="col-sm-2"></div>
@@ -98,7 +35,175 @@
 
             <hr class="my-4">
 
-            <p>Data type</p>
+            <div class="row">
+                <div class="col-sm-2"><b>Period</b></div>
+                <div class="col-sm-4"></div>
+                <div class="col-sm-6">
+                    <div class="col-sm-12 row">
+                        <div class="col-sm-5">
+                            From
+                        </div>
+                        <div class="col-sm-7">
+                            To
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-4">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input"
+                               [(ngModel)]="selectedViewType"
+                               type="radio"
+                               name="radioPeriodType"
+                               id="DAILY_RADIO"
+                               value="DAILY"
+                               required>
+                        <label class="form-check-label" for="DAILY_RADIO">Daily view</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input"
+                               [(ngModel)]="selectedViewType"
+                               type="radio"
+                               name="radioPeriodType"
+                               id="MULTI_YEAR_RADIO"
+                               value="MULTI_YEAR"
+                               required>
+                        <label class="form-check-label" for="MULTI_YEAR_RADIO">Multi-year view</label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="col-sm-12 row" *ngIf="selectedViewType === 'DAILY'">
+                        <div class="col-sm-5">
+                            <div class="input-group">
+                                <input class="form-control" placeholder="yyyy-mm-dd"
+                                       name="dpStart" [(ngModel)]="startModel" ngbDatepicker #dStart="ngbDatepicker" required>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" (click)="dStart.toggle()" type="button">
+                                        <!--<img src="img/calendar-icon.svg" style="width: 1.2rem; height: 1rem; cursor: pointer;"/>-->
+                                        <i class="fa fa-calendar" style="font-size: 1.3em;"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <div class="input-group">
+                                <input class="form-control" placeholder="yyyy-mm-dd"
+                                       name="dpEnd" [(ngModel)]="endModel" ngbDatepicker #dEnd="ngbDatepicker" required>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" (click)="dEnd.toggle()" type="button">
+                                        <!--<img src="img/calendar-icon.svg" style="width: 1.2rem; height: 1rem; cursor: pointer;"/>-->
+                                        <i class="fa fa-calendar" style="font-size: 1.3em;"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2"></div>
+                    </div>
+                    <div class="col-sm-12 row" *ngIf="selectedViewType === 'MULTI_YEAR'">
+                        <div class="col-sm-5">
+                            <input type="text" placeholder="yyyy" size="4" maxlength="4" [(ngModel)]="startYear" name="startYear"
+                                   (keypress)="isNumeralInput($event.charCode)" (change)="checkEndYear()" autocomplete="off" required>
+                        </div>
+                        <div class="col-sm-5">
+                            <input type="text" placeholder="yyyy" size="4" maxlength="4" [(ngModel)]="endYear" name="endYear"
+                                   (keypress)="isNumeralInput($event.charCode)" (change)="checkStartYear()" autocomplete="off" required>
+                        </div>
+                        <div class="col-sm-2"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <hr class="my-4">
+
+            <div class="row">
+                <div class="col-sm-2"><b>RSC</b></div>
+            </div>
+
+            <div class="row" *ngIf="selectedViewType === 'MULTI_YEAR'">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    <a href="javascript: void(0)" (click)="isAllRscsChecked() ? uncheckAllRscs() : checkAllRscs()">
+                        {{isAllRscsChecked() ? 'Unselect all RSCs' : 'Select all RSCs'}}
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10" *ngIf="selectedViewType === 'DAILY'">
+                    <div class="form-check form-check-inline" *ngFor="let rsc of rscs">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="radioRSCs"
+                               [(ngModel)]="selected_rsc"
+                               [id]="rsc.eicCode + '_radiobox'"
+                               [value]="rsc">
+                        <label class="form-check-label" [for]="rsc.eicCode + '_radiobox'">{{rsc.name}}</label>
+                    </div>
+                </div>
+                <div class="col-sm-10" *ngIf="selectedViewType === 'MULTI_YEAR'">
+                    <div class="form-check form-check-inline" *ngFor="let rsc of rscs">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               [name]="rsc.eicCode + '_checkbox'"
+                               [(ngModel)]="rsc.checked"
+                               [id]="rsc.eicCode + '_checkbox'"
+                               (change)="uncheckAllRegions()">
+                        <label class="form-check-label" [for]="rsc.eicCode + '_checkbox'">{{rsc.name}}</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4" style="text-align: center;">
+                <b>OR</b>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-2"><b>Region/CCR</b></div>
+            </div>
+
+            <div class="row" *ngIf="selectedViewType === 'MULTI_YEAR'">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    <a href="javascript: void(0)" (click)="isAllRegionsChecked() ? uncheckAllRegions() : checkAllRegions()">
+                        {{isAllRegionsChecked() ? 'Unselect all Regions' : 'Select all Regions'}}
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10" *ngIf="selectedViewType === 'DAILY'">
+                    <div class="form-check form-check-inline" *ngFor="let region of regions">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="radioRegions"
+                               [(ngModel)]="selected_region"
+                               [id]="region.eicCode + '_radiobox'"
+                               [value]="region">
+                        <label class="form-check-label" [for]="region.eicCode + '_radiobox'">{{region.name}}</label>
+                    </div>
+                </div>
+                <div class="col-sm-10" *ngIf="selectedViewType === 'MULTI_YEAR'">
+                    <div class="form-check form-check-inline" *ngFor="let region of regions">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               [name]="region.eicCode + '_checkbox'"
+                               [(ngModel)]="region.checked"
+                               [id]="region.eicCode + '_checkbox'"
+                               (change)="uncheckAllRscs()">
+                        <label class="form-check-label" [for]="region.eicCode + '_checkbox'">{{region.name}}</label>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="row">
+                <div class="col-sm-2"><b>Data type</b></div>
+            </div>
 
             <div class="row">
                 <div class="col-sm-2"></div>
@@ -120,7 +225,7 @@
 
             <div class="mt-5" style="text-align: center;">
                 <button type="submit" class="pl-5 pr-5 btn btn-lg btn-success"
-                        [disabled]="isValidForm()">Submit</button>
+                        [disabled]="!isValidForm()">Submit</button>
             </div>
 
         </form>

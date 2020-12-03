@@ -12,20 +12,23 @@
 import {AfterViewChecked, Component, Input} from '@angular/core';
 import {KpiChartOptions} from "../../core/models/kpi-chart-options.model";
 import {ThemeService} from "../../core/services/theme.service";
+import {KpiReportService} from "../../core/services/kpi-report.service";
+import {ViewTypeEnum} from "../../core/enums/view-type-enum";
 
 @Component({
-  selector: 'app-bar-chart',
-  templateUrl: './bar-chart.component.html',
-  styleUrls: ['./bar-chart.component.scss'],
+  selector: 'app-kpi-chart',
+  templateUrl: './kpi-chart.component.html',
+  styleUrls: ['./kpi-chart.component.scss'],
 })
-export class BarChartComponent implements AfterViewChecked{
+export class KpiChartComponent implements AfterViewChecked{
   @Input() public kpiChartId: string;
   @Input() public kpiChartOptions: KpiChartOptions;
+  @Input() public viewTypeEnum: ViewTypeEnum;
 
   constructor(private themeService: ThemeService) {
   }
 
   ngAfterViewChecked() {
-    this.themeService.updateChartColors(this.kpiChartOptions.chartOptions)
+    this.themeService.updateChartColors(this.kpiChartOptions.chartOptions, this.viewTypeEnum)
   }
 }

@@ -12,6 +12,7 @@
 import {RscKpiData, RscKpiDataAdapter} from "./rsc-kpi-data.model";
 import {Injectable} from "@angular/core";
 import {Adapter} from "../utils/adapter";
+import {ViewTypeEnum} from "../enums/view-type-enum";
 
 export class RscKpi {
     constructor(public code: string,
@@ -30,15 +31,26 @@ export class RscKpiAdapter implements Adapter<RscKpi>{
 
     adapt(entry: any, ...extraParams: any): RscKpi {
         let key = entry[0]; // GPx or BPx (while x in [1..n])
-        let value = entry[1];
+        let value = entry[1]; // Map (key: graph legend, value: list of {timestamp, label, details} objects)
         let rscKpiData: RscKpiData[] = [];
-        let kpiSubtype = extraParams[0][1] ? extraParams[0][1][key] : null;
-        if(Array.from(Object.entries(value)).length === 0) {
-            rscKpiData.push(this.rscKpiDataAdapter.adapt([kpiSubtype ? kpiSubtype.name : key, []], extraParams, key, key + '-graph0'))
-        } else {
-            Array.from(Object.entries(value))
-                .forEach((entry,index) => rscKpiData.push(this.rscKpiDataAdapter.adapt(entry, extraParams, key, key + '-graph' + index)));
+        let kpiSubtype = extraParams[0][1] ? extraParams[0][1][key] : null; // the full name of the GPx or BPx
+        let submittedFormData = extraParams[0][0]; // values selected in the config page
+
+        if (submittedFormData.viewTypeEnum === ViewTypeEnum.DAILY) { // CASE: DAILY VIEW
+            if (Array.from(Object.entries(value)).length === 0) {
+                rscKpiData.push(this.rscKpiDataAdapter.adapt([kpiSubtype ? kpiSubtype.name : key, []], extraParams, key, key + '-graph0'))
+            } else {
+                Array.from(Object.entries(value))
+                    .forEach((entry, index) => rscKpiData.push(this.rscKpiDataAdapter.adapt(entry, extraParams, key, key + '-graph' + index)));
+            }
+        } else { // CASE: MULTI-YEAR VIEW
+            if (Array.from(Object.entries(value)).length === 0) {
+                rscKpiData.push(this.rscKpiDataAdapter.adapt([kpiSubtype ? kpiSubtype.name : key, []], extraParams, key, key + '-graph0'))
+            } else {
+                rscKpiData.push(this.rscKpiDataAdapter.adapt(entry, extraParams, key, key + '-graph0'));
+            }
         }
+
         return new RscKpi(
             key,
             kpiSubtype && kpiSubtype.name ? kpiSubtype.name : null,

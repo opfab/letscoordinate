@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018-2020, RTE (https://www.rte-france.com)
- * Copyright (c) 2019-2020 RTE international (https://www.rte-international.com)
+ * Copyright (c) 2020, RTE (https://www.rte-france.com)
+ * Copyright (c) 2020 RTE international (https://www.rte-international.com)
  * See AUTHORS.txt
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -20,8 +20,9 @@ import java.io.Serializable;
 @Builder
 @Getter
 @Setter
-public class KpiDataTypeDto implements Serializable {
-    private String code;
+public class RegionDto implements Serializable {
     private String name;
+    private String shortName;
+    private String eicCode;
     private Integer index;
 }

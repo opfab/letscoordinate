@@ -20,4 +20,14 @@ public final class Constants {
     public static final String ROLE_PREFIX = "ROLE_";
     public static final String SERVICE_PREFIX = ROLE_PREFIX + "SRV_";
 
+    public static final String ALL_DATA_TYPE_CODE = "ALL";
+    public static final String ALL_RSCS_CODE = "ALL_RSCS";
+    public static final String ALL_RSCS_NAME = "Pan-EU";
+    public static final String ALL_REGIONS_CODE = "ALL_REGIONS";
+    public static final String ALL_REGIONS_NAME = "Pan-EU";
+    public static final String STRING_RSC = "RSC";
+    public static final String STRING_RSCS = "RSCs";
+    public static final String STRING_REGION = "Region";
+    public static final String STRING_REGIONS = "Regions";
+
 }

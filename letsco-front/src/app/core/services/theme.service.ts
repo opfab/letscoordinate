@@ -12,6 +12,7 @@
 import {Injectable} from '@angular/core';
 import {ChartOptions} from 'chart.js';
 import {Theme} from "../models/theme.model";
+import {ViewTypeEnum} from "../enums/view-type-enum";
 
 @Injectable({
   providedIn: 'root'
@@ -40,13 +41,19 @@ export class ThemeService {
     }
   }
 
-  updateChartColors(options: ChartOptions) {
+  updateChartColors(options: ChartOptions, viewTypeEnum: ViewTypeEnum) {
     if (options) {
       options.legend = {
         labels: {
           fontColor: this.currentTheme.color
-        }
+        },
+        position: (viewTypeEnum === ViewTypeEnum.MULTI_YEAR ? 'bottom' : 'top')
       };
+      options.layout = {
+        padding: {
+          top: (viewTypeEnum === ViewTypeEnum.MULTI_YEAR ? 15 : 0)
+        }
+      }
 
       options.scales.xAxes = [{
         ticks: {fontColor: this.currentTheme.color},
