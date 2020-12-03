@@ -72,7 +72,7 @@ public class OpfabPublisherComponentTest {
                 "eic2", new CoordinationConfig.Tso( "eic2", "TSO2", "eicRsc2" ),
                 "eic3", new CoordinationConfig.Tso( "eic3", "TSO3", "eicRsc3" )));
         coordinationConfig.setRscs(Map.of(
-                "eicRsc1", new CoordinationConfig.Rsc("eicRsc1", "RSC1")));
+                "eicRsc1", new CoordinationConfig.Rsc("eicRsc1", "RSC1", null, null)));
 
         timestamp = Instant.parse("2021-03-17T10:15:30Z");
         businessDayFrom = Instant.parse("2021-03-21T23:00:00Z");

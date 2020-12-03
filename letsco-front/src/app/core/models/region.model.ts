@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018-2020, RTE (https://www.rte-france.com)
- * Copyright (c) 2019-2020 RTE international (https://www.rte-international.com)
+ * Copyright (c) 2020, RTE (https://www.rte-france.com)
+ * Copyright (c) 2020 RTE international (https://www.rte-international.com)
  * See AUTHORS.txt
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,7 +12,7 @@
 import {Injectable} from "@angular/core";
 import {Adapter} from "../utils/adapter";
 
-export class Rsc {
+export class Region {
     constructor(public eicCode: string,
                 public name: string,
                 public shortName: string,
@@ -24,9 +24,9 @@ export class Rsc {
 @Injectable({
     providedIn: 'root'
 })
-export class RscAdapter implements Adapter<Rsc>{
-    adapt(item: any, ...extraParams: any): Rsc {
-        return new Rsc(
+export class RegionAdapter implements Adapter<Region>{
+    adapt(item: any, ...extraParams: any): Region {
+        return new Region(
             item.eicCode,
             item.name,
             item.shortName,

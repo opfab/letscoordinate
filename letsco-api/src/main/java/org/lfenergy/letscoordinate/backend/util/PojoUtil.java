@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -54,6 +55,8 @@ public final class PojoUtil {
         else if (field.getType() == String.class) {field.set(object, fieldValue);}
         else if (field.getType() == OffsetDateTime.class) {
             field.set(object, DateUtil.toOffsetDateTime(fieldValue));
+        } else if (field.getType() == Instant.class) {
+            field.set(object, DateUtil.toOffsetDateTime(fieldValue).toInstant());
         } else if (field.getType() == List.class) {
             field.set(object, StringUtil.cleanAndSplitString(fieldValue, MULTIPLE_ELEMENTS_SEPARATOR));
         } else {

@@ -22,6 +22,7 @@ import {KpiDataTypeFullNamePipe} from "../../core/pipes/kpi-data-type-full-name.
 import {KpiSubmittedForm} from "../../core/models/kpi-submitted-form.model";
 import * as jsPDF from 'jspdf';
 import {ThemeService} from "../../core/services/theme.service";
+import {ViewTypeEnum} from "../../core/enums/view-type-enum";
 
 const pdfConstants = {
   logoLetsco: {
@@ -46,7 +47,8 @@ const pdfConstants = {
     _y_min: 10,
     _y_max: 276,
     titleLineHeight: 7,
-    textLineHeight: 5
+    textLineHeight: 5,
+    maxFirstPageTitleWidth: 140
   }
 };
 
@@ -108,16 +110,7 @@ export class KpiReportComponent implements OnInit {
     this.generateReportContent(pdf, pageNum, false);
 
     // file generation
-    pdf.save(`${this.generateFileName()}.pdf`);
-  }
-
-  generateFileName(): string {
-    let kpiSubmittedForm: KpiSubmittedForm = this.rscKpiReportData.submittedForm;
-    return `${kpiSubmittedForm.rscService.code}_` +
-        `${kpiSubmittedForm.kpiDataType.code.toLowerCase()}Kpis_` +
-        (kpiSubmittedForm.rsc.eicCode === 'ALL' ? `allRscs_` : `${kpiSubmittedForm.rsc.name}_`) +
-        `${this.datePipe.transform(kpiSubmittedForm.startDate, 'yyyyMMdd')}_` +
-        `${this.datePipe.transform(kpiSubmittedForm.endDate, 'yyyyMMdd')}`
+    pdf.save(`${this.kpiReportService.reportFileName}.pdf`);
   }
 
   addPdfPageFooter(pdf: jsPDF, pageNum: number) {
@@ -140,15 +133,51 @@ export class KpiReportComponent implements OnInit {
     let _y = pdfConstants.layout._y_min;
     pdf.setFont('times', 'bold');
     pdf.setFontSize(14);
-    pdf.text(68, _y+=10, 'RSC KPIs reporting - ' + this.rscKpiReportData.submittedForm.rscService.name + ' service');
+    let textToCenter = this.selectedEntityType + ' KPIs reporting - ' + this.rscKpiReportData.submittedForm.rscService.name + ' service';
+    let textParam = this.getOffsetForTextToCenter(pdf, textToCenter);
+    pdf.text(textParam.offset, _y+=10, textToCenter);
+
     pdf.setFontSize(10);
-    pdf.text(80, _y+=10, 'From: ' + this.datePipe.transform(this.rscKpiReportData.submittedForm.startDate, 'fullDate'));
-    pdf.text(80, _y+=7, 'To: ' + this.datePipe.transform(this.rscKpiReportData.submittedForm.endDate, 'fullDate'));
-    pdf.text(80, _y+=7, 'RSC: ' + this.rscKpiReportData.submittedForm.rsc.name);
+    if (this.isDailyView) {
+      textToCenter = 'From: ' + this.datePipe.transform(this.rscKpiReportData.submittedForm.startDate, 'fullDate');
+      textParam = this.getOffsetForTextToCenter(pdf, textToCenter);
+      pdf.text(textParam.offset, _y+=10, textToCenter);
+      textToCenter = 'To: ' + this.datePipe.transform(this.rscKpiReportData.submittedForm.endDate, 'fullDate');
+      textParam = this.getOffsetForTextToCenter(pdf, textToCenter);
+      pdf.text(textParam.offset, _y+=7, textToCenter);
+    } else {
+      textToCenter = 'From  ' + this.rscKpiReportData.submittedForm.startDate.getFullYear() + '  To  ' + this.rscKpiReportData.submittedForm.endDate.getFullYear();
+      textParam = this.getOffsetForTextToCenter(pdf, textToCenter);
+      pdf.text(textParam.offset, _y+=10, textToCenter);
+    }
+
+    _y += 3;
+    textToCenter = this.selectedEntityType + ': ' + this.rscsOrRegionsToString;
+    textParam = this.getOffsetForTextToCenter(pdf, textToCenter);
+    let splitedText = pdf.splitTextToSize(textToCenter, textParam.textWidth);
+    for (let i = 0, length = splitedText.length; i < length; i++) {
+      if (i < length-1)
+        pdf.text(textParam.offset, _y+=7, splitedText[i]);
+      else
+        pdf.text(this.getOffsetForTextToCenter(pdf, splitedText[i]).offset, _y+=7, splitedText[i]);
+    }
+  }
+
+  private getOffsetForTextToCenter(pdf: jsPDF, textToCenter: string) : {offset: number, textWidth: number} {
+    let pdfPageWidth = parseInt(pdf.internal.pageSize.width);
+    let textWidth = Math.min(
+        pdf.getStringUnitWidth(textToCenter) * pdf.internal.getFontSize() / pdf.internal.scaleFactor,
+        pdfConstants.layout.maxFirstPageTitleWidth
+    );
+    let offset = (pdfPageWidth - textWidth) / 2;
+    return {
+      offset: Math.round(offset),
+      textWidth: Math.ceil(textWidth)
+    };
   }
 
   generateReportContent(pdf: jsPDF, pageNum: number, isSummaryPage: boolean) {
-    let _y : number = (isSummaryPage === true ? 70 : pdfConstants.layout._y_min);
+    let _y : number = (isSummaryPage === true ? 80 : pdfConstants.layout._y_min);
     for (let [i,rscKpiTypedDatum] of this.rscKpiReportData.rscKpiTypedData.entries()) {
       if (isSummaryPage === false) {
         // The BP and GP global titles should be in separate pages
@@ -182,7 +211,7 @@ export class KpiReportComponent implements OnInit {
             let wrapWidth = 180;
             if ((comment.length > 0 && _y + 2*pdfConstants.layout.titleLineHeight > pdfConstants.layout._y_max)
                 || (comment.length === 0 && _y + pdfConstants.layout.titleLineHeight > pdfConstants.layout._y_max)) {
-              // this check is to avoid righting the word "Comment:" in the bottom of the page without it's content when exists,
+              // this check is to avoid writing the word "Comment:" in the bottom of the page without it's content when exists,
               // the should been written together in the top of a new page
               _y = this.initNewPdfPage(pdf, pageNum+=1);
             }
@@ -209,6 +238,31 @@ export class KpiReportComponent implements OnInit {
     pdf.addPage();
     this.addPdfPageFooter(pdf, pageNum);
     return pdfConstants.layout._y_min;
+  }
+
+  get rscsOrRegionsToString() : string {
+    if (this.kpiReportService.rscKpiReportData) {
+      let rscs = this.kpiReportService.rscKpiReportData.submittedForm.rscs;
+      let regions = this.kpiReportService.rscKpiReportData.submittedForm.regions;
+      if (this.isDailyView === true) {
+        return rscs.length > 0 ? rscs[0].name : regions[0].name;
+      } else {
+        return rscs.length > 0 ? rscs.map(r => r.name).join(", ") : regions.map(r => r.name).join(", ");
+      }
+    }
+    return ""
+  }
+
+  get isDailyView() : boolean {
+    return this.kpiReportService.rscKpiReportData.submittedForm.viewTypeEnum === ViewTypeEnum.DAILY
+  }
+
+  get isRscsSelected() : boolean {
+    return this.kpiReportService.rscKpiReportData.submittedForm.rscs && this.kpiReportService.rscKpiReportData.submittedForm.rscs.length > 0;
+  }
+
+  get selectedEntityType(): string {
+    return this.isRscsSelected === true ? 'RSC' : 'Region';
   }
 
 }

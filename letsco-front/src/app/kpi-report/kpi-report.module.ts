@@ -17,7 +17,7 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {KpiReportComponent} from './kpi-report/kpi-report.component';
 import {RouterModule} from "@angular/router";
 import {CoreModule} from "../core/core.module";
-import {BarChartComponent} from './bar-chart/bar-chart.component';
+import {KpiChartComponent} from './kpi-chart/kpi-chart.component';
 import {ChartsModule} from "ng2-charts";
 
 
@@ -25,7 +25,7 @@ import {ChartsModule} from "ng2-charts";
   declarations: [
       KpiReportConfigComponent,
       KpiReportComponent,
-      BarChartComponent
+      KpiChartComponent
   ],
   imports: [
       CommonModule,

@@ -19,6 +19,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -88,5 +89,16 @@ public final class StringUtil {
         } catch (JsonProcessingException e) {
             return e.getMessage();
         }
+    }
+
+    public static String toCamelCase(String str) {
+        if(StringUtils.isBlank(str))
+            return str;
+        String result = "";
+        List<String> tokens = Arrays.asList(str.trim().split("[ _\\-]"));
+        for(String token : tokens) {
+            result += StringUtils.capitalize(token.toLowerCase());
+        }
+        return StringUtils.uncapitalize(result);
     }
 }

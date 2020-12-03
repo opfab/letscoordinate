@@ -31,12 +31,17 @@ public class CoordinationConfig {
 
     private Map<String, Tso> tsos;
     private Map<String, Rsc> rscs;
+    private Map<String, Region> regions;
     private Map<String, Service> services;
     private Map<String, KpiDataType> kpiDataTypes;
     private Map<String, Map<String, KpiDataSubtype>> kpiDataSubtypes;
 
     public Set<String> getRscEicCodes() {
         return Collections.unmodifiableSet(rscs.keySet());
+    }
+
+    public Set<String> getRegionEicCodes() {
+        return Collections.unmodifiableSet(regions.keySet());
     }
 
     public Set<String> getTsoEicCodes() {
@@ -48,7 +53,7 @@ public class CoordinationConfig {
     }
 
     public Set<String> getAllEicCodes() {
-        return Collections.unmodifiableSet(Stream.of(getRscEicCodes(), getTsoEicCodes())
+        return Collections.unmodifiableSet(Stream.of(getRscEicCodes(), getRegionEicCodes(), getTsoEicCodes())
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet()));
     }
@@ -70,6 +75,10 @@ public class CoordinationConfig {
         return Optional.ofNullable(eicCode).map(rscs::get).orElse(null);
     }
 
+    public Region getRegionByEicCode(String eicCode) {
+        return Optional.ofNullable(eicCode).map(regions::get).orElse(null);
+    }
+
     public Tso getTsoByEicCode(String eicCode) {
         return Optional.ofNullable(eicCode).map(tsos::get).orElse(null);
     }
@@ -89,9 +98,24 @@ public class CoordinationConfig {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Rsc {
+    @Builder
+    public static class Rsc implements LetscoEntity {
         private String eicCode;
         private String name;
+        private String shortName;
+        private Integer index;
+    }
+
+    @Setter
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class Region implements LetscoEntity {
+        private String eicCode;
+        private String name;
+        private String shortName;
+        private Integer index;
     }
 
     @Setter
@@ -117,6 +141,7 @@ public class CoordinationConfig {
     public static class KpiDataType {
         private String code;
         private String name;
+        private Integer index;
     }
 
     @Setter
@@ -125,6 +150,13 @@ public class CoordinationConfig {
         private String code;
         private String name;
         private String graphType;
+    }
+
+    public interface LetscoEntity {
+        String getEicCode();
+        String getName();
+        String getShortName();
+        Integer getIndex();
     }
 
 }

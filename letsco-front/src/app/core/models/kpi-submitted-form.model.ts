@@ -12,11 +12,15 @@
 import {Rsc} from "./rsc.model";
 import {RscService} from "./rsc-service.model";
 import {KpiDataType} from "./kpi-data-type.model";
+import {ViewTypeEnum} from "../enums/view-type-enum";
+import {Region} from "./region.model";
 
 export class KpiSubmittedForm {
-    constructor(public startDate: Date,
+    constructor(public viewTypeEnum: ViewTypeEnum,
+                public startDate: Date,
                 public endDate: Date,
-                public rsc: Rsc,
+                public rscs: Rsc[],
+                public regions: Region[],
                 public rscService: RscService,
                 public kpiDataType: KpiDataType) {
     }
