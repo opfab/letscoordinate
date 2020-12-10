@@ -106,8 +106,7 @@ public class OpfabPublisherComponent {
         Instant timestamp = eventMessageDto.getHeader().getTimestamp();
         BusinessDataIdentifierDto businessDataIdentifierDto = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
         Instant businessDayFrom = businessDataIdentifierDto.getBusinessDayFrom();
-        Instant businessDayTo = businessDataIdentifierDto.getBusinessDayTo()
-                .orElse(businessDayFrom.plus(Duration.ofHours(24)));
+        Instant businessDayTo = businessDataIdentifierDto.getBusinessDayTo().get();
 
         List<TimeSpan> timeSpans = new ArrayList<>();
         ValidationDto validation = eventMessageDto.getPayload().getValidation();
@@ -125,7 +124,9 @@ public class OpfabPublisherComponent {
 
         card.setTimeSpans(timeSpans);
         card.setPublishDate(timestamp);
-        card.setStartDate(businessDayFrom);
+        // MR1: The feed card’s start date is the minimum between the card’s arrival date (timestamp) and the beginning
+        // of the business period (businessDayFrom)
+        card.setStartDate(businessDayFrom.isBefore(timestamp) ? businessDayFrom : timestamp);
         card.setEndDate(businessDayTo);
     }
 

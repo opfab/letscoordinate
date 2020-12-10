@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.lfenergy.letscoordinate.backend.component.OpfabPublisherComponent;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
+import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
 import org.lfenergy.letscoordinate.backend.mapper.EventMessageMapper;
 import org.lfenergy.letscoordinate.backend.model.EventMessage;
 import org.lfenergy.letscoordinate.backend.processor.JsonDataProcessor;
@@ -28,6 +29,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -56,6 +58,12 @@ public class LetscoKafkaListener {
                 DateTimeFormatter.ISO_INSTANT.format(Instant.ofEpochMilli(ts)), partition);
         log.debug("Received data:\n {}", data);
         EventMessageDto eventMessageDto = jsonDataProcessor.inputStreamToPojo(new ByteArrayInputStream(data.getBytes()));
+
+        // LC-254 (Change Request) MR2: Remove a second from the end of the business period (businessDayTo) to avoid
+        // displaying the card in the next month
+        BusinessDataIdentifierDto businessDataIdentifierDto = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        businessDataIdentifierDto.setBusinessDayTo((businessDataIdentifierDto.getBusinessDayTo().orElse(
+                businessDataIdentifierDto.getBusinessDayFrom().plus(Duration.ofHours(24)))).minus(Duration.ofSeconds(1)));
 
         String noun = eventMessageDto.getHeader().getNoun();
         if (!isGenericNoun(noun)) {
