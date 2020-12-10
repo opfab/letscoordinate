@@ -106,8 +106,7 @@ public class OpfabPublisherComponent {
         Instant timestamp = eventMessageDto.getHeader().getTimestamp();
         BusinessDataIdentifierDto businessDataIdentifierDto = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
         Instant businessDayFrom = businessDataIdentifierDto.getBusinessDayFrom();
-        Instant businessDayTo = businessDataIdentifierDto.getBusinessDayTo()
-                .orElse(businessDayFrom.plus(Duration.ofHours(24)));
+        Instant businessDayTo = businessDataIdentifierDto.getBusinessDayTo().get();
 
         List<TimeSpan> timeSpans = new ArrayList<>();
         ValidationDto validation = eventMessageDto.getPayload().getValidation();
@@ -120,7 +119,9 @@ public class OpfabPublisherComponent {
         } else {
             // LC-207 MR-1 & LC-208 MR-2: If the card does not contain any validation error or warning, we display only
             // one bubble for the card’s arrival time in feed
-            timeSpans.add(new TimeSpan().start(timestamp));
+            // LC-254 (Change Request) MR1: The bubble's date in the timeline is the minimum between the reception date
+            // and the beginning of the business period (businessDayFrom)
+            timeSpans.add(new TimeSpan().start(businessDayFrom.isBefore(timestamp) ? businessDayFrom : timestamp));
         }
 
         card.setTimeSpans(timeSpans);
