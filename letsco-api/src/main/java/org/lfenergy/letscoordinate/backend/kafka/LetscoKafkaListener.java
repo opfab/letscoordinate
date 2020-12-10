@@ -39,6 +39,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -103,6 +104,10 @@ public class LetscoKafkaListener {
         ignoreMessageTypeNameIfNeeded(messageTypeName);
         ignorePositiveTechnicalQualityCheck(eventMessageDto);
         processIfBusinessDayFromOptional(eventMessageDto);
+        bdi.setBusinessDayTo(bdi.getBusinessDayTo() == null ?
+                bdi.getBusinessDayFrom().plus(Duration.ofHours(24)).minus(Duration.ofSeconds(1)) :
+                bdi.getBusinessDayTo().minus(Duration.ofSeconds(1)));
+
     }
 
     void ignoreMessageTypeNameIfNeeded(String messageTypeName) {

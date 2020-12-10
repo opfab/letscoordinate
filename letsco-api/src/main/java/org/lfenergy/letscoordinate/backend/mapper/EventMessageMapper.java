@@ -48,8 +48,7 @@ public class EventMessageMapper {
                     eventMessage.setMessageType(businessDataIdentifierDto.getMessageType());
                     eventMessage.setMessageTypeName(businessDataIdentifierDto.getMessageTypeName());
                     eventMessage.setBusinessDayFrom(businessDataIdentifierDto.getBusinessDayFrom());
-                    eventMessage.setBusinessDayTo(businessDataIdentifierDto.getBusinessDayTo().orElse(
-                            businessDataIdentifierDto.getBusinessDayFrom().plus(Duration.ofHours(24))));
+                    eventMessage.setBusinessDayTo(businessDataIdentifierDto.getBusinessDayTo());
                     eventMessage.setProcessStep(businessDataIdentifierDto.getProcessStep().orElse(null));
                     eventMessage.setTimeframe(businessDataIdentifierDto.getTimeframe().orElse(null));
                     eventMessage.setTimeframeNumber(businessDataIdentifierDto.getTimeframeNumber().orElse(null));

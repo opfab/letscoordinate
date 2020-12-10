@@ -29,7 +29,6 @@ public class BusinessDataIdentifierDto {
     private String messageType;
     private String messageTypeName;
     private Instant businessDayFrom;
-    @Getter(AccessLevel.NONE)
     private Instant businessDayTo;
     @Getter(AccessLevel.NONE)
     private String processStep;
@@ -103,15 +102,6 @@ public class BusinessDataIdentifierDto {
     @JsonProperty("biddingZone")
     public String getBiddingZoneSimple() {
         return biddingZone;
-    }
-
-    public Optional<Instant> getBusinessDayTo() {
-        return Optional.ofNullable(businessDayTo);
-    }
-
-    @JsonProperty("businessDayTo")
-    public Instant getBusinessDayToSimple() {
-        return businessDayTo;
     }
 
     public Optional<String> getBusinessApplication() {

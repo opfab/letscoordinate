@@ -177,8 +177,7 @@ public class OpfabPublisherComponent {
         BusinessDataIdentifierDto businessDataIdentifierDto =
                 eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
         Instant businessDayFrom = businessDataIdentifierDto.getBusinessDayFrom();
-        Instant businessDayTo = businessDataIdentifierDto.getBusinessDayTo()
-                .orElse(businessDayFrom.plus(Duration.ofHours(24)));
+        Instant businessDayTo = businessDataIdentifierDto.getBusinessDayTo();
 
         List<TimeSpan> timeSpans = new ArrayList<>();
         Optional<ValidationDto> validationOpt = eventMessageDto.getPayload().getValidation();
@@ -198,8 +197,44 @@ public class OpfabPublisherComponent {
 
         card.setTimeSpans(timeSpans);
         card.setPublishDate(timestamp);
-        card.setStartDate(timestamp.isBefore(businessDayFrom) ? timestamp : businessDayFrom);
-        card.setEndDate(businessDayTo.minus(Duration.ofMinutes(1)));
+        card.setStartDate(businessDayFrom.isBefore(timestamp) ? businessDayFrom : timestamp);
+        card.setEndDate(businessDayTo);
+    }
+
+    void setCardRecipients(Card card, EventMessageDto eventMessageDto) {
+
+        String source = eventMessageDto.getHeader().getSource();
+        BusinessDataIdentifierDto businessDataIdentifier = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        Optional<String> tso = businessDataIdentifier.getTso();
+        Optional<String> sendingUser = businessDataIdentifier.getSendingUser();
+        Optional<List<String>> recipient = businessDataIdentifier.getRecipients();
+        String messageTypeName = businessDataIdentifier.getMessageTypeName();
+        String processKey = source + "_" + messageTypeName;
+
+        card.setRecipient(new Recipient().type(RecipientEnum.GROUP).identity(source));
+
+        Set<String> entityRecipientList = new HashSet<>();
+        tso.ifPresent(entityRecipientList::add);
+        if (opfabConfig.getEntityRecipients().containsKey(processKey)) {
+            OpfabConfig.OpfabEntityRecipients entityRecipients = opfabConfig.getEntityRecipients().get(processKey);
+            String notAllowed = entityRecipients.getNotAllowed().orElse("");
+            if (!"sendingUser".equals(notAllowed)) {
+                sendingUser.ifPresent(entityRecipientList::add);
+            }
+            if (!"recipient".equals(notAllowed)) {
+                recipient.ifPresent(entityRecipientList::addAll);
+            }
+            if (entityRecipients.isAddRscs()) {
+                entityRecipientList.addAll(tsos.entrySet().stream()
+                        .filter(t -> entityRecipientList.contains(t.getKey()))
+                        .map(Map.Entry::getValue)
+                        .map(CoordinationConfig.Tso::getRsc).collect(Collectors.toList()));
+            }
+        } else {
+            sendingUser.ifPresent(entityRecipientList::add);
+            recipient.ifPresent(entityRecipientList::addAll);
+        }
+        card.setEntityRecipients(new ArrayList<>(entityRecipientList));
     }
 
     void specificCardTreatment(Card opfabCard, EventMessageDto eventMessageDto, Long cardId) {
@@ -207,7 +242,7 @@ public class OpfabPublisherComponent {
         BusinessDataIdentifierDto businessDataIdentifierDto =
                 eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
         Instant businessDayFrom = businessDataIdentifierDto.getBusinessDayFrom();
-        Optional<Instant> businessDayToOpt = businessDataIdentifierDto.getBusinessDayTo();
+        Instant businessDayTo = businessDataIdentifierDto.getBusinessDayTo();
         String source = eventMessageDto.getHeader().getSource();
         String messageTypeName = businessDataIdentifierDto.getMessageTypeName();
         String noun = eventMessageDto.getHeader().getNoun();
@@ -252,7 +287,7 @@ public class OpfabPublisherComponent {
         opfabCard.setTitle(new I18n().key("cardFeed.title").parameters(params));
 
         String summary = generateFeedSummary(source, messageTypeName, timeframeOpt, timeframeNumberOpt, businessDayFrom,
-                businessDayToOpt, eventMessageDto);
+                businessDayTo, eventMessageDto);
         Map<String, String> summaryParams = new HashMap<>();
         summaryParams.put("summary", summary);
         opfabCard.setSummary(new I18n().key("cardFeed.summary").parameters(summaryParams));
@@ -377,43 +412,6 @@ public class OpfabPublisherComponent {
         return message;
     }
 
-    void setCardRecipients(Card card, EventMessageDto eventMessageDto) {
-
-        String source = eventMessageDto.getHeader().getSource();
-        BusinessDataIdentifierDto businessDataIdentifier = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
-        Optional<String> tso = businessDataIdentifier.getTso();
-        Optional<String> sendingUser = businessDataIdentifier.getSendingUser();
-        Optional<List<String>> recipient = businessDataIdentifier.getRecipients();
-        String messageTypeName = businessDataIdentifier.getMessageTypeName();
-        String processKey = source + "_" + messageTypeName;
-
-        card.setRecipient(new Recipient().type(RecipientEnum.GROUP).identity(source));
-
-        Set<String> entityRecipientList = new HashSet<>();
-        tso.ifPresent(entityRecipientList::add);
-        if (opfabConfig.getEntityRecipients().containsKey(processKey)) {
-            OpfabConfig.OpfabEntityRecipients entityRecipients = opfabConfig.getEntityRecipients().get(processKey);
-            String notAllowed = entityRecipients.getNotAllowed().orElse("");
-            if (!"sendingUser".equals(notAllowed)) {
-                sendingUser.ifPresent(entityRecipientList::add);
-            }
-            if (!"recipient".equals(notAllowed)) {
-                recipient.ifPresent(entityRecipientList::addAll);
-            }
-            if (entityRecipients.isAddRscs()) {
-                entityRecipientList.addAll(tsos.entrySet().stream()
-                        .filter(t -> entityRecipientList.contains(t.getKey()))
-                        .map(Map.Entry::getValue)
-                        .map(CoordinationConfig.Tso::getRsc).collect(Collectors.toList()));
-            }
-        } else {
-            sendingUser.ifPresent(entityRecipientList::add);
-            recipient.ifPresent(entityRecipientList::addAll);
-        }
-        card.setEntityRecipients(new ArrayList<>(entityRecipientList));
-
-    }
-
     private String generateFeedTitle(String source, String messageTypeName, String titleProcessType,
                                      Optional<String> processStep, EventMessageDto eventMessageDto) {
 
@@ -429,7 +427,7 @@ public class OpfabPublisherComponent {
 
     private String generateFeedSummary(String source, String messageTypeName, Optional<String> timeframe,
                                        Optional<Integer> timeframeNumber, Instant businessDayFrom,
-                                       Optional<Instant> businessDayToOpt, EventMessageDto eventMessageDto) {
+                                       Instant businessDayTo, EventMessageDto eventMessageDto) {
         String key = source + "_" + messageTypeName;
         if (opfabConfig.getFeed().containsKey(key)) {
             String summary = opfabConfig.getFeed().get(key).getSummary();
@@ -438,9 +436,7 @@ public class OpfabPublisherComponent {
         } else {
             return String.format("%s%s%s%s", timeframe.orElse(""), timeframeNumber.map(tn -> tn + " ").orElse(""),
                     DateUtil.formatDate(businessDayFrom.atZone(getParisZoneId())),
-                    businessDayToOpt
-                            .map(instant -> "-" + DateUtil.formatDate(instant.atZone(getParisZoneId())))
-                            .orElse(""));
+                    DateUtil.formatDate(businessDayTo.atZone(getParisZoneId())));
         }
     }
 

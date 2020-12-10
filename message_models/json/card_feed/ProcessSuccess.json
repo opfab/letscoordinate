@@ -4,15 +4,15 @@
     "header": {
       "verb": "created",
       "noun": "ProcessSuccess",
-      "timestamp": "2020-06-16T08:13:15Z",
+      "timestamp": "2020-06-01T08:13:15Z",
       "source": "ServiceA",
       "messageId": "134654a095714812ba74323b021f23b5",
       "properties": {
         "format": "JSON",
         "businessDataIdentifier": {
           "messageTypeName": "NotificationTypeA",
-          "businessDayFrom": "2020-09-21T22:00:00Z",
-          "businessDayTo": "2020-09-30T22:00:00Z",
+          "businessDayFrom": "2020-05-25T22:00:00Z",
+          "businessDayTo": "2020-06-30T22:00:00Z",
           "processStep": "Initial Calculation"
         }
       }
