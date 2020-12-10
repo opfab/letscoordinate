@@ -15,6 +15,7 @@ import io.vavr.control.Validation;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
 import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
@@ -41,6 +42,9 @@ public class InputFileToPojoServiceTest {
     @Spy
     LetscoProperties letscoProperties = ApplicationContextUtil.initLetscoProperties();
 
+    @Spy
+    CoordinationConfig coordinationConfig = null;
+
     @Mock
     EventMessageService eventMessageService;
 
@@ -49,7 +53,7 @@ public class InputFileToPojoServiceTest {
 
     abstract class MockExcelDataProcessor extends ExcelDataProcessor {
         MockExcelDataProcessor() {
-            super(letscoProperties, eventMessageService);
+            super(letscoProperties, null, eventMessageService);
         }
     }
 

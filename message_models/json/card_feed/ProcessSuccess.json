@@ -11,8 +11,8 @@
         "format": "JSON",
         "businessDataIdentifier": {
           "messageTypeName": "NotificationTypeA",
-          "businessDayFrom": "2020-09-22T00:00:00Z",
-          "businessDayTo": "2020-09-29T00:00:00Z",
+          "businessDayFrom": "2020-09-21T22:00:00Z",
+          "businessDayTo": "2020-09-30T22:00:00Z",
           "processStep": "Initial Calculation"
         }
       }

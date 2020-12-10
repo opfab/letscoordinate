@@ -18,9 +18,10 @@
     margin-right: auto;">
 
     <h4 class="my-3 synthesisTitle" style="text-align: center;" *ngIf="rscKpiReportData">
-        <b>{{ rscKpiReportData.submittedForm.rsc.name }} RSC Report - {{ rscKpiReportData.submittedForm.rscService.name }} Service<br/>
-            Synthesis from {{ rscKpiReportData.submittedForm.startDate | date:'fullDate' }}
-            to {{ rscKpiReportData.submittedForm.endDate | date:'fullDate' }}</b>
+        <b>{{ rscKpiReportData.submittedForm.rscService.name }} Service<br/>
+            Synthesis from {{ rscKpiReportData.submittedForm.viewTypeEnum === 'DAILY' ? (rscKpiReportData.submittedForm.startDate | date:'fullDate') : rscKpiReportData.submittedForm.startDate.getFullYear() }}
+            to {{ rscKpiReportData.submittedForm.viewTypeEnum === 'DAILY' ? (rscKpiReportData.submittedForm.endDate | date:'fullDate') : rscKpiReportData.submittedForm.endDate.getFullYear() }}<br/>
+            {{rscsOrRegionsToString}} {{selectedEntityType}}{{isDailyView ? '' : 's'}} Report</b>
     </h4>
 
     <div class="my-3">
@@ -50,8 +51,9 @@
                             <div class="col-sm-12">
                                 <div class="chartDiv">
 
-                                    <app-bar-chart [kpiChartId]="rscKpiDatum.kpiChartId"
-                                                   [kpiChartOptions]="rscKpiDatum.kpiChartOptions"></app-bar-chart>
+                                    <app-kpi-chart [kpiChartId]="rscKpiDatum.kpiChartId"
+                                                   [kpiChartOptions]="rscKpiDatum.kpiChartOptions"
+                                                   [viewTypeEnum]="rscKpiReportData.submittedForm.viewTypeEnum"></app-kpi-chart>
 
                                     <div class="col-sm-12">
                                         <label [for]="'comment-'+rscKpi.code+'-'+k" [textContent]="'Comment ('+(255-rscKpiDatum.comment.length)+' char. left)'"></label>

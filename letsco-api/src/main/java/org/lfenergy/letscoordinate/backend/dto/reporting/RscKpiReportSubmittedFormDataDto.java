@@ -14,16 +14,20 @@ package org.lfenergy.letscoordinate.backend.dto.reporting;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.lfenergy.letscoordinate.backend.enums.ViewTypeEnum;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Builder
 @Getter
 @Setter
 public class RscKpiReportSubmittedFormDataDto {
+    ViewTypeEnum viewTypeEnum;
     LocalDate startDate;
     LocalDate endDate;
-    String rscCode;
+    List<String> rscCodes;
+    List<String> regionCodes;
     String rscServiceCode;
     String kpiDataTypeCode;
 }

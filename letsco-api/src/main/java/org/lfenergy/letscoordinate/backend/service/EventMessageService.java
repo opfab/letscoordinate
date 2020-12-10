@@ -19,6 +19,7 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataI
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.HeaderDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.*;
 import org.lfenergy.letscoordinate.backend.exception.InvalidInputFileException;
+import org.lfenergy.letscoordinate.backend.util.Constants;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -34,6 +35,7 @@ public class EventMessageService {
         // check that all eic_code provided by the dto exists in our database
         Set<String> dtoEicCodes = extratEicCodesFromEventMessageDto(eventMessageDto);
         List<String> knownEicCodes = getKnownEicCodes(dtoEicCodes);
+        knownEicCodes.addAll(Arrays.asList(Constants.ALL_RSCS_CODE, Constants.ALL_REGIONS_CODE));
         Set<String> unknownEicCodes = dtoEicCodes.stream()
                 .filter(eicCode -> !knownEicCodes.contains(eicCode))
                 .collect(Collectors.toSet());

@@ -28,4 +28,5 @@ public class RscKpiReportDataDto {
     private RscKpiReportSubmittedFormDataDto submittedFormData;
     private Map<KpiDataTypeEnum, Map<KpiDataSubtypeEnum, Map<String, List<RscKpiDto.DataDto>>>> rscKpiTypedDataMap;
     private Map<String, CoordinationConfig.KpiDataSubtype> rscKpiSubtypedDataMap;
+    private String reportFileName;
 }

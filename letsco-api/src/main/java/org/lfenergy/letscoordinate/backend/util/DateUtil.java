@@ -17,6 +17,8 @@ import lombok.NoArgsConstructor;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DateUtil {
@@ -37,5 +39,13 @@ public final class DateUtil {
 
     public static ZoneId getParisZoneId() {
         return ZoneId.of("Europe/Paris");
+    }
+
+    public static List<LocalDateTime> getDatesForMultiYearView(LocalDate startDate, LocalDate endDate) {
+        List<LocalDateTime> dates = new ArrayList<>();
+        for (int year = startDate.getYear(); year <= endDate.getYear() ; year++) {
+            dates.add(LocalDateTime.of(year, Month.JANUARY, 1, 12, 30));
+        }
+        return dates;
     }
 }

@@ -17,18 +17,10 @@ import org.lfenergy.letscoordinate.backend.dto.reporting.RscKpiReportDataDto;
 import org.lfenergy.letscoordinate.backend.dto.reporting.RscKpiReportSubmittedFormDataDto;
 import org.lfenergy.letscoordinate.backend.enums.ReportTypeEnum;
 import org.lfenergy.letscoordinate.backend.service.ReportingService;
-import org.lfenergy.letscoordinate.backend.util.SecurityUtil;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -54,7 +46,7 @@ public class RscKpiReportController {
     @ApiOperation(value = "Get RSCs with their services")
     @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
     public ResponseEntity<RscKpiReportDataDto> getKpis(@RequestBody RscKpiReportSubmittedFormDataDto submittedFormDataDto) {
-        return ResponseEntity.ok(reportingService.getRscKpiReportData(submittedFormDataDto));
+        return ResponseEntity.ok(reportingService.getRscKpiReportDataForWebReport(submittedFormDataDto));
     }
 
     @PostMapping(value = "/rsc-kpi-report/download/excel")
