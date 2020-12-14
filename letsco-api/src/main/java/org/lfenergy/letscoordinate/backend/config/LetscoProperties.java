@@ -17,12 +17,14 @@ import org.lfenergy.letscoordinate.backend.enums.UnknownEicCodesProcessEnum;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.*;
+import java.time.ZoneId;
 
 @ConfigurationProperties(prefix = "letsco")
 @Getter
 @Setter
 public class LetscoProperties {
 
+    private ZoneId timezone;
     private InputFile inputFile;
 
     @Getter

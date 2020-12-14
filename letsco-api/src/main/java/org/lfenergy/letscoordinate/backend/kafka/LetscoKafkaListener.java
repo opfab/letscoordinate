@@ -46,7 +46,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.lfenergy.letscoordinate.backend.util.StringUtil.*;
+import static org.lfenergy.letscoordinate.backend.util.Constants.*;
 
 @Component
 @RequiredArgsConstructor
@@ -99,8 +99,8 @@ public class LetscoKafkaListener {
         changeMessageTypeNameIfNeeded(bdi);
         String messageTypeName =
                 eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getMessageTypeName();
-        String process = OpfabUtil.generateProcess(eventMessageDto);
-        ignoreProcessIfNeeded(process);
+        String processKey = OpfabUtil.generateProcessKey(eventMessageDto);
+        ignoreProcessIfNeeded(processKey);
         ignoreMessageTypeNameIfNeeded(messageTypeName);
         ignorePositiveTechnicalQualityCheck(eventMessageDto);
         processIfBusinessDayFromOptional(eventMessageDto);
@@ -180,7 +180,7 @@ public class LetscoKafkaListener {
     }
 
     private boolean isGenericNoun(String noun) {
-        return Arrays.asList(PROCESS_SUCCESS, PROCESS_FAILED, PROCESS_ACTION, PROCESS_INFORMATION,
+        return Arrays.asList(PROCESS_SUCCESSFUL, PROCESS_FAILED, PROCESS_ACTION, PROCESS_INFORMATION,
                 MESSAGE_VALIDATED).contains(noun);
     }
 }

@@ -14,14 +14,34 @@ Feature: Prepare OpFab env. for Let's Co open source
     * def signIn = call read('./getToken.feature') { username: 'admin'}
     * def authToken = signIn.authToken
 
-  Scenario: Create group ServiceA
+  Scenario: Create group Service A
 
     * def group =
 """
 {
-  "id" : "ServiceA",
-  "name" : "ServiceA group",
-  "description" : "The ServiceA group"
+  "id" : "servicea",
+  "name" : "Service A group",
+  "description" : "The Service A group"
+}
+"""
+
+    Given url opfabUrl + 'users/groups'
+    And header Authorization = 'Bearer ' + authToken
+    And request group
+    When method post
+    Then assert responseStatus == 200 || responseStatus == 201
+    And match response.description == group.description
+    And match response.name == group.name
+    And match response.id == group.id
+
+  Scenario: Create group Service B
+
+    * def group =
+"""
+{
+  "id" : "serviceb",
+  "name" : "Service B group",
+  "description" : "The Service B group"
 }
 """
 
@@ -59,7 +79,6 @@ Feature: Prepare OpFab env. for Let's Co open source
     * def user =
 """
 {
-
    "login" : "user.test",
    "firstName" : "User",
    "lastName" : "Test"
@@ -75,9 +94,23 @@ Feature: Prepare OpFab env. for Let's Co open source
     And match response.firstName == user.firstName
     And match response.lastName == user.lastName
 
-  Scenario: Add user user.terna to group ServiceA
+  Scenario: Add user user.test to group Service A
 
-    * def group = 'ServiceA'
+    * def group = 'servicea'
+    * def usersArray =
+"""
+[ "user.test" ]
+"""
+
+    Given url opfabUrl + 'users/groups/' + group + '/users'
+    And header Authorization = 'Bearer ' + authToken
+    And request usersArray
+    When method patch
+    And status 200
+
+  Scenario: Add user user.test to group Service B
+
+    * def group = 'serviceb'
     * def usersArray =
 """
 [ "user.test" ]

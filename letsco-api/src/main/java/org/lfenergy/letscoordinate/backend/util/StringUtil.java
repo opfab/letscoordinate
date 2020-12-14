@@ -28,16 +28,6 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StringUtil {
 
-    public static final String PROCESS_SUCCESS = "ProcessSuccess";
-    public static final String PROCESS_FAILED = "ProcessFailed";
-    public static final String PROCESS_ACTION = "ProcessAction";
-    public static final String PROCESS_INFORMATION = "ProcessInformation";
-    public static final String MESSAGE_VALIDATED = "DfgMessageValidated";
-
-    public static final String POSITIVE_ACK = "Positive";
-    public static final String POSITIVE_ACK_WITH_WARNINGS = "Positive with warnings";
-    public static final String NEGATIVE_ACK = "Negative";
-
     /**
      * <p>This function allows to split an input string according to a separator after removing all spaces from it
      * if and only if the input string contains the separator</p>
@@ -92,7 +82,7 @@ public final class StringUtil {
     }
 
     public static String toCamelCase(String str) {
-        if(StringUtils.isBlank(str))
+        if (StringUtils.isBlank(str))
             return str;
         String result = "";
         List<String> tokens = Arrays.asList(str.trim().split("[ _\\-]"));
@@ -101,4 +91,11 @@ public final class StringUtil {
         }
         return StringUtils.uncapitalize(result);
     }
+
+    public static String toLowercaseIdentifier(String str) {
+        if (StringUtils.isBlank(str))
+            return str;
+        return toCamelCase(str).toLowerCase();
+    }
+
 }

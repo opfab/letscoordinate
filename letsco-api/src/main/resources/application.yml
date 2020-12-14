@@ -52,6 +52,7 @@ logging:
 letsco:
   kafka:
     topic-pattern: 'letsco_eventmessage_.*'
+  timezone: "Europe/Paris"  # e.g: "Europe/London", "Europe/Paris", "Europe/Rome", "UTC", "UTC+1", "UTC-04:00", "GMT-5"
   input-file:
     dir: D:\_RTE_\tmp\input
     validation:
@@ -84,13 +85,38 @@ opfab:
 #      qcTagWarning: "positivewithwarnings"
 #      qcTagError: "negative"
   feed:
-    sourceA_messageTypeNameA:
-      title: " AA - Validation - {{result::notificationTitle()}}"
-      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy HH:mm)}}  - {{businessDayTo::dateFormat(dd/MM/yyyy HH:mm)}}  (CET/CEST) - {{sendingUser::eicToName()}}"
-    sourceA_messageTypeNameB:
-      title: " AB - Validation - {{result::notificationTitle()}}"
-      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy HH:mm)}}  - {{businessDayTo::dateFormat(dd/MM/yyyy HH:mm)}}  (CET/CEST) - {{sendingUser::eicToName()}}"
-
+    # SERVICE A
+    servicea_processsuccessful:
+      title: " Service A - Process successful"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone})"
+    servicea_processfailed:
+      title: " Service A - Process failed"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone})"
+    servicea_positivevalidation:
+      title: " Service A {{noun}} - Positive validation"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
+    servicea_positivevalidationwithwarnings:
+      title: " Service A {{noun}} - Positive validation with warnings"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
+    servicea_negativevalidation:
+      title: " Service A {{noun}} - Negative validation"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
+    # SERVICE B
+    serviceb_processsuccessful:
+      title: " Service B - Process successful"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone})"
+    serviceb_processfailed:
+      title: " Service B - Process failed"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone})"
+    serviceb_positivevalidation:
+      title: " Service B {{noun}} - Positive validation"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
+    serviceb_positivevalidationwithwarnings:
+      title: " Service B {{noun}} - Positive validation with warnings"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
+    serviceb_negativevalidation:
+      title: " Service B {{noun}} - Negative validation"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
   entityRecipients:
     sourceA_messageTypeNameA:
       notAllowed: sendingUser

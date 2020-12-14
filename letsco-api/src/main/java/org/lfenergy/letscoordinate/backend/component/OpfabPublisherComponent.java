@@ -14,23 +14,22 @@ package org.lfenergy.letscoordinate.backend.component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
+import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
 import org.lfenergy.letscoordinate.backend.config.OpfabConfig;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.PayloadDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationMessageDto;
+import org.lfenergy.letscoordinate.backend.enums.MessageTypeEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 import org.lfenergy.letscoordinate.backend.model.opfab.ValidationData;
-import org.lfenergy.letscoordinate.backend.util.DateUtil;
-import org.lfenergy.letscoordinate.backend.util.HttpUtil;
-import org.lfenergy.letscoordinate.backend.util.JacksonUtil;
-import org.lfenergy.letscoordinate.backend.util.OpfabUtil;
+import org.lfenergy.letscoordinate.backend.util.*;
 import org.lfenergy.operatorfabric.cards.model.*;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -41,30 +40,31 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.lfenergy.letscoordinate.backend.config.OpfabConfig.ChangeTimeserieDataDetailValueTypeEnum.INSTANT;
-import static org.lfenergy.letscoordinate.backend.util.DateUtil.getParisZoneId;
-import static org.lfenergy.letscoordinate.backend.util.StringUtil.*;
+import static org.lfenergy.letscoordinate.backend.util.Constants.*;
 
 @Component
 @Slf4j
 public class OpfabPublisherComponent {
 
-    private String process;
+    private String processKey;
     private OpfabConfig opfabConfig;
     private Map<String, CoordinationConfig.Tso> tsos;
     private Map<String, CoordinationConfig.Rsc> rscs;
+    private LetscoProperties letscoProperties;
 
-    public OpfabPublisherComponent(OpfabConfig opfabConfig, CoordinationConfig coordinationConfig) {
+    public OpfabPublisherComponent(OpfabConfig opfabConfig, CoordinationConfig coordinationConfig, LetscoProperties letscoProperties) {
         this.opfabConfig = opfabConfig;
         this.tsos = coordinationConfig.getTsos();
         this.rscs = coordinationConfig.getRscs();
+        this.letscoProperties = letscoProperties;
     }
 
-    void setProcess(String process) {
-        this.process = process;
+    void setProcessKey(String processKey) {
+        this.processKey = processKey;
     }
 
     public void publishOpfabCard(EventMessageDto eventMessageDto, Long id) {
-        process = OpfabUtil.generateProcess(eventMessageDto);
+        processKey = OpfabUtil.generateProcessKey(eventMessageDto);
         List<Card> cards = generateOpfabCards(eventMessageDto, id);
         cards.forEach(c -> {
             // TODO This field must be handled in future releases for response cards
@@ -79,7 +79,7 @@ public class OpfabPublisherComponent {
         List<Card> cards = new ArrayList<>();
 
         if (!opfabConfig.getSeparateCardsForRecipients().isEmpty() &&
-                opfabConfig.getSeparateCardsForRecipients().contains(process)) {
+                opfabConfig.getSeparateCardsForRecipients().contains(processKey)) {
             List<String> recipients = new ArrayList<>(eventMessageDto.getHeader().getProperties()
                     .getBusinessDataIdentifier().getRecipients().orElse(new ArrayList<>()));
             recipients.forEach(recipient -> {
@@ -102,43 +102,58 @@ public class OpfabPublisherComponent {
         return card;
     }
 
+    String getValidationName(EventMessageDto eventMessageDto) {
+        ValidationSeverityEnum result = eventMessageDto.getPayload().getValidation().get().getResult();
+
+        switch (result) {
+            case OK:
+                return StringUtils.capitalize(MessageTypeEnum.POSITIVE_VALIDATION.getValue());
+            case WARNING:
+                return StringUtils.capitalize(MessageTypeEnum.POSITIVE_VALIDATION_WITH_WARNINGS.getValue());
+            case ERROR:
+                return StringUtils.capitalize(MessageTypeEnum.NEGATIVE_VALIDATION.getValue());
+            default:
+                return "";
+        }
+    }
+
     void setCardHeadersAndTags(Card card, EventMessageDto eventMessageDto, Long id) {
         String noun = eventMessageDto.getHeader().getNoun();
         String source = eventMessageDto.getHeader().getSource();
         String messageTypeName = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getMessageTypeName();
-        List<String> tags = Stream.of(source, messageTypeName, process)
+        List<String> tags = Stream.of(source, messageTypeName, processKey)
                 .map(String::toLowerCase).collect(Collectors.toList());
         if (MESSAGE_VALIDATED.equals(noun)) {
             ValidationSeverityEnum result = eventMessageDto.getPayload().getValidation().get().getResult();
-            tags.add((process + "_" + result).toLowerCase());
-            fillQualityCheckSpecificTag(process, result, tags);
+            tags.add((processKey + "_" + result).toLowerCase());
+            fillQualityCheckSpecificTag(processKey, result, tags);
             card.setState(result.toString().toLowerCase());
         } else {
             opfabConfig.getTags().ifPresent(t -> {
-                if (t.containsKey(process)) {
-                    tags.add(t.get(process).getTag());
+                if (t.containsKey(processKey)) {
+                    tags.add(t.get(processKey).getTag());
                 }
             });
             setOpfabCardState(card);
         }
         card.setTags(tags);
         setOpfabCardProcess(card);
-        card.setProcessInstanceId(process + "_" + id);
+        card.setProcessInstanceId(processKey + "_" + id);
         card.setPublisher(opfabConfig.getPublisher());
         card.setProcessVersion("1");
     }
 
     private void setOpfabCardProcess(Card card) {
-        if (opfabConfig.getChangeProcess().containsKey(process)) {
-            card.setProcess(opfabConfig.getChangeProcess().get(process));
+        if (opfabConfig.getChangeProcess().containsKey(processKey)) {
+            card.setProcess(opfabConfig.getChangeProcess().get(processKey));
         } else {
-            card.setProcess(process);
+            card.setProcess(processKey);
         }
     }
 
     private void setOpfabCardState(Card card) {
-        if (opfabConfig.getChangeState().containsKey(process)) {
-            card.setState(opfabConfig.getChangeState().get(process));
+        if (opfabConfig.getChangeState().containsKey(processKey)) {
+            card.setState(opfabConfig.getChangeState().get(processKey));
         } else {
             card.setState("initial");
         }
@@ -208,10 +223,8 @@ public class OpfabPublisherComponent {
         Optional<String> tso = businessDataIdentifier.getTso();
         Optional<String> sendingUser = businessDataIdentifier.getSendingUser();
         Optional<List<String>> recipient = businessDataIdentifier.getRecipients();
-        String messageTypeName = businessDataIdentifier.getMessageTypeName();
-        String processKey = source + "_" + messageTypeName;
 
-        card.setRecipient(new Recipient().type(RecipientEnum.GROUP).identity(source));
+        card.setRecipient(new Recipient().type(RecipientEnum.GROUP).identity(StringUtil.toLowercaseIdentifier(source)));
 
         Set<String> entityRecipientList = new HashSet<>();
         tso.ifPresent(entityRecipientList::add);
@@ -241,19 +254,17 @@ public class OpfabPublisherComponent {
 
         BusinessDataIdentifierDto businessDataIdentifierDto =
                 eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        String noun = eventMessageDto.getHeader().getNoun();
         Instant businessDayFrom = businessDataIdentifierDto.getBusinessDayFrom();
         Instant businessDayTo = businessDataIdentifierDto.getBusinessDayTo();
-        String source = eventMessageDto.getHeader().getSource();
-        String messageTypeName = businessDataIdentifierDto.getMessageTypeName();
-        String noun = eventMessageDto.getHeader().getNoun();
         Optional<String> processStepOpt = businessDataIdentifierDto.getProcessStep();
         Optional<String> timeframeOpt = businessDataIdentifierDto.getTimeframe();
         Optional<Integer> timeframeNumberOpt = businessDataIdentifierDto.getTimeframeNumber();
 
         String titleProcessType = "";
         switch (noun) {
-            case PROCESS_SUCCESS:
-                titleProcessType = "process success";
+            case PROCESS_SUCCESSFUL:
+                titleProcessType = "process successful";
                 opfabCard.setSeverity(SeverityEnum.INFORMATION);
                 opfabCard.setData(generateCardData(eventMessageDto, cardId));
                 break;
@@ -281,13 +292,12 @@ public class OpfabPublisherComponent {
                 opfabCard.setSeverity(SeverityEnum.INFORMATION);
         }
 
-        String title = generateFeedTitle(source, messageTypeName, titleProcessType, processStepOpt, eventMessageDto);
+        String title = generateFeedTitle(titleProcessType, processStepOpt, eventMessageDto);
         Map<String, String> params = new HashMap<>();
         params.put("title", title);
         opfabCard.setTitle(new I18n().key("cardFeed.title").parameters(params));
 
-        String summary = generateFeedSummary(source, messageTypeName, timeframeOpt, timeframeNumberOpt, businessDayFrom,
-                businessDayTo, eventMessageDto);
+        String summary = generateFeedSummary(timeframeOpt, timeframeNumberOpt, businessDayFrom, businessDayTo, eventMessageDto);
         Map<String, String> summaryParams = new HashMap<>();
         summaryParams.put("summary", summary);
         opfabCard.setSummary(new I18n().key("cardFeed.summary").parameters(summaryParams));
@@ -322,8 +332,8 @@ public class OpfabPublisherComponent {
     }
 
     private void addPayloadData(Map<String, Object> data, PayloadDto payloadDto) {
-        if (opfabConfig.getData().containsKey(process)) {
-            opfabConfig.getData().get(process).getChangeTimeserieDataDetailValueType().ifPresent(c ->
+        if (opfabConfig.getData().containsKey(processKey)) {
+            opfabConfig.getData().get(processKey).getChangeTimeserieDataDetailValueType().ifPresent(c ->
                 payloadDto.getTimeserie().forEach(t ->
                     t.getData().forEach(d ->
                         d.getDetail().forEach(detail -> {
@@ -412,31 +422,26 @@ public class OpfabPublisherComponent {
         return message;
     }
 
-    private String generateFeedTitle(String source, String messageTypeName, String titleProcessType,
-                                     Optional<String> processStep, EventMessageDto eventMessageDto) {
-
-        String key = source + "_" + messageTypeName;
-        if (opfabConfig.getFeed().containsKey(key)) {
-            String title = opfabConfig.getFeed().get(key).getTitle();
+    private String generateFeedTitle(String titleProcessType, Optional<String> processStep, EventMessageDto eventMessageDto) {
+        if (opfabConfig.getFeed().containsKey(processKey)) {
+            String title = opfabConfig.getFeed().get(processKey).getTitle();
             title = replacePlaceholders(title, eventMessageDto);
             return title;
         } else {
-            return String.format("%s %s%s", source, titleProcessType, processStep.map(p -> " - " + p).orElse(""));
+            return String.format("%s %s%s", eventMessageDto.getHeader().getSource(), titleProcessType, processStep.map(p -> " - " + p).orElse(""));
         }
     }
 
-    private String generateFeedSummary(String source, String messageTypeName, Optional<String> timeframe,
-                                       Optional<Integer> timeframeNumber, Instant businessDayFrom,
+    private String generateFeedSummary(Optional<String> timeframe, Optional<Integer> timeframeNumber, Instant businessDayFrom,
                                        Instant businessDayTo, EventMessageDto eventMessageDto) {
-        String key = source + "_" + messageTypeName;
-        if (opfabConfig.getFeed().containsKey(key)) {
-            String summary = opfabConfig.getFeed().get(key).getSummary();
+        if (opfabConfig.getFeed().containsKey(processKey)) {
+            String summary = opfabConfig.getFeed().get(processKey).getSummary();
             summary = replacePlaceholders(summary, eventMessageDto);
             return summary;
         } else {
             return String.format("%s%s%s%s", timeframe.orElse(""), timeframeNumber.map(tn -> tn + " ").orElse(""),
-                    DateUtil.formatDate(businessDayFrom.atZone(getParisZoneId())),
-                    DateUtil.formatDate(businessDayTo.atZone(getParisZoneId())));
+                    DateUtil.formatDate(businessDayFrom.atZone(letscoProperties.getTimezone())),
+                    DateUtil.formatDate(businessDayTo.atZone(letscoProperties.getTimezone())));
         }
     }
 
@@ -459,7 +464,7 @@ public class OpfabPublisherComponent {
             while (m.find()) {
                 allMatches.put(m.group(), null);
             }
-            allMatches = allMatches.entrySet().stream().map(e -> generatePlaceholderValue(e, bdiMap,eventMessageDto))
+            allMatches = allMatches.entrySet().stream().map(e -> generatePlaceholderValue(e, bdiMap, eventMessageDto))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
             for (Map.Entry<String, String> entry : allMatches.entrySet())
@@ -469,8 +474,9 @@ public class OpfabPublisherComponent {
         }
     }
 
-    Map.Entry<String, String> generatePlaceholderValue(Map.Entry<String, String> entry, Map<String, Object> bdiMap,
-                                                       EventMessageDto eventMessageDto) {
+    Map.Entry<String, String> generatePlaceholderValue
+            (Map.Entry<String, String> entry, Map<String, Object> bdiMap,
+             EventMessageDto eventMessageDto) {
 
         String placeholder = entry.getKey();
         String placeholderValue = null;
@@ -546,19 +552,5 @@ public class OpfabPublisherComponent {
             }
         }
         return new AbstractMap.SimpleEntry(placeholder, placeholderValue);
-    }
-
-    String getValidationName(EventMessageDto eventMessageDto) {
-        ValidationSeverityEnum result = eventMessageDto.getPayload().getValidation().get().getResult();
-        switch (result) {
-            case OK:
-                return POSITIVE_ACK;
-            case WARNING:
-                return POSITIVE_ACK_WITH_WARNINGS;
-            case ERROR:
-                return NEGATIVE_ACK;
-            default:
-                return "";
-        }
     }
 }

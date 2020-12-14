@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
+import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
 import org.lfenergy.letscoordinate.backend.config.OpfabConfig;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
@@ -40,8 +41,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum.*;
-import static org.lfenergy.letscoordinate.backend.util.DateUtil.getParisZoneId;
-import static org.lfenergy.letscoordinate.backend.util.StringUtil.*;
+import static org.lfenergy.letscoordinate.backend.util.DateUtilTest.getParisZoneId;
 import static org.lfenergy.operatorfabric.cards.model.SeverityEnum.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,6 +51,7 @@ public class OpfabPublisherComponentTest {
     private CoordinationConfig coordinationConfig;
     private OpfabPublisherComponent opfabPublisherComponent;
     private EventMessageDto eventMessageDto;
+    LetscoProperties letscoProperties;
 
     String process;
     String source = "source";
@@ -65,6 +66,7 @@ public class OpfabPublisherComponentTest {
     public void before() {
 
         opfabConfig = new OpfabConfig();
+        letscoProperties = new LetscoProperties();
 
         CoordinationConfig coordinationConfig = new CoordinationConfig();
         coordinationConfig.setTsos(Map.of(
@@ -81,7 +83,7 @@ public class OpfabPublisherComponentTest {
         eventMessageDto = EventMessageDto.builder()
                 .header(HeaderDto.builder()
                         .source(source)
-                        .noun(PROCESS_ACTION)
+                        .noun("ProcessAction")
                         .timestamp(timestamp)
                         .properties(PropertiesDto.builder()
                                 .businessDataIdentifier(BusinessDataIdentifierDto.builder()
@@ -93,9 +95,9 @@ public class OpfabPublisherComponentTest {
                         .build())
                 .payload(PayloadDto.builder().build()).build();
 
-        opfabPublisherComponent = new OpfabPublisherComponent(opfabConfig, coordinationConfig);
-        process = OpfabUtil.generateProcess(eventMessageDto);
-        opfabPublisherComponent.setProcess(process);
+        opfabPublisherComponent = new OpfabPublisherComponent(opfabConfig, coordinationConfig, letscoProperties);
+        process = OpfabUtil.generateProcessKey(eventMessageDto);
+        opfabPublisherComponent.setProcessKey(process);
     }
 
     @Test
@@ -182,7 +184,7 @@ public class OpfabPublisherComponentTest {
 
     @Test
     public void setCardHeadersAndTags_MessageValidated() {
-        eventMessageDto.getHeader().setNoun(MESSAGE_VALIDATED);
+        eventMessageDto.getHeader().setNoun("DfgMessageValidated");
         eventMessageDto.getPayload().setValidation(ValidationDto.builder()
                 .result(OK).build());
         Card card = new Card();
@@ -209,7 +211,7 @@ public class OpfabPublisherComponentTest {
         Map<String, OpfabConfig.OpfabTagsConf> opfabTagsConfMap = Map.of(process,
                 new OpfabConfig.OpfabTagsConf("tag", "qcTagOk", "qcTagWarning", "qcTagError"));
         opfabConfig.setTags(opfabTagsConfMap);
-        eventMessageDto.getHeader().setNoun(MESSAGE_VALIDATED);
+        eventMessageDto.getHeader().setNoun("DfgMessageValidated");
         eventMessageDto.getPayload().setValidation(ValidationDto.builder()
                 .result(OK).build());
         Card card = new Card();
@@ -286,7 +288,7 @@ public class OpfabPublisherComponentTest {
     public void specificCardTreatment_ProcessSuccess_NoProcessStepNoTimeframeNoTimeframeNumber_OK() {
 
         Card card = new Card();
-        eventMessageDto.getHeader().setNoun(PROCESS_SUCCESS);
+        eventMessageDto.getHeader().setNoun("ProcessSuccess");
         opfabPublisherComponent.specificCardTreatment(card, eventMessageDto, 1L);
         specificCardTreatment_CommonAsserts(card, String.format("%s process success", source),
                 String.format("%s-%s", DateUtil.formatDate(businessDayFrom.atZone(getParisZoneId())),
@@ -298,7 +300,7 @@ public class OpfabPublisherComponentTest {
     public void specificCardTreatment_ProcessSuccess_NoTimeframeNoTimeframeNumber_OK() {
 
         Card card = new Card();
-        eventMessageDto.getHeader().setNoun(PROCESS_SUCCESS);
+        eventMessageDto.getHeader().setNoun("ProcessSuccess");
         String processStep = "processStep";
         eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().setProcessStep(processStep);
         opfabPublisherComponent.specificCardTreatment(card, eventMessageDto, 1L);
@@ -311,7 +313,7 @@ public class OpfabPublisherComponentTest {
     @Test
     public void specificCardTreatment_ProcessSuccess_NoProcessStep_OK() {
         Card card = new Card();
-        eventMessageDto.getHeader().setNoun(PROCESS_SUCCESS);
+        eventMessageDto.getHeader().setNoun("ProcessSuccess");
         String timeframe = "W";
         int timeframeNumber = 12;
         eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().setTimeframe(timeframe);
@@ -327,7 +329,7 @@ public class OpfabPublisherComponentTest {
     @Test
     public void specificCardTreatment_ProcessSuccess_OK() {
         Card card = new Card();
-        eventMessageDto.getHeader().setNoun(PROCESS_SUCCESS);
+        eventMessageDto.getHeader().setNoun("ProcessSuccess");
         String processStep = "processStep";
         String timeframe = "W";
         int timeframeNumber = 12;
@@ -345,7 +347,7 @@ public class OpfabPublisherComponentTest {
     @Test
     public void specificCardTreatment_ProcessFailed_NoProcessStepNoTimeframeNoTimeframeNumber_OK() {
         Card card = new Card();
-        eventMessageDto.getHeader().setNoun(PROCESS_FAILED);
+        eventMessageDto.getHeader().setNoun("ProcessFailed");
         opfabPublisherComponent.specificCardTreatment(card, eventMessageDto, 1L);
         specificCardTreatment_CommonAsserts(card, String.format("%s process failed", source),
                 String.format("%s-%s", DateUtil.formatDate(businessDayFrom.atZone(getParisZoneId())),
@@ -357,7 +359,7 @@ public class OpfabPublisherComponentTest {
     public void specificCardTreatment_MessageValidated_OK_NoProcessStepNoTimeframeNoTimeframeNumber_OK() {
 
         Card card = new Card();
-        eventMessageDto.getHeader().setNoun(MESSAGE_VALIDATED);
+        eventMessageDto.getHeader().setNoun("DfgMessageValidated");
         ValidationDto validation = ValidationDto.builder().result(OK).build();
         PayloadDto payload = PayloadDto.builder().validation(validation).build();
         eventMessageDto.setPayload(payload);
@@ -375,7 +377,7 @@ public class OpfabPublisherComponentTest {
     public void specificCardTreatment_MessageValidated_WARNING_NoProcessStepNoTimeframeNoTimeframeNumber_OK() {
 
         Card card = new Card();
-        eventMessageDto.getHeader().setNoun(MESSAGE_VALIDATED);
+        eventMessageDto.getHeader().setNoun("DfgMessageValidated");
         addMessageValidatedData(WARNING);
         opfabPublisherComponent.specificCardTreatment(card, eventMessageDto, 1L);
         specificCardTreatment_CommonAsserts(card, String.format("%s message validated", source),
@@ -391,7 +393,7 @@ public class OpfabPublisherComponentTest {
     public void specificCardTreatment_MessageValidated_ERROR_NoProcessStepNoTimeframeNoTimeframeNumber_OK() {
 
         Card card = new Card();
-        eventMessageDto.getHeader().setNoun(MESSAGE_VALIDATED);
+        eventMessageDto.getHeader().setNoun("DfgMessageValidated");
         addMessageValidatedData(ERROR);
         opfabPublisherComponent.specificCardTreatment(card, eventMessageDto, 1L);
         specificCardTreatment_CommonAsserts(card, String.format("%s message validated", source),
@@ -487,20 +489,20 @@ public class OpfabPublisherComponentTest {
 
     @Test
     public void publishOpfabCard_ProcessSuccess() throws Exception {
-        eventMessageDto.getHeader().setNoun(PROCESS_SUCCESS);
+        eventMessageDto.getHeader().setNoun("ProcessSuccess");
         opfabPublisherComponent.publishOpfabCard(eventMessageDto, 1L);
     }
 
     @Test
     public void publishOpfabCard_ProcessFailed() throws Exception {
-        eventMessageDto.getHeader().setNoun(PROCESS_FAILED);
+        eventMessageDto.getHeader().setNoun("ProcessFailed");
         opfabPublisherComponent.publishOpfabCard(eventMessageDto, 1L);
     }
 
     @Test
     public void publishOpfabCard_ErrorMessageValidated() throws Exception {
         addMessageValidatedData(ERROR);
-        eventMessageDto.getHeader().setNoun(MESSAGE_VALIDATED);
+        eventMessageDto.getHeader().setNoun("DfgMessageValidated");
         opfabPublisherComponent.publishOpfabCard(eventMessageDto, 1L);
     }
 
@@ -529,9 +531,9 @@ public class OpfabPublisherComponentTest {
     @Test
     public void replacePlaceholders_containsPlaceholders() {
         Instant businessDayFrom = LocalDateTime.of(2020, 8, 25, 12, 0)
-                .atZone(DateUtil.getParisZoneId()).toInstant();
+                .atZone(getParisZoneId()).toInstant();
         Instant businessDayTo = LocalDateTime.of(2020, 8, 30, 12, 0)
-                .atZone(DateUtil.getParisZoneId()).toInstant();
+                .atZone(getParisZoneId()).toInstant();
         EventMessageDto eventMessageDto = EventMessageDto.builder()
                 .header(HeaderDto.builder()
                         .properties(PropertiesDto.builder()
@@ -612,7 +614,7 @@ public class OpfabPublisherComponentTest {
         Map<String, Object> dataObtained = opfabPublisherComponent.generateCardData(eventMessageDto, 1L);
         assertAll(
                 () -> assertEquals(1L, dataObtained.get("cardId")),
-                () -> assertEquals(PROCESS_ACTION, dataObtained.get("noun")),
+                () -> assertEquals("ProcessAction", dataObtained.get("noun")),
                 () -> assertEquals(source, dataObtained.get("source")),
                 () -> assertEquals(timestamp, dataObtained.get("timestamp")),
                 () -> assertEquals(eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier(),

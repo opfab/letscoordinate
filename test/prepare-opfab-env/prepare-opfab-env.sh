@@ -10,8 +10,15 @@
 # This file is part of the Let’s Coordinate project.
 
 cd test/prepare-opfab-env/bundles
-./send_bundles.sh mv
-./send_bundles.sh pf
-./send_bundles.sh ps
+./send_bundles.sh serviceA pv
+./send_bundles.sh serviceA pvww
+./send_bundles.sh serviceA nv
+./send_bundles.sh serviceA ps
+./send_bundles.sh serviceA pf
+./send_bundles.sh serviceB pv
+./send_bundles.sh serviceB pvww
+./send_bundles.sh serviceB nv
+./send_bundles.sh serviceB ps
+./send_bundles.sh serviceB pf
 cd ..
 java -jar karate.jar prepare-opfab-env.feature

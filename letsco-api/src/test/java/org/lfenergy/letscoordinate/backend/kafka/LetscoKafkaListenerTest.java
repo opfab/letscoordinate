@@ -31,8 +31,8 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.lfenergy.letscoordinate.backend.enums.ChangeJsonDataFromWhichEnum.BUSINESS_DATA_IDENTIFIER;
 import static org.lfenergy.letscoordinate.backend.enums.ChangeJsonDataFromWhichEnum.HEADER;
-import static org.lfenergy.letscoordinate.backend.util.StringUtil.MESSAGE_VALIDATED;
-import static org.lfenergy.letscoordinate.backend.util.StringUtil.PROCESS_SUCCESS;
+import static org.lfenergy.letscoordinate.backend.util.Constants.MESSAGE_VALIDATED;
+import static org.lfenergy.letscoordinate.backend.util.Constants.PROCESS_SUCCESSFUL;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -64,7 +64,7 @@ public class LetscoKafkaListenerTest {
         timestamp = Instant.parse("2021-03-17T10:15:30.00Z");
         eventMessageDto = EventMessageDto.builder()
                 .header(HeaderDto.builder()
-                        .noun(PROCESS_SUCCESS)
+                        .noun(PROCESS_SUCCESSFUL)
                         .source("source")
                         .messageId("messageId")
                         .timestamp(timestamp)
@@ -133,7 +133,7 @@ public class LetscoKafkaListenerTest {
 
     @Test
     public void ignoreProcessIfNeeded() {
-        String process = OpfabUtil.generateProcess(eventMessageDto);
+        String process = OpfabUtil.generateProcessKey(eventMessageDto);
         List<String> ignoreProcesses = List.of(process);
         letscoProperties.getInputFile().getValidation().setIgnoreProcesses(ignoreProcesses);
         assertThrows(IgnoreProcessException.class, () ->
@@ -142,7 +142,7 @@ public class LetscoKafkaListenerTest {
 
     @Test
     public void ignoreProcessIfNeeded_ProcessNotIgnored() {
-        String process = OpfabUtil.generateProcess(eventMessageDto);
+        String process = OpfabUtil.generateProcessKey(eventMessageDto);
         letscoKafkaListener.ignoreProcessIfNeeded(process);
     }
 

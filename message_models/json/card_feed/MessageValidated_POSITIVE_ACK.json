@@ -3,17 +3,17 @@
     "xmlns": "http://iec.ch/TC57/2011/schema/message",
     "header": {
       "verb": "created",
-      "noun": "DfgMessageValidated",
-      "timestamp": "2020-09-18T10:00:16Z",
-      "source": "ServiceA",
+      "noun": "File A",
+      "timestamp": "2020-09-17T10:00:16Z",
+      "source": "Service B",
       "messageId": "d51b25b7ac1e41e1aeff404c1827ef84",
       "properties": {
         "format": "JSON",
         "businessDataIdentifier": {
           "messageType": "101",
-          "messageTypeName": "MessageValidated",
-          "businessDayFrom": "2020-09-19T00:00:00Z",
-          "businessDayTo": "2020-12-29T23:59:00Z",
+          "messageTypeName": "PositiveValidation",
+          "businessDayFrom": "2020-09-18T22:00:00Z",
+          "businessDayTo": "2020-12-29T23:00:00Z",
           "sendingUser": "10XCZ-CEPS-GRIDE",
           "filename": "20200318_0950_ServiceA_0_CZ.xlsx",
           "tso": "10X1001A1001A345"
