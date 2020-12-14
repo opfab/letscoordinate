@@ -22,27 +22,67 @@
           },
           {
             "label": "Service A Process successful",
-            "value": "servicea_notificationtypea"
+            "value": "servicea_processsuccessful"
           },
           {
             "label": "Service A Process failed",
-            "value": "servicea_notificationtypeb"
+            "value": "servicea_processfailed"
           },
           {
-            "label": "Service A Validations",
-            "value": "servicea_messagevalidated"
+            "label": "Service A File A Positive validation",
+            "value": "servicea_filea_positivevalidation"
+          },
+          {
+            "label": "Service A File A Positive validation with warnings",
+            "value": "servicea_filea_positivevalidationwithwarnings"
+          },
+          {
+            "label": "Service A File A Negative validation",
+            "value": "servicea_filea_negativevalidation"
+          },
+          {
+            "label": "Service A File B Positive validation",
+            "value": "servicea_fileb_positivevalidation"
+          },
+          {
+            "label": "Service A File B Positive validation with warnings",
+            "value": "servicea_fileb_positivevalidationwithwarnings"
+          },
+          {
+            "label": "Service A File B Negative validation",
+            "value": "servicea_fileb_negativevalidation"
           },
           {
             "label": "Service B Process successful",
-            "value": "serviceb_notificationtypea"
+            "value": "serviceb_processsuccessful"
           },
           {
             "label": "Service B Process failed",
-            "value": "serviceb_notificationtypeb"
+            "value": "serviceb_processfailed"
           },
           {
-            "label": "Service B Validations",
-            "value": "serviceb_messagevalidated"
+            "label": "Service B File A Positive validation",
+            "value": "serviceb_filea_positivevalidation"
+          },
+          {
+            "label": "Service B File A Positive validation with warnings",
+            "value": "serviceb_filea_positivevalidationwithwarnings"
+          },
+          {
+            "label": "Service B File A Negative validation",
+            "value": "serviceb_filea_negativevalidation"
+          },
+          {
+            "label": "Service B File B Positive validation",
+            "value": "serviceb_fileb_positivevalidation"
+          },
+          {
+            "label": "Service B File B Positive validation with warnings",
+            "value": "serviceb_fileb_positivevalidationwithwarnings"
+          },
+          {
+            "label": "Service B File B Negative validation",
+            "value": "serviceb_fileb_negativevalidation"
           }
         ]
       }
@@ -133,7 +173,7 @@
       },
       "letscoordinate": {
         "name": "Let's Coordinate OS",
-        "version": "1.1.0.RELEASE"
+        "version": "1.2.0.RELEASE"
       }
     },
     "infos": {

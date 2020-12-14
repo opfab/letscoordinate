@@ -16,11 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.lfenergy.letscoordinate.backend.component.OpfabPublisherComponent;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
+import org.lfenergy.letscoordinate.backend.enums.MessageTypeEnum;
 import org.lfenergy.letscoordinate.backend.mapper.EventMessageMapper;
 import org.lfenergy.letscoordinate.backend.model.EventMessage;
 import org.lfenergy.letscoordinate.backend.processor.JsonDataProcessor;
 import org.lfenergy.letscoordinate.backend.repository.EventMessageRepository;
 import org.lfenergy.letscoordinate.backend.util.HttpUtil;
+import org.lfenergy.letscoordinate.backend.util.StringUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
@@ -33,6 +35,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import static org.lfenergy.letscoordinate.backend.util.StringUtil.*;
 
@@ -65,8 +68,8 @@ public class LetscoKafkaListener {
         businessDataIdentifierDto.setBusinessDayTo((businessDataIdentifierDto.getBusinessDayTo().orElse(
                 businessDataIdentifierDto.getBusinessDayFrom().plus(Duration.ofHours(24)))).minus(Duration.ofSeconds(1)));
 
-        String noun = eventMessageDto.getHeader().getNoun();
-        if (!isGenericNoun(noun)) {
+        String messageTypeNameId = StringUtil.toLowercaseIdentifier(eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getMessageTypeName());
+        if (!isGenericMessageTypeName(messageTypeNameId)) {
             String url = String.format("%s/api/json", thirdAppUrl);
             HttpUtil.post(url, data);
             return;
@@ -80,8 +83,8 @@ public class LetscoKafkaListener {
         opfabPublisherComponent.publishOpfabCard(eventMessageDto, eventMessage.getId());
     }
 
-    private boolean isGenericNoun(String noun) {
-        return Arrays.asList(PROCESS_SUCCESS, PROCESS_FAILED, PROCESS_ACTION, PROCESS_INFORMATION,
-                MESSAGE_VALIDATED).contains(noun);
+    private boolean isGenericMessageTypeName(String messageTypeNameId) {
+        return Arrays.stream(MessageTypeEnum.values()).map(MessageTypeEnum::getId).collect(Collectors.toList())
+                .contains(messageTypeNameId);
     }
 }

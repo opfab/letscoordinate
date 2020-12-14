@@ -16,12 +16,21 @@ USERNAME='admin'
 PASSWORD='test'
 TOKEN=$( curl -d "client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&username=${USERNAME}&password=${PASSWORD}&grant_type=password" -k ${KEYCLOAK_TOKEN_ENDPOINT_URL} | sed 's/.*access_token":"\(.*\)","expires_in.*/\1/')
 
-if [ $1 == 'mv' ]; then
-  cd messageValidated
-elif [ $1 == 'ps' ]; then
-  cd processSuccess
-elif [ $1 == 'pf' ]; then
-  cd processFailed
+if [ $1 = 'serviceA' ] || [ $1 = 'serviceB' ]; then
+  if [ $2 = 'pv' ]; then
+    cd $1/messageValidated_positive
+  elif [ $2 = 'pvww' ]; then
+    cd $1/messageValidated_positiveWithWarnings
+  elif [ $2 = 'nv' ]; then
+    cd $1/messageValidated_negative
+  elif [ $2 = 'ps' ]; then
+    cd $1/processSuccessful
+  elif [ $2 = 'pf' ]; then
+    cd $1/processFailed
+  else
+    echo "Incorrect arg: $2"
+    exit 1
+  fi
 else
   echo "Incorrect arg: $1"
   exit 1

@@ -15,10 +15,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.time.ZoneId;
+
 @ConfigurationProperties(prefix = "letsco")
 @Getter
 @Setter
 public class LetscoProperties {
+    private ZoneId timezone;
     private InputFile inputFile;
 
     @Getter
