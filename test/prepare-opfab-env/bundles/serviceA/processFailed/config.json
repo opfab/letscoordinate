@@ -1,0 +1,29 @@
+{
+  "license": "MPL-2.0",
+  "id": "servicea_processfailed",
+  "version": "1",
+  "defaultLocale": "en",
+  "templates": [
+    "process"
+  ],
+  "csses": [
+    "main"
+  ],
+  "menuEntries": [],
+  "states": {
+    "initial": {
+      "details": [
+        {
+          "title": {
+            "key": "cardDetails.title"
+          },
+          "templateName": "process",
+          "styles": [
+            "main"
+          ]
+        }
+      ],
+      "acknowledgementAllowed": true
+    }
+  }
+}

@@ -1,0 +1,160 @@
+<!-- Copyright (c) 2020, RTE (https://www.rte-france.com)                          -->
+<!-- Copyright (c) 2020 RTE international (https://www.rte-international.com)      -->
+<!-- See AUTHORS.txt                                                               -->
+<!-- This Source Code Form is subject to the terms of the Mozilla Public           -->
+<!-- License, v. 2.0. If a copy of the MPL was not distributed with this           -->
+<!-- file, You can obtain one at http://mozilla.org/MPL/2.0/.                      -->
+<!-- SPDX-License-Identifier: MPL-2.0                                              -->
+<!-- This file is part of the Let’s Coordinate project.                            -->
+
+{{#with card.data}}
+
+  <div style="border: 0.5px solid white; border-radius: 0px 0px 10px 10px; overflow: hidden;">
+
+    <div class="m-3" style="overflow: hidden;">
+      <h6>
+        {{header.source}} {{header.noun}} -
+        {{#with header.properties.businessDataIdentifier}}
+          {{timeframe}}{{timeframeNumber}}
+          {{dateFormat (math businessDayFrom.epochSecond '*' 1000) format='DD/MM/YYYY HH:mm'}} -
+          {{dateFormat (math businessDayTo.epochSecond '*' 1000) format='DD/MM/YYYY HH:mm'}}
+        {{/with}}
+        <br/>
+        Received at {{dateFormat (math header.timestamp.epochSecond '*' 1000) format='DD/MM/YYYY HH:mm'}}
+      </h6>
+
+      {{#if (bool payload.validation.result '==' 'OK')}}
+        <h4 class="mt-3 text-success" style="text-align: center;">Positive validation</h4>
+        <h6 class="text-success mb-5" style="text-align: center;">File
+          name: {{header.properties.businessDataIdentifier.fileName}}</h6>
+      {{else}}
+        {{#if (bool payload.validation.result '==' 'WARNING')}}
+          <h4 class="mt-3 text-warning" style="text-align: center;">Positive validation with warnings</h4>
+          <h6 class="text-warning" style="text-align: center;">File
+            name: {{header.properties.businessDataIdentifier.fileName}}</h6>
+        {{else}}
+          {{#if (bool payload.validation.result '==' 'ERROR')}}
+            <h4 class="mt-3 text-danger" style="text-align: center;">Negative validation</h4>
+            <h6 class="text-danger" style="text-align: center;">File
+              name: {{header.properties.businessDataIdentifier.fileName}}</h6>
+          {{/if}}
+        {{/if}}
+      {{/if}}
+
+    {{#if sendingUser}}
+    <h6>
+    Sent by {{sendingUser}}
+    </h6>
+    {{/if}}
+
+      <div id="divErrors">
+        {{#if (bool errors.length '>' 0)}}
+          <p class="mt-4 mb-3">
+            Detected errors ({{errors.length}})&nbsp;
+            <a class="detected-errors" href="javascript:void(0)"><i class="fas fa-chevron-circle-up"></i></a>
+          </p>
+
+          <div class="detected-errors-div visible">
+            <table class="card-table col-sm-10" style="margin-left: auto; margin-right: auto;">
+              <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">Hour</th>
+                <th scope="col">Code</th>
+                <th scope="col">Title</th>
+                <th scope="col">Message</th>
+              </tr>
+              </thead>
+              <tbody>
+              {{#each errors}}
+                <tr>
+                  <th scope="row">{{math @index '+' 1}}</th>
+                  <td>{{dateFormat (math this.timestamp.epochSecond '*' 1000) format='DD/MM/YYYY'}}</td>
+                  <td>{{dateFormat (math this.timestamp.epochSecond '*' 1000) format='HH:mm'}}</td>
+                  <td>{{this.code}}</td>
+                  <td>{{this.title}}</td>
+                  <td>{{this.message}}</td>
+                </tr>
+              {{/each}}
+              </tbody>
+            </table>
+          </div>
+        {{/if}}
+      </div>
+
+      <div id="divWarnings">
+        {{#if (bool warnings.length '>' 0)}}
+          <p class="mt-4 mb-3">
+            Detected warnings ({{warnings.length}})&nbsp;
+            <a class="detected-warnings" href="javascript:void(0)"><i class="fas fa-chevron-circle-up"></i></a>
+          </p>
+
+          <div class="detected-warnings-div visible">
+            <table class="card-table col-sm-10" style="margin-left: auto; margin-right: auto;">
+              <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">Hour</th>
+                <th scope="col">Code</th>
+                <th scope="col">Title</th>
+                <th scope="col">Message</th>
+              </tr>
+              </thead>
+              <tbody>
+              {{#each warnings}}
+                <tr>
+                  <th scope="row">{{math @index '+' 1}}</th>
+                  <td>{{dateFormat (math this.timestamp.epochSecond '*' 1000) format='DD/MM/YYYY'}}</td>
+                  <td>{{dateFormat (math this.timestamp.epochSecond '*' 1000) format='HH:mm'}}</td>
+                  <td>{{this.code}}</td>
+                  <td>{{this.title}}</td>
+                  <td>{{this.message}}</td>
+                </tr>
+              {{/each}}
+              </tbody>
+            </table>
+          </div>
+        {{/if}}
+      </div>
+
+    </div>
+
+  </div>
+{{/with}}
+
+<script type="text/javascript">
+
+    // Hide/Show the errors/warnings
+    var detectedErrors = document.querySelector('.detected-errors');
+    if (detectedErrors) {
+        detectedErrors.onclick =
+                function () {
+                    var detectedErrorsDiv = document.querySelector('.detected-errors-div');
+                    if (detectedErrorsDiv.classList.contains('visible')) {
+                        this.innerHTML = "<i class=\"fas fa-chevron-circle-down\"></i>";
+                        detectedErrorsDiv.className = 'detected-errors-div hidden';
+                    } else {
+                        this.innerHTML = "<i class=\"fas fa-chevron-circle-up\"></i>";
+                        detectedErrorsDiv.className = 'detected-errors-div visible';
+                    }
+                };
+    }
+
+    var detectedWarnings = document.querySelector('.detected-warnings');
+    if (detectedWarnings) {
+        detectedWarnings.onclick =
+                function () {
+                    var detectedErrorsDiv = document.querySelector('.detected-warnings-div');
+                    if (detectedErrorsDiv.classList.contains('visible')) {
+                        this.innerHTML = "<i class=\"fas fa-chevron-circle-down\"></i>";
+                        detectedErrorsDiv.className = 'detected-warnings-div hidden';
+                    } else {
+                        this.innerHTML = "<i class=\"fas fa-chevron-circle-up\"></i>";
+                        detectedErrorsDiv.className = 'detected-warnings-div visible';
+                    }
+                };
+    }
+
+</script>
