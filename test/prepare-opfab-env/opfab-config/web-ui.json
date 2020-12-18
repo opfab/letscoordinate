@@ -169,10 +169,11 @@
       "operatorfabric": {
         "name": "OperatorFabric",
         "rank": 0,
-        "version": "1.7.0.RELEASE"
+        "version": "1.8.0.RELEASE"
       },
       "letscoordinate": {
         "name": "Let's Coordinate OS",
+        "rank": 1,
         "version": "1.2.0.RELEASE"
       }
     },

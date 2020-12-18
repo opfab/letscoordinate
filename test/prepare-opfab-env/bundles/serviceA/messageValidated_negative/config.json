@@ -9,26 +9,15 @@
   "csses": [
     "main"
   ],
-  "menuEntries": [
-    {
-      "id": "reporting",
-      "url": "http://localhost:4200/kpi-report-config",
-      "label": "iframe.letsco.reporting",
-      "linkType": "IFRAME"
-    }
-  ],
+  "menuEntries": [],
   "states": {
     "initial": {
-      "details": [
-        {
-          "title": {
-            "key": "cardDetails.title"
-          },
-          "templateName": "messageValidated",
-          "styles": [
-            "main"
-          ]
-        }
+      "detailTitle": {
+        "key": "cardDetails.title"
+      },
+      "templateName": "messageValidated",
+      "styles": [
+        "main"
       ],
       "acknowledgementAllowed": true
     }
