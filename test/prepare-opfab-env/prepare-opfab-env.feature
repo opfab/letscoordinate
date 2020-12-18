@@ -143,16 +143,11 @@ Feature: Prepare OpFab env. for Let's Co open source
 """
 {
   "login" : "user.test",
-  "email" : "user.test@tsoa.com",
   "description" : "TSO A",
   "timeZone" : "Europe/Paris",
   "locale" : "en"
 }
 """
-#   "timeFormat" : "LT",
-#   "dateFormat" : "L"
-# }
-# """
 
     Given url opfabUrl + 'users/users/' + userSettings.login + '/settings'
     And header Authorization = 'Bearer ' + authToken
@@ -161,7 +156,6 @@ Feature: Prepare OpFab env. for Let's Co open source
     Then print response
     And status 200
     And match response.login == userSettings.login
-    And match response.email == userSettings.email
     And match response.description == userSettings.description
     And match response.timeZone == userSettings.timeZone
     And match response.locale == userSettings.locale
