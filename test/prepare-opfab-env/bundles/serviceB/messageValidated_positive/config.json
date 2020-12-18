@@ -12,16 +12,12 @@
   "menuEntries": [],
   "states": {
     "initial": {
-      "details": [
-        {
-          "title": {
-            "key": "cardDetails.title"
-          },
-          "templateName": "messageValidated",
-          "styles": [
-            "main"
-          ]
-        }
+      "detailTitle": {
+        "key": "cardDetails.title"
+      },
+      "templateName": "messageValidated",
+      "styles": [
+        "main"
       ],
       "acknowledgementAllowed": true
     }

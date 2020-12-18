@@ -6,10 +6,5 @@
   "cardFeed": {
     "title": "{{title}}",
     "summary": "{{summary}}"
-  },
-  "iframe": {
-    "letsco": {
-      "reporting": "RSC KPI report"
-    }
   }
 }
