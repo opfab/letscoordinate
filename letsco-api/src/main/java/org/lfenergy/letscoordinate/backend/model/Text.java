@@ -36,7 +36,7 @@ public class Text implements java.io.Serializable {
     @JoinColumn(name = "id_event_message", nullable = false)
     private EventMessage eventMessage;
 
-    @Column(name = "name", nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 250)
     private String name;
 
     @Column(name = "value", nullable = false, length = 65535)

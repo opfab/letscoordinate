@@ -43,7 +43,7 @@ public class RscKpiData implements java.io.Serializable {
     @Column(name = "timestamp", nullable = false)
     private OffsetDateTime timestamp;
 
-    @Column(name = "label", length = 50)
+    @Column(name = "label", length = 250)
     private String label;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "rscKpiData", cascade = CascadeType.ALL)

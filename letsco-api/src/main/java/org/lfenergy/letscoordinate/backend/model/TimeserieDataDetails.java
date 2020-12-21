@@ -38,10 +38,10 @@ public class TimeserieDataDetails implements java.io.Serializable {
     @JoinColumn(name = "id_timeserie_data", nullable = false)
     private TimeserieData timeserieData;
 
-    @Column(name = "identifier", length = 50)
+    @Column(name = "identifier", length = 100)
     private String identifier;
 
-    @Column(name = "label", length = 50)
+    @Column(name = "label", length = 250)
     private String label;
 
     @Column(name = "value", nullable = false, length = 1000)
@@ -53,10 +53,10 @@ public class TimeserieDataDetails implements java.io.Serializable {
     @Column(name = "reject", nullable = false)
     private Integer reject;
 
-    @Column(name = "explanation", nullable = false, length = 500)
+    @Column(name = "explanation", nullable = false, length = 1000)
     private String explanation;
 
-    @Column(name = "comment", nullable = false, length = 500)
+    @Column(name = "comment", nullable = false, length = 1000)
     private String comment;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "timeserieDataDetails", cascade = CascadeType.ALL)

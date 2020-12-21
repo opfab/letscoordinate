@@ -36,7 +36,7 @@ public class LinkEicCode implements java.io.Serializable {
     @JoinColumn(name = "id_link", nullable = false)
     private Link link;
 
-    @Column(name = "eic_code", nullable = false, length = 20)
+    @Column(name = "eic_code", nullable = false, length = 50)
     private String eicCode;
 
 }
