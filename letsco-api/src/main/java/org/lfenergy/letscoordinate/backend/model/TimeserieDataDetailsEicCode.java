@@ -36,7 +36,7 @@ public class TimeserieDataDetailsEicCode implements java.io.Serializable {
     @JoinColumn(name = "id_timeserie_data_details", nullable = false)
     private TimeserieDataDetails timeserieDataDetails;
 
-    @Column(name = "eic_code", nullable = false, length = 20)
+    @Column(name = "eic_code", nullable = false, length = 50)
     private String eicCode;
 
 }
