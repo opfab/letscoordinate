@@ -33,22 +33,6 @@
           "name": "ServiceA_Report",
           "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf"
         }
-      ],
-      "rscKpi": [
-        {
-          "name": "gp1",
-          "data": [
-            {
-              "timestamp": "2020-09-22T01:00:00Z",
-              "label": "ProcessSuccessCount",
-              "detail": [
-                {
-                  "value": 1
-                }
-              ]
-            }
-          ]
-        }
       ]
     }
   }

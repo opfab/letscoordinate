@@ -37,7 +37,7 @@ public class User implements java.io.Serializable {
     @Column(name = "username", unique = true, nullable = false, length = 50)
     private String username;
 
-    @Column(name = "eic_code", length = 20)
+    @Column(name = "eic_code", length = 50)
     private String eicCode;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL)

@@ -36,28 +36,28 @@ public class EventMessage implements java.io.Serializable {
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
 
-    @Column(name = "message_id", nullable = false, length = 50)
+    @Column(name = "message_id", nullable = false, length = 100)
     private String messageId;
 
-    @Column(name = "noun", nullable = false, length = 100)
+    @Column(name = "noun", nullable = false, length = 250)
     private String noun;
 
-    @Column(name = "verb", nullable = false, length = 20)
+    @Column(name = "verb", nullable = false, length = 100)
     private String verb;
 
     @Column(name = "timestamp", nullable = false)
     private Instant timestamp;
 
-    @Column(name = "source", nullable = false, length = 100)
+    @Column(name = "source", nullable = false, length = 250)
     private String source;
 
     @Column(name = "format", nullable = false, length = 10)
     private String format;
 
-    @Column(name = "message_type", nullable = false, length = 10)
+    @Column(name = "message_type", nullable = false, length = 100)
     private String messageType;
 
-    @Column(name = "message_type_name", nullable = false, length = 100)
+    @Column(name = "message_type_name", nullable = false, length = 250)
     private String messageTypeName;
 
     @Column(name = "business_day_from", nullable = false)
@@ -66,16 +66,16 @@ public class EventMessage implements java.io.Serializable {
     @Column(name = "business_day_to")
     private Instant businessDayTo;
 
-    @Column(name = "process_step", length = 20)
+    @Column(name = "process_step", length = 100)
     private String processStep;
 
-    @Column(name = "timeframe", length = 5)
+    @Column(name = "timeframe", length = 50)
     private String timeframe;
 
     @Column(name = "timeframe_number")
     private Integer timeframeNumber;
 
-    @Column(name = "sending_user", length = 20)
+    @Column(name = "sending_user", length = 50)
     private String sendingUser;
 
     @Column(name = "file_name", length = 100)

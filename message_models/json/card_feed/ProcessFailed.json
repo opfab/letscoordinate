@@ -35,31 +35,6 @@
           "name": "Reason of delay",
           "value": "Calculation delayed"
         }
-      ],
-      "rscKpi": [
-        {
-          "name": "gp2",
-          "data": [
-            {
-              "timestamp": "2020-08-04T01:00:00Z",
-              "label": "ProcessFailedCount",
-              "detail": [
-                {
-                  "value": 0
-                }
-              ]
-            },
-            {
-              "timestamp": "2020-08-04T01:00:00Z",
-              "label": "ProcessDelayedCount",
-              "detail": [
-                {
-                  "value": 0
-                }
-              ]
-            }
-          ]
-        }
       ]
     }
   }

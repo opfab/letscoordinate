@@ -37,7 +37,7 @@ public class UserService implements java.io.Serializable {
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
 
-    @Column(name = "service_code", length = 50)
+    @Column(name = "service_code", nullable = false, length = 250)
     private String serviceCode;
 
 }
