@@ -1,0 +1,52 @@
+<!-- Copyright (c) 2020, RTE (https://www.rte-france.com)                          -->
+<!-- Copyright (c) 2020 RTE international (https://www.rte-international.com)      -->
+<!-- See AUTHORS.txt                                                               -->
+<!-- This Source Code Form is subject to the terms of the Mozilla Public           -->
+<!-- License, v. 2.0. If a copy of the MPL was not distributed with this           -->
+<!-- file, You can obtain one at http://mozilla.org/MPL/2.0/.                      -->
+<!-- SPDX-License-Identifier: MPL-2.0                                              -->
+<!-- This file is part of the Let’s Coordinate project.                            -->
+
+
+  <div style="border: 0.5px solid white; border-radius: 0px 0px 10px 10px; overflow: hidden;">
+
+    <div class="m-3" style="overflow: hidden;">
+      <h6>
+        Service B - Free message 1 - {{dateFormat card.startDate format='DD/MM/YYYY HH:mm'}} - {{dateFormat card.endDate format='DD/MM/YYYY HH:mm'}}
+        <br/>
+        Received at {{dateFormat card.publishDate format='DD/MM/YYYY HH:mm'}}
+      </h6>
+
+    <br/>
+
+    <div class="ml-10">
+      {{#if (bool card.data.message '!=' '')}}
+      <h6>
+        <b>Message:</b><br/>
+        {{keepSpacesAndEndOfLine card.data.message}}
+      </h6>
+      <br/>
+      {{/if}}
+
+      <h6>
+        <b>Business period:</b> {{dateFormat card.startDate format='DD/MM/YYYY HH:mm'}} - {{dateFormat card.endDate format='DD/MM/YYYY HH:mm'}}
+      </h6>
+      <br/>
+
+      {{#if (bool card.data.conf_subject '!=' '')}}
+      <h6>
+        <b>Conference call:</b><br/>
+        The conference call is available here: <a href="{{card.data.conf_link}}" target="_blank">{{card.data.conf_subject}}</a>
+      </h6>
+      <br/>
+      {{/if}}
+
+      {{#if (bool card.data.report_title '!=' '')}}
+      <h6>
+        <b>Report:</b><br/>
+        The report is available here: <a href="{{card.data.report_link}}" target="_blank">{{card.data.report_title}}</a>
+      </h6>
+      {{/if}}
+    </div>
+
+  </div>

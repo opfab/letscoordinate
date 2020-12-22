@@ -27,6 +27,8 @@ if [ $1 = 'serviceA' ] || [ $1 = 'serviceB' ]; then
     cd $1/processSuccessful
   elif [ $2 = 'pf' ]; then
     cd $1/processFailed
+  elif [ $2 = 'cc' ]; then
+    cd $1/cardCreation
   else
     echo "Incorrect arg: $2"
     exit 1
