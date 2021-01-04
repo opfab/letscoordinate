@@ -28,11 +28,6 @@
       <br/>
       {{/if}}
 
-      <h6>
-        <b>Business period:</b> {{dateFormat card.startDate format='DD/MM/YYYY HH:mm'}} - {{dateFormat card.endDate format='DD/MM/YYYY HH:mm'}}
-      </h6>
-      <br/>
-
       {{#if (bool card.data.conf_subject '!=' '')}}
       <h6>
         <b>Conference call:</b><br/>

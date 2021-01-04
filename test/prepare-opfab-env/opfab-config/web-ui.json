@@ -1,5 +1,6 @@
 {
   "license": "MPL-2.0",
+  "title": "Let's Coordinate",
   "archive": {
     "filters": {
       "page": {
@@ -197,5 +198,10 @@
   "time": {
     "pulse": 5000
   },
-  "title": "Let's Coordinate"
+  "admin": {
+    "hidden": true
+  },
+  "feedConfiguration": {
+    "hidden": false
+  }
 }

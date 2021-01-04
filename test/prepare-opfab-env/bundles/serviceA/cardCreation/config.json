@@ -12,7 +12,9 @@
     "freeMessageState": {
       "name": "freeMessage.title",
       "color": "#FAF0AF",
-      "userCardTemplate": "usercard_freemessage",
+      "userCard": {
+        "template": "usercard_freemessage"
+      },
       "detailTitle": {
         "key": "cardDetails.title"
       },
