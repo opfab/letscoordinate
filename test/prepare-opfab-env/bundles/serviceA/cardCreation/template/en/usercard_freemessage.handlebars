@@ -76,7 +76,6 @@
             key : "cardFeed.summary",
             parameters: { startDate: new Date(startDate).toLocaleDateString(), endDate: new Date(endDate).toLocaleDateString() }
         },
-        secondsBeforeTimeSpanForReminder: 300,
         data : {
                 message: message,
                 conf_subject:conf_subject,
@@ -89,7 +88,7 @@
         return {
             valid: true,
             card: card,
-            viewCardInAgenda: true
+            viewCardInAgenda: false
         };
 
     }
