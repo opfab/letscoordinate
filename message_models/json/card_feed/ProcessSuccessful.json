@@ -4,16 +4,16 @@
     "header": {
       "verb": "created",
       "noun": "ProcessSuccessful",
-      "timestamp": "2020-05-16T08:13:15Z",
+      "timestamp": "2021-05-16T08:13:15Z",
       "source": "Service A",
       "messageId": "134654a095714812ba74323b021f23b5",
       "properties": {
         "format": "JSON",
         "businessDataIdentifier": {
           "messageTypeName": "ProcessSuccessful",
-          "businessDayFrom": "2020-06-05T22:00:00Z",
-          "businessDayTo": "2020-06-30T22:00:00Z",
-          "processStep": "Initial Calculation"
+          "businessDayFrom": "2021-06-05T22:00:00Z",
+          "businessDayTo": "2021-06-30T22:00:00Z",
+          "processStep": "Initial calculation"
         }
       }
     },
