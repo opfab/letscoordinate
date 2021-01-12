@@ -13,7 +13,7 @@
     window.__env = window.__env || {};
 
     window.__env.serverUrl = 'http://localhost:8088/letsco/api';
-    window.__env.openidUrl = 'http://localhost:89';
+    window.__env.openidUrl = 'http://keycloak:8080';
     window.__env.openidRealmsUrlPrefix = '/auth/realms/';
     window.__env.openidRealms = 'dev';
     window.__env.openidRealmsUrlSuffix = '/protocol/openid-connect/';

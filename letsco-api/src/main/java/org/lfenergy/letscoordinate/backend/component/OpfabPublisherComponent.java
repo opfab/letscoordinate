@@ -264,7 +264,7 @@ public class OpfabPublisherComponent {
         String titleProcessType = "";
         switch (noun) {
             case PROCESS_SUCCESSFUL:
-                titleProcessType = "process successful";
+                titleProcessType = "process success";
                 opfabCard.setSeverity(SeverityEnum.INFORMATION);
                 opfabCard.setData(generateCardData(eventMessageDto, cardId));
                 break;

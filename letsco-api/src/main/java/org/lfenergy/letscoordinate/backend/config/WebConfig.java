@@ -54,7 +54,6 @@ public class WebConfig {
         jackson2ObjectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         jackson2ObjectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, inputFileValidationConfig.isAcceptPropertiesIgnoreCase());
         jackson2ObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, inputFileValidationConfig.isFailOnUnknownProperties());
-//        jackson2ObjectMapper.registerModule(new JavaTimeModule());
         jackson2ObjectMapper.registerModule(new SimpleModule().addSerializer(OffsetDateTime.class, new JsonSerializer<OffsetDateTime>() {
             @Override
             public void serialize(OffsetDateTime offsetDateTime, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {

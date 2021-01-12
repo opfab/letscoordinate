@@ -9,8 +9,14 @@
 
 version: '3.3'
 
+networks:
+  default:
+    external:
+      name: opfab-network
+
 services:
   zookeeper:
+    container_name: zookeeper
     image: 'docker.io/bitnami/zookeeper:3-debian-10'
     ports:
       - '2181:2181'
@@ -19,6 +25,7 @@ services:
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
   kafka:
+    container_name: kafka
     image: 'docker.io/bitnami/kafka:2-debian-10'
     ports:
       - '9092:9092'
@@ -29,12 +36,13 @@ services:
       - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
       - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
-      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://localhost:9092,EXTERNAL://localhost:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://kafka:9093
       - KAFKA_INTER_BROKER_LISTENER_NAME=CLIENT
     depends_on:
       - zookeeper
     restart: always
-  mariadb_letscoos:
+  mariadb:
+    container_name: mariadb
     image: 'mariadb:10.5.4'
     ports:
       - '3306:3306'
@@ -44,6 +52,35 @@ services:
       - MYSQL_USER=user
       - MYSQL_PASSWORD=userpwd
     command: ['--default-time-zone=+00:00', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+  letsco-api:
+    container_name: letsco-api
+    image: letscoordinate/letsco-api:latest
+    depends_on:
+      - mariadb
+      - kafka
+    user: ${USER_ID}:${USER_GID}
+    ports:
+      - 8088:8088
+    restart: always
+  letsco-data-provider:
+    container_name: letsco-data-provider
+    image: letscoordinate/letsco-data-provider:latest
+    depends_on:
+      - kafka
+    user: ${USER_ID}:${USER_GID}
+    ports:
+      - 8082:8082
+    restart: always
+
+#  letsco-front:
+#    container_name: letsco-front
+#    image: letscoordinate/letsco-front:latest
+#    depends_on:
+#      - letsco-api
+#    user: ${USER_ID}:${USER_GID}
+#    ports:
+#      - 4200:8080
+    #restart: always
 
 volumes:
   zookeeper_data:
