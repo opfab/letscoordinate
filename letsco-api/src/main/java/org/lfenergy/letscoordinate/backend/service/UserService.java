@@ -12,6 +12,7 @@
 package org.lfenergy.letscoordinate.backend.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.lfenergy.letscoordinate.backend.model.User;
 import org.lfenergy.letscoordinate.backend.repository.UserRepository;
 import org.lfenergy.letscoordinate.backend.util.SecurityUtil;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -33,6 +35,7 @@ public class UserService {
         if(user.isPresent()) {
             return user.get();
         }
+        log.debug("User \"{}\" not found in letsco database, it will be created.", username);
         User newUser = new User();
         newUser.setUsername(username);
         newUser.setUserServices(SecurityUtil.getServicesFromToken().stream()

@@ -1,0 +1,16 @@
+{
+  "license": "MPL-2.0",
+  "cardDetails":{
+    "title":"Card details"
+  },
+  "cardFeed": {
+    "title": "{{title}}",
+    "summary": "{{summary}}"
+  },
+  "process": {
+    "label": "Service A Process successful"
+  },
+  "initial": {
+    "title": "Service A Process successful"
+  }
+}

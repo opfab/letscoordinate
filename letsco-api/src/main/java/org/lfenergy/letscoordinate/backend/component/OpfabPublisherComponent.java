@@ -184,6 +184,9 @@ public class OpfabPublisherComponent {
         Optional<String> timeframe = businessDataIdentifierDto.getTimeframe();
         Optional<Integer> timeframeNumber = businessDataIdentifierDto.getTimeframeNumber();
 
+        // TODO This param should be equal true when dealing with smart notifications
+        opfabCard.setKeepChildCards(false);
+
         MessageTypeEnum messageTypeEnum = MessageTypeEnum.getById(StringUtil.toLowercaseIdentifier(messageTypeName));
         if (messageTypeEnum != null) {
             switch (messageTypeEnum) {
