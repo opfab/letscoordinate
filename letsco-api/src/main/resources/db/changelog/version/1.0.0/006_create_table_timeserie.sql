@@ -27,7 +27,7 @@ CREATE TABLE timeserie_data_details (
                 id_timeserie_data BIGINT NOT NULL,
                 identifier VARCHAR(50),
                 label VARCHAR(50),
-                value VARCHAR(100) NOT NULL,
+                value VARCHAR(1000) NOT NULL,
                 accept INT,
                 reject INT,
                 explanation VARCHAR(500),

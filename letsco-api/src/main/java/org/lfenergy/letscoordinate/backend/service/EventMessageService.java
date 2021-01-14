@@ -12,23 +12,28 @@
 package org.lfenergy.letscoordinate.backend.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
+import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.HeaderDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.*;
+import org.lfenergy.letscoordinate.backend.enums.UnknownEicCodesProcessEnum;
 import org.lfenergy.letscoordinate.backend.exception.InvalidInputFileException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EventMessageService {
 
     private final CoordinationConfig coordinationConfig;
+    private final LetscoProperties letscoProperties;
 
     public void checkEicCodes(EventMessageDto eventMessageDto) throws InvalidInputFileException {
         // check that all eic_code provided by the dto exists in our database
@@ -38,8 +43,15 @@ public class EventMessageService {
                 .filter(eicCode -> !knownEicCodes.contains(eicCode))
                 .collect(Collectors.toSet());
         if(!unknownEicCodes.isEmpty()) {
-            // TODO monitoring
-            throw new InvalidInputFileException("Unknown eic_codes found! >>> " + unknownEicCodes.toString());
+            UnknownEicCodesProcessEnum unknownEicCodesProcess =
+                    letscoProperties.getInputFile().getValidation().getUnknownEicCodesProcess();
+            if(unknownEicCodesProcess == UnknownEicCodesProcessEnum.EXCEPTION) {
+                if (!letscoProperties.getInputFile().getValidation().getAllowedEicCodes().containsAll(unknownEicCodes)) {
+                    throw new InvalidInputFileException("Unknown eic_codes found! >>> " + unknownEicCodes.toString());
+                }
+            } else if (unknownEicCodesProcess == UnknownEicCodesProcessEnum.WARNING) {
+                log.warn("Unknown eic_codes found! >>> " + unknownEicCodes.toString());
+            }
         }
     }
 

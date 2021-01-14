@@ -13,7 +13,11 @@ package org.lfenergy.letscoordinate.backend.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.lfenergy.letscoordinate.backend.enums.UnknownEicCodesProcessEnum;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @ConfigurationProperties(prefix = "letsco")
 @Getter
@@ -32,6 +36,8 @@ public class LetscoProperties {
         public static class Validation {
             private boolean acceptPropertiesIgnoreCase;
             private boolean failOnUnknownProperties;
+            private UnknownEicCodesProcessEnum unknownEicCodesProcess = UnknownEicCodesProcessEnum.EXCEPTION;
+            private List<String> allowedEicCodes = new ArrayList<>();
         }
     }
 }

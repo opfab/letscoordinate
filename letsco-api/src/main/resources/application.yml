@@ -55,6 +55,10 @@ letsco:
     validation:
       accept-properties-ignore-case: true
       fail-on-unknown-properties: false
+#      unknown-eic-codes-process: WARNING
+      # EXCEPTION, WARNING, NONE. Default is EXCEPTION
+#        allowedEicCodes: # This works with the EXCEPTION scenario
+#          - unknownEicCode
 
 opfab:
   publisher: letsco_opensource
@@ -62,10 +66,10 @@ opfab:
     cardsPub: http://localhost:2102/cards
   feed:
     sourceA_messageTypeNameA:
-      title: " STA - Generation Tripping Validation - {{result::notificationTitle()}}"
+      title: " AA - Validation - {{result::notificationTitle()}}"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy HH:mm)}}  - {{businessDayTo::dateFormat(dd/MM/yyyy HH:mm)}}  (CET/CEST) - {{sendingUser::eicToName()}}"
     sourceA_messageTypeNameB:
-      title: " STA - HVDC Tripping information Validation - {{result::notificationTitle()}}"
+      title: " AB - Validation - {{result::notificationTitle()}}"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy HH:mm)}}  - {{businessDayTo::dateFormat(dd/MM/yyyy HH:mm)}}  (CET/CEST) - {{sendingUser::eicToName()}}"
 
   entityRecipients:

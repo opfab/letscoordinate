@@ -103,6 +103,7 @@ public class OpfabPublisherComponent {
 
     public void setOpfabCardDates(Card card, EventMessageDto eventMessageDto) {
 
+        
         Instant timestamp = eventMessageDto.getHeader().getTimestamp();
         BusinessDataIdentifierDto businessDataIdentifierDto = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
         Instant businessDayFrom = businessDataIdentifierDto.getBusinessDayFrom();
@@ -126,7 +127,7 @@ public class OpfabPublisherComponent {
         card.setTimeSpans(timeSpans);
         card.setPublishDate(timestamp);
         card.setStartDate(businessDayFrom);
-        card.setEndDate(businessDayTo);
+        card.setEndDate(businessDayTo.minus(Duration.ofMinutes(1)));
     }
 
     void setCardRecipients(Card card, EventMessageDto eventMessageDto) {
@@ -336,6 +337,11 @@ public class OpfabPublisherComponent {
         }
 
         ValidationData data = new ValidationData(eventMessageDto);
+        eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getSendingUser()
+                .ifPresent(u -> {
+                    if (tsos.containsKey(u))
+                        data.setSendingUser(tsos.get(u).getName());
+                });
         validationMessagesOpt.ifPresent(validationMessages -> {
             List<ValidationMessageDto> warnings = validationMessages.stream()
                     .filter(m -> m.getSeverity() == ValidationSeverityEnum.WARNING).collect(Collectors.toList());

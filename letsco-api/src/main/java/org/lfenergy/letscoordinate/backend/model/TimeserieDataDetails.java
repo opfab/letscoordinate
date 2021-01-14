@@ -44,7 +44,7 @@ public class TimeserieDataDetails implements java.io.Serializable {
     @Column(name = "label", length = 50)
     private String label;
 
-    @Column(name = "value", nullable = false, length = 100)
+    @Column(name = "value", nullable = false, length = 1000)
     private String value;
 
     @Column(name = "accept", nullable = false)
