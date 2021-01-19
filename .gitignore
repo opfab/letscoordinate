@@ -14,6 +14,10 @@ HELP.md
 !**/src/test/**
 **/bundle.tar.gz
 **/karate.jar
+**/*.env
+opfab/operatorfabric-getting-started/server/businessconfig-storage
+dockerfiles/**/*.jar
+dockerfiles/front/letsco-front
 
 ### STS ###
 .apt_generated

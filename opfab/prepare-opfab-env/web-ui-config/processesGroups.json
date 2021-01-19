@@ -1,0 +1,37 @@
+{
+  "groups": [
+    {
+      "id": "processgroup_servicea",
+      "processes": [
+        "servicea_cardcreation",
+        "servicea_processsuccessful",
+        "servicea_processfailed",
+        "servicea_positivevalidation",
+        "servicea_positivevalidationwithwarnings",
+        "servicea_negativevalidation"
+      ]
+    },
+    {
+      "id": "processgroup_serviceb",
+      "processes": [
+
+        "serviceb_cardcreation",
+        "serviceb_processsuccessful",
+        "serviceb_processfailed",
+        "serviceb_positivevalidation",
+        "serviceb_positivevalidationwithwarnings",
+        "serviceb_negativevalidation"
+      ]
+    }
+  ],
+  "locale": {
+    "en": {
+      "processgroup_servicea": "Service A",
+      "processgroup_serviceb": "Service B"
+    },
+    "fr": {
+      "processgroup_servicea": "Service A",
+      "processgroup_serviceb": "Service B"
+    }
+  }
+}
