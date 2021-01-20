@@ -11,6 +11,7 @@
 
 package org.lfenergy.letscoordinate.backend.config;
 
+import lombok.RequiredArgsConstructor;
 import org.lfenergy.letscoordinate.backend.util.Constants;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -27,9 +28,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    String clientId = "opfab-client";
+    private final LetscoProperties letscoProperties;
 
     /**
      * Secure the endpoints of the application
@@ -58,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * @return
      */
     Converter<Jwt, AbstractAuthenticationToken> grantedAuthoritiesExtractor() {
-        return new GrantedAuthoritiesExtractor(clientId);
+        return new GrantedAuthoritiesExtractor(letscoProperties.getSecurity().getClientId());
     }
 
     /**

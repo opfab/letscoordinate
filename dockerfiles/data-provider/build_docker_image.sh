@@ -17,10 +17,7 @@ else
   exit 1
 fi
 
-cd ../../letsco-data-provider
-mvn clean package -DskipTests=true
-cd -
-cp -r ../../letsco-data-provider/target/letsco-data-provider-${LC_VERSION}*-exec.jar ./letsco-data-provider.jar
+cp -r ${LC_HOME}/letsco-data-provider/target/letsco-data-provider-${LC_VERSION}*-exec.jar ${LC_HOME}/dockerfiles/data-provider/letsco-data-provider.jar
 
 docker build --tag=letscoordinate/letsco-data-provider:latest -f ./Dockerfile .
 docker build --tag=letscoordinate/letsco-data-provider:${tag} -f ./Dockerfile .

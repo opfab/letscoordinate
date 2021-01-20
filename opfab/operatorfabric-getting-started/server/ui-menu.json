@@ -6,7 +6,7 @@
       "entries": [
         {
           "id": "rscKpiReport",
-          "url": "http://localhost:4200/kpi-report-config",
+          "url": "http://letsco-front:4200/kpi-report-config",
           "label": "title.rscKpiReport",
           "linkType": "IFRAME"
         }

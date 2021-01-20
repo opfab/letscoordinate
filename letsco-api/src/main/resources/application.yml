@@ -36,7 +36,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:89/auth/realms/dev
+          issuer-uri: http://keycloak:8080/auth/realms/dev
 
 logging:
   level:
@@ -56,6 +56,11 @@ letsco:
     validation:
       accept-properties-ignore-case: true
       fail-on-unknown-properties: false
+  security:
+    allowed-origins:
+      - http://localhost:4200
+      - http://letsco-front:4200
+    clientId: opfab-client
 
 opfab:
   publisher: letsco_opensource
@@ -107,7 +112,7 @@ third-app:
 
 keycloak:
   server:
-    url: http://localhost:89/auth
+    url: http://keycloak:8080/auth
     realm: dev
     client-id: opfab-client
     client-secret: opfab-keycloak-secret

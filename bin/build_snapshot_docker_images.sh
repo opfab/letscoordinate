@@ -9,15 +9,18 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of the Let’s Coordinate project.
 
+# Build letscoordinate maven project
+cd ${LC_HOME}
+mvn clean package -DskipTests=true
 
 # build docker images for letsco-api
 cd ${LC_HOME}/dockerfiles/back
-source ./build_docker_image.sh ${LC_VERSION}.snapshot
+./build_docker_image.sh ${LC_VERSION}.snapshot
 
 # build docker images for letsco-data-provider
 cd ${LC_HOME}/dockerfiles/data-provider
-source ./build_docker_image.sh ${LC_VERSION}.snapshot
+./build_docker_image.sh ${LC_VERSION}.snapshot
 
 # build docker images for letsco-front
 cd ${LC_HOME}/dockerfiles/front
-source ./build_docker_image.sh ${LC_VERSION}.snapshot
+./build_docker_image.sh ${LC_VERSION}.snapshot

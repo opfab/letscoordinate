@@ -336,9 +336,9 @@ Feature: Prepare OpFab env. for Let's Co open source
     And status 200
 
 
-  Scenario: Add user user.test2 to group Service B
+  Scenario: Add user user.test2 to group Service A
 
-    * def group = 'serviceb'
+    * def group = 'servicea'
     * def usersArray =
 """
 [ "user.test2" ]

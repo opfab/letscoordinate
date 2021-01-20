@@ -56,6 +56,13 @@ letsco:
     validation:
       accept-properties-ignore-case: true
       fail-on-unknown-properties: false
+  security:
+    allowed-origins:
+      - http://localhost:4200
+      - http://letsco-front:4200
+      - http://51.103.32.140:4200
+      - https://51.103.32.140:4200
+    clientId: opfab-client
 
 opfab:
   publisher: letsco_opensource

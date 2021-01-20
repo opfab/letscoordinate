@@ -119,7 +119,7 @@ services:
     container_name: web-ui
     image: "lfeoperatorfabric/of-web-ui:SNAPSHOT"
     ports:
-    - "2002:80"
+    - "80:80"
     depends_on:
       - users
       - businessconfig
