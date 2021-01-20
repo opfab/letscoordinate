@@ -1,7 +1,7 @@
 function fn() {
     
     var config = { // base config JSON
-      opfabUrl: 'http://localhost:2002/',
+      opfabUrl: 'http://localhost/',
       opfabPublishCardUrl: 'http://localhost:2102/'
     };
 

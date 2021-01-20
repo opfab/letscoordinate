@@ -26,6 +26,7 @@ public class LetscoProperties {
 
     private ZoneId timezone;
     private InputFile inputFile;
+    private Security security;
 
     @Getter
     @Setter
@@ -80,5 +81,12 @@ public class LetscoProperties {
             private ChangeJsonDataFromWhichEnum fromWhichLevel;
             private String changingField;
         }
+    }
+
+    @Getter
+    @Setter
+    public static class Security {
+        private String[] allowedOrigins;
+        private String clientId;
     }
 }

@@ -71,16 +71,6 @@ function commandNotImplemented() {
   echo -e "\033[0;31m  This function is not yet implemented! \033[0m"
 }
 
-function prepareEnvironment() {
-  # load environment variables and display exported values
-  source ./prepare_environment.sh --debug
-}
-
-function prepareEnvironmentWithoutDisplayingValues() {
-  # load environment variables
-  source ./prepare_environment.sh
-}
-
 function buildSnapshotDockerImagesIfAsked() {
   if [ ${build} = true ] || [ ${firstInit} = true ]; then
       echo -e "\033[0;32mINSTALLING OPERATORFABRIC DEPENDENCIES...\033[0m"
@@ -89,7 +79,7 @@ function buildSnapshotDockerImagesIfAsked() {
       echo
       echo -e "\033[0;32mBUILDING LETSCO SNAPSHOT DOCKER IMAGES...\033[0m"
       echo
-      source ./build_snapshot_docker_images.sh
+      ./build_snapshot_docker_images.sh
       echo
   fi
 }
@@ -100,6 +90,7 @@ function initIfAsked() {
       echo
       cd ${LC_HOME}
       ./opfab/prepare-opfab-env/prepare-opfab-env.sh
+      sudo chown -R $USER:$USER ${LC_HOME}/opfab/operatorfabric-getting-started/server/businessconfig-storage
       cd ${LC_HOME}/opfab/prepare-opfab-env/web-ui-config
       ./send-processes-groups.sh
       echo
@@ -107,6 +98,13 @@ function initIfAsked() {
 }
 
 ### PROCESSING STARTS HEAR! ###
+
+# Check if environment variables loaded
+if [ "${LC_HOME}" = "" ] || ["${$LC_VERSION}" = ""] || ["${$OF_VERSION}" = ""]; then
+    echo -e "\033[0;31m\nOups! It seems that you forgot to load environment variables! Please run the following command and try again:\033[0m"
+    echo -e "\033[0;31m\n\tsource ./load_environment.sh\n \033[0m"
+    exit 1;
+fi
 
 build=false
 init=false
@@ -156,13 +154,11 @@ currentPath=$(pwd)
 
 case ${command} in
   start)
-  prepareEnvironment
   buildSnapshotDockerImagesIfAsked
   startCommand
   initIfAsked
   ;;
   restart)
-  prepareEnvironment
   stopCommand
   echo -e "\033[0;32mWAITING 5s...\033[0m"
   sleep 5s
@@ -171,15 +167,12 @@ case ${command} in
   initIfAsked
   ;;
   stop)
-  prepareEnvironment
   stopCommand
   ;;
   down)
-  prepareEnvironment
   downCommand
   ;;
   status)
-  prepareEnvironmentWithoutDisplayingValues
   statusCommand
   ;;
   *) # unknown option

@@ -45,7 +45,7 @@ services:
     container_name: mariadb
     image: 'mariadb:10.5.4'
     ports:
-      - '3306:3306'
+      - 3306:3306
     environment:
       - MYSQL_ROOT_PASSWORD=rootpwd
       - MYSQL_DATABASE=letsco
@@ -61,6 +61,9 @@ services:
     user: ${USER_ID}:${USER_GID}
     ports:
       - 8088:8088
+      - 5005:5005
+    environment:
+      - TZ=Europe/Paris
     restart: always
   letsco-data-provider:
     container_name: letsco-data-provider

@@ -40,7 +40,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/letsco/api/**")
-                        .allowedOrigins("http://localhost:4200")
+                        .allowedOrigins(letscoProperties.getSecurity().getAllowedOrigins())
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD")
                         .allowedHeaders("authorization", "content-type", "x-auth-token")
                         .allowCredentials(true);

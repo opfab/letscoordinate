@@ -17,13 +17,14 @@ else
   exit 1
 fi
 
-cd ../../letsco-front
+cd ${LC_HOME}/letsco-front
+npm clean-install
 ng build --prod --base-href /letsco --deploy-url /letsco/
-cd -
-rm -rf ./letsco-front
-cp -r ../../letsco-front/dist/letsco-front .
+cd ${LC_HOME}/dockerfiles/front
+rm -rf letsco-front
+cp -r ${LC_HOME}/letsco-front/dist/letsco-front .
 JS_FILES=$(ls letsco-front/ | grep -E '(\.js|\.css|assets)' | xargs echo)
-cd letsco-front/ && mv $JS_FILES letsco && cd -
+cd letsco-front/ && mv $JS_FILES letsco && cd ${LC_HOME}/dockerfiles/front
 
 docker build --tag=letscoordinate/letsco-front:latest -f ./Dockerfile . && \
 docker build --tag=letscoordinate/letsco-front:${tag} -f ./Dockerfile . && \

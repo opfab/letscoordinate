@@ -73,6 +73,11 @@ letsco:
       # EXCEPTION, WARNING, NONE. Default is EXCEPTION
 #        allowedEicCodes: # This works with the EXCEPTION scenario
 #          - unknownEicCode
+  security:
+    allowed-origins:
+      - http://localhost:4200
+      - http://letsco-front:4200
+    clientId: opfab-client
 
 opfab:
   publisher: letsco_opensource
@@ -130,7 +135,7 @@ third-app:
 
 keycloak:
   server:
-    url: http://localhost:89/auth
+    url: http://keycloak:8080/auth
     realm: dev
     client-id: opfab-client
     client-secret: opfab-keycloak-secret
