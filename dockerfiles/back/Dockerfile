@@ -13,4 +13,5 @@
 FROM openjdk:11-jre-slim
 COPY ./letsco-api.jar /usr/local/lib/letsco-api.jar
 EXPOSE 8088
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=docker", "/usr/local/lib/letsco-api.jar"]
+EXPOSE 5005
+ENTRYPOINT ["java", "-jar", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-Dspring.profiles.active=docker", "/usr/local/lib/letsco-api.jar"]

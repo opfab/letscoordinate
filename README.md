@@ -13,18 +13,22 @@
 
 To use Let's Coordinate, you need a linux OS with the following:
 
-* Maven
+* Maven (3.5.3)
 * Java (8 or grater)
-* Docker
-* Docker-compose
-* NPM (6 or grater) 
+* Docker (18.09.9)
+* Docker-compose (1.27.4)
+* NPM (v6.9.0) 
+* Node JS (v10.16.3)
 * Angular CLI (8 or grater)
+
+**Please note**: It is highly recommended to use [sdkman](https://sdkman.io/) and [nvm](https://github.com/nvm-sh/nvm) to manage tools versions (Maven, NPM and Node JS). 
 
 ## 2. Setup and run Let's Coordinate
 
 #### 2.1. Clone Let's Coordinate project
 
 To start Let's Coordinate, you first need to clone the *letscoordinate* git project:
+
 ```
 git clone https://github.com/opfab/letscoordinate.git
 ```
@@ -46,14 +50,29 @@ git checkout tags/1.2.0.RELEASE -b test-letsco-1.2.0.RELEASE
 
 #### 2.3. Run Let's Coordinate
 
+##### a. Prepare the environment
+
 Before starting the *Let's Coordinate* getting started project, it is important to mention that we use the *karate.jar* dependency to initialize our database with required test data.
 
 Download the latest *karate.jar* from [Karate github release page](https://github.com/intuit/karate/releases/) , put it in the "*opfab/prepare-opfab-env*" directory, rename it to "*karate.jar*" to use it easily.
 
-To start Let's Coordinate, position your self in the root directory of the *Let's Coordinate* project (by default letscoordinate) and execute the following commands:
+After that, you have to add the *keycloak*, *cards-publication*, *businessconfig*, *web-ui*, *kafka*, *letsco-front* and *letsco-api* hosts to the */etc/hosts* file in order to map the host names with the corresponding docker containers address (you can change the *127.0.0.1* ip address by the one you use to connect to your docker containers if different):
 
 ```
-cd bin
+127.0.0.1   keycloak cards-publication businessconfig web-ui kafka letsco-front letsco-api
+```
+
+One more thing to do before starting the server, is to load the environment variables. To do that, position your self in the root directory of the *Let's Coordinate* project (by default letscoordinate) and execute the following command:
+
+```
+source bin/load_environment.sh
+```
+
+##### b. Start the server
+
+To start Let's Coordinate, position your self in the *bin* directory and execute the following commands:
+
+```
 ./server.sh --first-init start 
 ```
 

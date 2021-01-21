@@ -17,10 +17,7 @@ else
   exit 1
 fi
 
-cd ../../letsco-api
-mvn clean package -DskipTests=true
-cd -
-cp -r ../../letsco-api/target/letsco-api-${LC_VERSION}*-exec.jar ./letsco-api.jar
+cp -r ${LC_HOME}/letsco-api/target/letsco-api-${LC_VERSION}*-exec.jar ${LC_HOME}/dockerfiles/back/letsco-api.jar
 
 docker build --tag=letscoordinate/letsco-api:latest -f ./Dockerfile .
 docker build --tag=letscoordinate/letsco-api:${tag} -f ./Dockerfile .

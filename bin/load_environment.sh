@@ -8,7 +8,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of the Let’s Coordinate project.
- 
+
+echo USER_ID="$(id -u)" > .env
+echo USER_GID="$(id -g)" >> .env
 
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -21,15 +23,17 @@ export LC_HOME=$(realpath $DIR/..)
 export LC_VERSION=$(cat "$LC_HOME/LETSCO_SHORT_VERSION")
 export OF_VERSION=$(cat "$LC_HOME/OPFAB_FULL_VERSION")
 
-if [ "$1" = "-d" ] || [ "$1" = "--debug" ]; then
-  echo -e "\033[0;32mPREPARING ENVIRONMENT VARIABLES...\033[0m"
-  echo
-  echo "LC_HOME    =" $LC_HOME
-  echo "LC_VERSION =" $LC_VERSION
-  echo "OF_VERSION =" $OF_VERSION
-  echo
-fi
+echo -e "\033[0;32mPREPARING ENVIRONMENT VARIABLES...\033[0m"
+echo
+echo "LC_HOME    =" $LC_HOME
+echo "LC_VERSION =" $LC_VERSION
+echo "OF_VERSION =" $OF_VERSION
+echo
 
 #sdk use java 8.0.275-zulu
-#sdk use maven 3.5.3
-#nvm use v10.16.3
+
+sdk install maven 3.5.3
+sdk use maven 3.5.3
+
+nvm install v10.16.3
+nvm use v10.16.3
