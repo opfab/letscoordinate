@@ -1,0 +1,25 @@
+{
+  "license": "MPL-2.0",
+  "cardDetails":{
+    "title":"{{title}}"
+  },
+  "cardFeed": {
+    "title": "{{title}}",
+    "summary": "{{summary}}"
+  },
+  "process": {
+    "name": "Process monitoring"
+  },
+  "processsuccessful": {
+    "name": "Process successful",
+    "cardDetails":{
+      "title":"Service B process successful"
+    }
+  },
+  "processfailed": {
+    "name": "Process failed",
+    "cardDetails":{
+      "title":"Service B process failed"
+    }
+  }
+}

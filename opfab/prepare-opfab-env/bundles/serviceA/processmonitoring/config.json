@@ -1,0 +1,38 @@
+{
+  "license": "MPL-2.0",
+  "id": "servicea_processmonitoring",
+  "name": "process.name",
+  "version": "1",
+  "defaultLocale": "en",
+  "templates": [
+    "process"
+  ],
+  "csses": [
+    "main"
+  ],
+  "menuEntries": [],
+  "states": {
+    "processsuccessful": {
+      "name": "processsuccessful.name",
+      "detailTitle": {
+        "key": "processsuccessful.cardDetails.title"
+      },
+      "templateName": "processmonitoring",
+      "styles": [
+        "main"
+      ],
+      "acknowledgementAllowed": true
+    },
+    "processfailed": {
+      "name": "processfailed.name",
+      "detailTitle": {
+        "key": "processfailed.cardDetails.title"
+      },
+      "templateName": "processmonitoring",
+      "styles": [
+        "main"
+      ],
+      "acknowledgementAllowed": true
+    }
+  }
+}

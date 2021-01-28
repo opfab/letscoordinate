@@ -3,24 +3,20 @@
     {
       "id": "processgroup_servicea",
       "processes": [
-        "servicea_cardcreation",
-        "servicea_processsuccessful",
-        "servicea_processfailed",
-        "servicea_positivevalidation",
-        "servicea_positivevalidationwithwarnings",
-        "servicea_negativevalidation"
+        "servicea_processmonitoring",
+        "servicea_filea_validation",
+        "servicea_fileb_validation",
+        "servicea_cardcreation"
       ]
     },
     {
       "id": "processgroup_serviceb",
       "processes": [
 
-        "serviceb_cardcreation",
-        "serviceb_processsuccessful",
-        "serviceb_processfailed",
-        "serviceb_positivevalidation",
-        "serviceb_positivevalidationwithwarnings",
-        "serviceb_negativevalidation"
+        "serviceb_processmonitoring",
+        "serviceb_filea_validation",
+        "serviceb_fileb_validation",
+        "serviceb_cardcreation"
       ]
     }
   ],

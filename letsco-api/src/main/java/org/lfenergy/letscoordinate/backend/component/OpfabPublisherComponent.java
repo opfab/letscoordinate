@@ -25,12 +25,10 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationMe
 import org.lfenergy.letscoordinate.backend.enums.MessageTypeEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 import org.lfenergy.letscoordinate.backend.model.opfab.ValidationData;
-import org.lfenergy.letscoordinate.backend.util.DateUtil;
-import org.lfenergy.letscoordinate.backend.util.HttpUtil;
-import org.lfenergy.letscoordinate.backend.util.JacksonUtil;
-import org.lfenergy.letscoordinate.backend.util.StringUtil;
+import org.lfenergy.letscoordinate.backend.util.*;
 import org.lfenergy.operatorfabric.cards.model.*;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -38,8 +36,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import static org.lfenergy.letscoordinate.backend.util.StringUtil.*;
 
 @Component
 @Slf4j
@@ -96,15 +92,20 @@ public class OpfabPublisherComponent {
         String messageTypeName = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getMessageTypeName();
         String processKey = generateProcessKey(source, messageTypeName); // Used to identify notification's template for all messages
         String processKeyWithNoun = generateProcessKeyWithNoun(source, messageTypeName, noun); // Used as tag for validation messages
+        MessageTypeEnum messageTypeEnum = MessageTypeEnum.getByStateId(StringUtil.toLowercaseIdentifier(messageTypeName));
+        Assert.notNull(messageTypeEnum, "Unknown message type \"" + messageTypeName + "\"!");
 
-        card.setTags(Arrays.asList(source, StringUtil.toLowercaseIdentifier(source), messageTypeName, StringUtil.toLowercaseIdentifier(messageTypeName),
-                noun, StringUtil.toLowercaseIdentifier(noun), processKey, processKeyWithNoun)
+        card.setTags(Arrays.asList(
+                StringUtil.toLowercaseIdentifier(source),
+                StringUtil.toLowercaseIdentifier(messageTypeName),
+                Constants.PROCESS_ID_PROCESSMONITORING.equals(messageTypeEnum.getProcessId()) ? processKey : processKeyWithNoun,
+                Constants.PROCESS_ID_PROCESSMONITORING.equals(messageTypeEnum.getProcessId()) ? generateStateKey(source, messageTypeName) : generateStateKeyWithNoun(source, messageTypeName, noun))
                 .stream().map(String::toLowerCase).collect(Collectors.toSet()).stream().collect(Collectors.toList()));
-        card.setProcess(processKey);
+        card.setProcess(Constants.PROCESS_ID_PROCESSMONITORING.equals(messageTypeEnum.getProcessId()) ? processKey : processKeyWithNoun);
         card.setProcessInstanceId(processKey + "_" + id);
         card.setPublisher(opfabConfig.getPublisher());
         card.setProcessVersion("1");
-        card.setState("initial");
+        card.setState(StringUtil.toLowercaseIdentifier(messageTypeName));
     }
 
     public void setOpfabCardDates(Card card, EventMessageDto eventMessageDto) {
@@ -187,7 +188,7 @@ public class OpfabPublisherComponent {
         // TODO This param should be equal true when dealing with smart notifications
         opfabCard.setKeepChildCards(false);
 
-        MessageTypeEnum messageTypeEnum = MessageTypeEnum.getById(StringUtil.toLowercaseIdentifier(messageTypeName));
+        MessageTypeEnum messageTypeEnum = MessageTypeEnum.getByStateId(StringUtil.toLowercaseIdentifier(messageTypeName));
         if (messageTypeEnum != null) {
             switch (messageTypeEnum) {
                 case PROCESS_SUCCESSFUL:
@@ -210,7 +211,7 @@ public class OpfabPublisherComponent {
             params.put("title", title);
             opfabCard.setTitle(new I18n().key("cardFeed.title").parameters(params));
 
-            String summary = generateFeedSummary(timeframe, timeframeNumber, businessDayFrom, businessDayToOpt, eventMessageDto);
+            String summary = generateFeedSummary(messageTypeEnum, timeframe, timeframeNumber, businessDayFrom, businessDayToOpt, eventMessageDto);
             Map<String, String> summaryParams = new HashMap<>();
             summaryParams.put("summary", summary);
             opfabCard.setSummary(new I18n().key("cardFeed.summary").parameters(summaryParams));
@@ -218,7 +219,9 @@ public class OpfabPublisherComponent {
     }
 
     private String generateFeedTitle(MessageTypeEnum messageTypeEnum, String source, Optional<String> processStep, EventMessageDto eventMessageDto) {
-        String key = generateProcessKey(eventMessageDto);
+        String key = Constants.PROCESS_ID_PROCESSMONITORING.equals(messageTypeEnum.getProcessId())
+                ? generateStateKey(eventMessageDto)
+                : generateStateKeyWithNoun(eventMessageDto);
         if (opfabConfig.getFeed().containsKey(key)) {
             String title = opfabConfig.getFeed().get(key).getTitle();
             title = replacePlaceholders(title, eventMessageDto);
@@ -228,10 +231,12 @@ public class OpfabPublisherComponent {
         }
     }
 
-    private String generateFeedSummary(Optional<String> timeframe,
+    private String generateFeedSummary(MessageTypeEnum messageTypeEnum, Optional<String> timeframe,
                                        Optional<Integer> timeframeNumber, Instant businessDayFrom,
                                        Optional<Instant> businessDayToOpt, EventMessageDto eventMessageDto) {
-        String key = generateProcessKey(eventMessageDto);
+        String key = Constants.PROCESS_ID_PROCESSMONITORING.equals(messageTypeEnum.getProcessId())
+                ? generateStateKey(eventMessageDto)
+                : generateStateKeyWithNoun(eventMessageDto);
         if (opfabConfig.getFeed().containsKey(key)) {
             String summary = opfabConfig.getFeed().get(key).getSummary();
             summary = replacePlaceholders(summary, eventMessageDto);
@@ -381,7 +386,7 @@ public class OpfabPublisherComponent {
     private String generateProcessKey(String source, String messageTypeName) {
         return new StringBuilder().append(StringUtil.toLowercaseIdentifier(source))
                 .append("_")
-                .append(StringUtil.toLowercaseIdentifier(messageTypeName))
+                .append(MessageTypeEnum.getByStateId(StringUtil.toLowercaseIdentifier(messageTypeName)).getProcessId())
                 .toString();
     }
 
@@ -390,7 +395,35 @@ public class OpfabPublisherComponent {
                 .append("_")
                 .append(StringUtil.toLowercaseIdentifier(noun))
                 .append("_")
+                .append(MessageTypeEnum.getByStateId(StringUtil.toLowercaseIdentifier(messageTypeName)).getProcessId())
+                .toString();
+    }
+
+    private String generateStateKey(EventMessageDto eventMessageDto) {
+        String source = eventMessageDto.getHeader().getSource();
+        String messageTypeName = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getMessageTypeName();
+        return generateStateKey(source, messageTypeName);
+    }
+
+    private String generateStateKeyWithNoun(EventMessageDto eventMessageDto) {
+        String source = eventMessageDto.getHeader().getSource();
+        String noun = eventMessageDto.getHeader().getNoun();
+        String messageTypeName = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getMessageTypeName();
+        return generateStateKeyWithNoun(source, messageTypeName, noun);
+    }
+
+    private String generateStateKey(String source, String messageTypeName) {
+        return new StringBuilder().append(generateProcessKey(source, messageTypeName))
+                .append("_")
                 .append(StringUtil.toLowercaseIdentifier(messageTypeName))
                 .toString();
     }
+
+    private String generateStateKeyWithNoun(String source, String messageTypeName, String noun) {
+        return new StringBuilder().append(generateProcessKeyWithNoun(source, messageTypeName, noun))
+                .append("_")
+                .append(StringUtil.toLowercaseIdentifier(messageTypeName))
+                .toString();
+    }
+
 }

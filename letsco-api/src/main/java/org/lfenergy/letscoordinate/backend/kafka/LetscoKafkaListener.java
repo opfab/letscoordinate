@@ -37,8 +37,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static org.lfenergy.letscoordinate.backend.util.StringUtil.*;
-
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -84,7 +82,7 @@ public class LetscoKafkaListener {
     }
 
     private boolean isGenericMessageTypeName(String messageTypeNameId) {
-        return Arrays.stream(MessageTypeEnum.values()).map(MessageTypeEnum::getId).collect(Collectors.toList())
+        return Arrays.stream(MessageTypeEnum.values()).map(MessageTypeEnum::getStateId).collect(Collectors.toList())
                 .contains(messageTypeNameId);
     }
 }
