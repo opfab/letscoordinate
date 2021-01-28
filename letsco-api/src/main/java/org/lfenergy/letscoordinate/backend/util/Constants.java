@@ -30,4 +30,7 @@ public final class Constants {
     public static final String STRING_REGION = "Region";
     public static final String STRING_REGIONS = "Regions";
 
+    public static final String PROCESS_ID_PROCESSMONITORING = "processmonitoring";
+    public static final String PROCESS_ID_VALIDATION = "validation";
+
 }

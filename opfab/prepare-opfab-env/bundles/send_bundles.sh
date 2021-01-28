@@ -17,16 +17,12 @@ PASSWORD='test'
 TOKEN=$( curl -d "client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&username=${USERNAME}&password=${PASSWORD}&grant_type=password" -k ${KEYCLOAK_TOKEN_ENDPOINT_URL} | sed 's/.*access_token":"\(.*\)","expires_in.*/\1/')
 
 if [ $1 = 'serviceA' ] || [ $1 = 'serviceB' ]; then
-  if [ $2 = 'pv' ]; then
-    cd $1/messageValidated_positive
-  elif [ $2 = 'pvww' ]; then
-    cd $1/messageValidated_positiveWithWarnings
-  elif [ $2 = 'nv' ]; then
-    cd $1/messageValidated_negative
-  elif [ $2 = 'ps' ]; then
-    cd $1/processSuccessful
-  elif [ $2 = 'pf' ]; then
-    cd $1/processFailed
+  if [ $2 = 'pm' ]; then
+    cd $1/processmonitoring
+  elif [ $2 = 'vfa' ]; then
+    cd $1/filea_validation
+  elif [ $2 = 'vfb' ]; then
+    cd $1/fileb_validation
   elif [ $2 = 'cc' ]; then
     cd $1/cardCreation
   else

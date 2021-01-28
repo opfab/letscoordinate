@@ -12,18 +12,14 @@
 cd ${LC_HOME}/opfab/prepare-opfab-env/bundles
 
 ./send_bundles.sh serviceA cc
-./send_bundles.sh serviceA pv
-./send_bundles.sh serviceA pvww
-./send_bundles.sh serviceA nv
-./send_bundles.sh serviceA ps
-./send_bundles.sh serviceA pf
+./send_bundles.sh serviceA pm
+./send_bundles.sh serviceA vfa
+./send_bundles.sh serviceA vfb
 
 ./send_bundles.sh serviceB cc
-./send_bundles.sh serviceB pv
-./send_bundles.sh serviceB pvww
-./send_bundles.sh serviceB nv
-./send_bundles.sh serviceB ps
-./send_bundles.sh serviceB pf
+./send_bundles.sh serviceB pm
+./send_bundles.sh serviceB vfa
+./send_bundles.sh serviceB vfb
 
 cd ..
 java -jar karate.jar prepare-opfab-env.feature
