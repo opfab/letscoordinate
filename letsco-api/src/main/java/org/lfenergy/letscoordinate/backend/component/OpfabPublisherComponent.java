@@ -14,7 +14,6 @@ package org.lfenergy.letscoordinate.backend.component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
 import org.lfenergy.letscoordinate.backend.config.OpfabConfig;
@@ -23,7 +22,6 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataI
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.PayloadDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationMessageDto;
-import org.lfenergy.letscoordinate.backend.enums.MessageTypeEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 import org.lfenergy.letscoordinate.backend.model.opfab.ValidationData;
 import org.lfenergy.letscoordinate.backend.util.*;
@@ -104,14 +102,13 @@ public class OpfabPublisherComponent {
 
     String getValidationName(EventMessageDto eventMessageDto) {
         ValidationSeverityEnum result = eventMessageDto.getPayload().getValidation().get().getResult();
-
         switch (result) {
             case OK:
-                return StringUtils.capitalize(MessageTypeEnum.POSITIVE_VALIDATION.getValue());
+                return POSITIVE_ACK;
             case WARNING:
-                return StringUtils.capitalize(MessageTypeEnum.POSITIVE_VALIDATION_WITH_WARNINGS.getValue());
+                return POSITIVE_ACK_WITH_WARNINGS;
             case ERROR:
-                return StringUtils.capitalize(MessageTypeEnum.NEGATIVE_VALIDATION.getValue());
+                return NEGATIVE_ACK;
             default:
                 return "";
         }
@@ -120,12 +117,15 @@ public class OpfabPublisherComponent {
     void setCardHeadersAndTags(Card card, EventMessageDto eventMessageDto, Long id) {
         String noun = eventMessageDto.getHeader().getNoun();
         String source = eventMessageDto.getHeader().getSource();
-        String messageTypeName = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getMessageTypeName();
-        List<String> tags = Stream.of(source, messageTypeName, processKey)
-                .map(String::toLowerCase).collect(Collectors.toList());
+        BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        String messageTypeName = bdi.getMessageTypeName();
+        List<String> tags = Stream.of(source, messageTypeName, processKey, source + "_" + noun)
+                .map(StringUtil::toLowercaseIdentifier).distinct().collect(Collectors.toList());
         if (MESSAGE_VALIDATED.equals(noun)) {
+            Optional<String> filenameOpt = bdi.getFileName();
             ValidationSeverityEnum result = eventMessageDto.getPayload().getValidation().get().getResult();
             tags.add((processKey + "_" + result).toLowerCase());
+            filenameOpt.ifPresent(f -> tags.add((processKey + "_" + f + result).toLowerCase()));
             fillQualityCheckSpecificTag(processKey, result, tags);
             card.setState(result.toString().toLowerCase());
         } else {
@@ -134,7 +134,7 @@ public class OpfabPublisherComponent {
                     tags.add(t.get(processKey).getTag());
                 }
             });
-            setOpfabCardState(card);
+            setOpfabCardState(card, messageTypeName);
         }
         card.setTags(tags);
         setOpfabCardProcess(card);
@@ -151,11 +151,11 @@ public class OpfabPublisherComponent {
         }
     }
 
-    private void setOpfabCardState(Card card) {
+    private void setOpfabCardState(Card card, String messageTypeName) {
         if (opfabConfig.getChangeState().containsKey(processKey)) {
             card.setState(opfabConfig.getChangeState().get(processKey));
         } else {
-            card.setState("initial");
+            card.setState(StringUtil.toLowercaseIdentifier(messageTypeName));
         }
     }
 
@@ -334,19 +334,19 @@ public class OpfabPublisherComponent {
     private void addPayloadData(Map<String, Object> data, PayloadDto payloadDto) {
         if (opfabConfig.getData().containsKey(processKey)) {
             opfabConfig.getData().get(processKey).getChangeTimeserieDataDetailValueType().ifPresent(c ->
-                payloadDto.getTimeserie().forEach(t ->
-                    t.getData().forEach(d ->
-                        d.getDetail().forEach(detail -> {
-                            if (c.containsKey(detail.getLabel())) {
-                                OpfabConfig.ChangeTimeserieDataDetailValueTypeEnum changeTimeserieDataDetailValueTypeEnum =
-                                        c.get(detail.getLabel());
-                                if (changeTimeserieDataDetailValueTypeEnum == INSTANT) {
-                                    detail.setOpfabDataValue(Instant.parse(detail.getValue()));
-                                }
-                            }
-                        })
+                    payloadDto.getTimeserie().forEach(t ->
+                            t.getData().forEach(d ->
+                                    d.getDetail().forEach(detail -> {
+                                        if (c.containsKey(detail.getLabel())) {
+                                            OpfabConfig.ChangeTimeserieDataDetailValueTypeEnum changeTimeserieDataDetailValueTypeEnum =
+                                                    c.get(detail.getLabel());
+                                            if (changeTimeserieDataDetailValueTypeEnum == INSTANT) {
+                                                detail.setOpfabDataValue(Instant.parse(detail.getValue()));
+                                            }
+                                        }
+                                    })
+                            )
                     )
-                )
             );
         }
         data.put("payload", payloadDto);

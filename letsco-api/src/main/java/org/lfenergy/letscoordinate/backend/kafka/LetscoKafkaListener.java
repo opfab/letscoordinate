@@ -63,9 +63,9 @@ public class LetscoKafkaListener {
 
     @KafkaListener(topicPattern = "#{@kafkaTopicPattern}")
     public void handleLetscoData(@Payload String data,
-                                           @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition,
-                                           @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
-                                           @Header(KafkaHeaders.RECEIVED_TIMESTAMP) long ts) throws Exception {
+                                 @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition,
+                                 @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
+                                 @Header(KafkaHeaders.RECEIVED_TIMESTAMP) long ts) throws Exception {
         log.info("Data receiced from topic \"{}\" (kafka_receivedTimestamp = {}, kafka_receivedPartitionId = {})", topic,
                 DateTimeFormatter.ISO_INSTANT.format(Instant.ofEpochMilli(ts)), partition);
         log.debug("Received data:\n {}", data);

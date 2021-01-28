@@ -53,7 +53,7 @@ public class EventMessageMapper {
                     eventMessage.setTimeframe(businessDataIdentifierDto.getTimeframe().orElse(null));
                     eventMessage.setTimeframeNumber(businessDataIdentifierDto.getTimeframeNumber().orElse(null));
                     eventMessage.setSendingUser(businessDataIdentifierDto.getSendingUser().orElse(null));
-                    eventMessage.setFileName(businessDataIdentifierDto.getFileName());
+                    eventMessage.setFileName(businessDataIdentifierDto.getFileName().orElse(""));
                     eventMessage.setTso(businessDataIdentifierDto.getTso().orElse(null));
                     eventMessage.setBiddingZone(businessDataIdentifierDto.getBiddingZone().orElse(null));
                 }

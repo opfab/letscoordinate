@@ -100,7 +100,7 @@ function initIfAsked() {
 ### PROCESSING STARTS HEAR! ###
 
 # Check if environment variables loaded
-if [ "${LC_HOME}" = "" ] || ["${$LC_VERSION}" = ""] || ["${$OF_VERSION}" = ""]; then
+if [ "${LC_HOME}" = "" ] || [ "${LC_VERSION}" = "" ] || [ "${OF_VERSION}" = "" ]; then
     echo -e "\033[0;31m\nOups! It seems that you forgot to load environment variables! Please run the following command and try again:\033[0m"
     echo -e "\033[0;31m\n\tsource ./load_environment.sh\n \033[0m"
     exit 1;

@@ -40,6 +40,7 @@ public class BusinessDataIdentifierDto {
     private Integer timeframeNumber;
     @Getter(AccessLevel.NONE)
     private String sendingUser;
+    @Getter(AccessLevel.NONE)
     private String fileName;
     @Getter(AccessLevel.NONE)
     private String tso;
@@ -84,6 +85,15 @@ public class BusinessDataIdentifierDto {
     @JsonProperty("sendingUser")
     public String getSendingUserSimple() {
         return sendingUser;
+    }
+
+    public Optional<String> getFileName() {
+        return Optional.ofNullable(fileName);
+    }
+
+    @JsonProperty("fileName")
+    public String getFileNameSimple() {
+        return fileName;
     }
 
     public Optional<String> getTso() {
