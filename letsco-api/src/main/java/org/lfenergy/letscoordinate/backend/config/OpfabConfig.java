@@ -28,6 +28,8 @@ public class OpfabConfig {
 
     private String publisher;
     private OpfabUrls url;
+    @Getter(AccessLevel.NONE)
+    private Map<String, OpfabTagsConf> tags;
     private Map<String, OpfabFeed> feed = new HashMap<>();
     private Map<String, OpfabEntityRecipients> entityRecipients = new HashMap<>();
 
@@ -48,8 +50,38 @@ public class OpfabConfig {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class OpfabTagsConf {
+        private String tag;
+        @Getter(AccessLevel.NONE)
+        private String qcTagOk;
+        @Getter(AccessLevel.NONE)
+        private String qcTagWarning;
+        @Getter(AccessLevel.NONE)
+        private String qcTagError;
+
+        public Optional<String> getQcTagOk() {
+            return Optional.ofNullable(qcTagOk);
+        }
+
+        public Optional<String> getQcTagWarning() {
+            return Optional.ofNullable(qcTagWarning);
+        }
+
+        public Optional<String> getQcTagError() {
+            return Optional.ofNullable(qcTagError);
+        }
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class OpfabFeed {
         private String title;
         private String summary;
+    }
+
+    public Optional<Map<String, OpfabTagsConf>> getTags() {
+        return Optional.ofNullable(tags);
     }
 }

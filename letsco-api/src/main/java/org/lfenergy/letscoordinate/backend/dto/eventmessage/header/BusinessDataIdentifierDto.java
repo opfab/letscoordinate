@@ -36,6 +36,8 @@ public class BusinessDataIdentifierDto {
     @Getter(AccessLevel.NONE)
     private String timeframe;
     @Getter(AccessLevel.NONE)
+    private String businessApplication;
+    @Getter(AccessLevel.NONE)
     private Integer timeframeNumber;
     @Getter(AccessLevel.NONE)
     private String sendingUser;
@@ -110,5 +112,14 @@ public class BusinessDataIdentifierDto {
     @JsonProperty("businessDayTo")
     public Instant getBusinessDayToSimple() {
         return businessDayTo;
+    }
+
+    public Optional<String> getBusinessApplication() {
+        return Optional.ofNullable(businessApplication);
+    }
+
+    @JsonProperty("businessApplication")
+    public String getBusinessApplicationSimple() {
+        return businessApplication;
     }
 }

@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -46,10 +46,12 @@ public class OpfabPublisherComponent {
 
     private OpfabConfig opfabConfig;
     private Map<String, CoordinationConfig.Tso> tsos;
+    private Map<String, CoordinationConfig.Rsc> rscs;
 
     public OpfabPublisherComponent(OpfabConfig opfabConfig, CoordinationConfig coordinationConfig) {
         this.opfabConfig = opfabConfig;
         this.tsos = coordinationConfig.getTsos();
+        this.rscs = coordinationConfig.getRscs();
     }
 
     public void publishOpfabCard(EventMessageDto eventMessageDto, Long id) {
@@ -87,22 +89,60 @@ public class OpfabPublisherComponent {
     }
 
     void setCardHeadersAndTags(Card card, EventMessageDto eventMessageDto, Long id) {
-
+        String noun = eventMessageDto.getHeader().getNoun();
         String source = eventMessageDto.getHeader().getSource();
         String messageTypeName = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getMessageTypeName();
         String process = source + "_" + messageTypeName;
-
-        card.setTags(Arrays.asList(source, messageTypeName, source + "_" + messageTypeName).stream()
-                .map(String::toLowerCase).collect(Collectors.toList()));
+        List<String> tags = Arrays.asList(source, messageTypeName, source + "_" + messageTypeName).stream()
+                .map(String::toLowerCase).collect(Collectors.toList());
+        if (MESSAGE_VALIDATED.equals(noun)) {
+            ValidationSeverityEnum result = eventMessageDto.getPayload().getValidation().getResult();
+            tags.add((source + "_" + messageTypeName + "_" + result).toLowerCase());
+            fillQualityCheckSpecificTag(process, result, tags);
+            card.setState(result.toString().toLowerCase());
+        } else {
+            opfabConfig.getTags().ifPresent(t -> {
+                if (t.containsKey(process)) {
+                    tags.add(t.get(process).getTag());
+                }
+            });
+            card.setState("initial");
+        }
+        card.setTags(tags);
         card.setProcess(process);
         card.setProcessInstanceId(process + "_" + id);
         card.setPublisher(opfabConfig.getPublisher());
         card.setProcessVersion("1");
-        card.setState("initial");
+    }
+
+    private void fillQualityCheckSpecificTag(String process, ValidationSeverityEnum result, List<String> tags) {
+        opfabConfig.getTags().ifPresent(t -> {
+            if (t.containsKey(process)) {
+                String tagSuffix = "";
+                if (result == ValidationSeverityEnum.OK) {
+                    if (t.get(process).getQcTagOk().isPresent()) {
+                        tagSuffix = t.get(process).getQcTagOk().get();
+                    }
+                }
+                if (result == ValidationSeverityEnum.WARNING) {
+                    if (t.get(process).getQcTagWarning().isPresent()) {
+                        tagSuffix = t.get(process).getQcTagWarning().get();
+                    }
+                }
+                if (result == ValidationSeverityEnum.ERROR) {
+                    if (t.get(process).getQcTagError().isPresent()) {
+                        tagSuffix = t.get(process).getQcTagError().get();
+                    }
+                }
+                if ("".equals(tagSuffix)) {
+                    tagSuffix = result.toString().toLowerCase();
+                }
+                tags.add(t.get(process).getTag() + "_" + tagSuffix);
+            }
+        });
     }
 
     public void setOpfabCardDates(Card card, EventMessageDto eventMessageDto) {
-
         
         Instant timestamp = eventMessageDto.getHeader().getTimestamp();
         BusinessDataIdentifierDto businessDataIdentifierDto = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
@@ -116,7 +156,8 @@ public class OpfabPublisherComponent {
             // LC-208 MR-1: If the card contains validation errors and/or warnings, we display a bubble in the timeline
             // for each error and/or warning found. No bubble to display for the card’s arrival time in this case.
             timeSpans = validation.getValidationMessages().get().stream()
-                    .map(validationMessage -> new TimeSpan().start(validationMessage.getTimestamp()))
+                    .filter(validationMessage -> validationMessage.getBusinessTimestamp() != null)
+                    .map(validationMessage -> new TimeSpan().start(validationMessage.getBusinessTimestamp()))
                     .collect(Collectors.toList());
         } else {
             // LC-207 MR-1 & LC-208 MR-2: If the card does not contain any validation error or warning, we display only
@@ -280,41 +321,62 @@ public class OpfabPublisherComponent {
         }
     }
 
-    Map.Entry<String, String> generatePlaceholderValue(Map.Entry<String, String> entry, Map<String, Object> bdiMap, EventMessageDto eventMessageDto) {
+    Map.Entry<String, String> generatePlaceholderValue(Map.Entry<String, String> entry, Map<String, Object> bdiMap,
+                                                       EventMessageDto eventMessageDto) {
 
         String placeholder = entry.getKey();
         String placeholderValue = null;
 
         // Examples:
-        //      ${businessDayFrom::dateFormat(HH:mm)} becomes businessDayFrom::dateFormat(HH:mm)
-        //      ${businessDayFrom} becomes businessDayFrom
+        //      {{businessDayFrom::dateFormat(HH:mm)}} becomes businessDayFrom
+        //      {{businessDayFrom}} becomes businessDayFrom
         String placeholderNoDelimiters = placeholder.replaceAll("(\\{\\{|::.*|\\}\\})", "");
 
         // If a format method is specified
         if (placeholder.contains("::")) {
-            String formatMethod = placeholder.replaceAll(".*::|\\(.*\\)\\}\\}", "");
+            String formatMethod = placeholder
+                    .replaceFirst("(.*?)::", "")
+                    .replaceFirst("\\(.*\\)\\}\\}", "");
             if ("dateFormat".equals(formatMethod)) {
-                String dateFormat =
+                String dateFormatAndZoneId =
                         placeholder.replaceAll(".*" + formatMethod + "\\(|\\)\\}\\}", "");
+                String dateFormat = null, zoneId = null;
+                if (dateFormatAndZoneId.contains("::")) {
+                    String[] dateFormatAndZoneIdFields = dateFormatAndZoneId.split("::");
+                    dateFormat = dateFormatAndZoneIdFields[0];
+                    zoneId = dateFormatAndZoneIdFields[1];
+                } else {
+                    dateFormat = dateFormatAndZoneId;
+                    zoneId = "Europe/Paris";
+                }
                 placeholderValue =
                         DateTimeFormatter.ofPattern(dateFormat).format(
                                 Instant.parse(bdiMap.get(placeholderNoDelimiters).toString())
-                                        .atZone(ZoneOffset.UTC));
+                                        .atZone(ZoneId.of(zoneId)));
                 return new AbstractMap.SimpleEntry(placeholder, placeholderValue);
             } if ("eicToName".equals(formatMethod)) {
-                placeholderValue = tsos.get(bdiMap.get(placeholderNoDelimiters)).getName();
+                String eicCode = bdiMap.get(placeholderNoDelimiters).toString();
+                if (tsos.get(eicCode) != null) {
+                    placeholderValue = tsos.get(eicCode).getName();
+                } else if (rscs.get(eicCode) != null) {
+                    placeholderValue = rscs.get(eicCode).getName();
+                } else {
+                    placeholderValue = eicCode;
+                }
                 return new AbstractMap.SimpleEntry(placeholder, placeholderValue);
-            } else if ("notificationTitle".equals(formatMethod)) {
-                placeholderValue = getValidationName(eventMessageDto);
-                return new AbstractMap.SimpleEntry(placeholder, placeholderValue);
-            }else{
+            } else {
                 log.error("The placeholder method " + formatMethod + "is not valid!");
                 placeholderValue = bdiMap.get(placeholderNoDelimiters) != null ?
                         bdiMap.get(placeholderNoDelimiters).toString() : "";
             }
         } else {
-            placeholderValue = bdiMap.get(placeholderNoDelimiters) != null ?
-                    bdiMap.get(placeholderNoDelimiters).toString() : "";
+            if ("validationStatus".equals(placeholderNoDelimiters)) {
+                placeholderValue = getValidationName(eventMessageDto);
+                return new AbstractMap.SimpleEntry(placeholder, placeholderValue);
+            } else {
+                placeholderValue = bdiMap.get(placeholderNoDelimiters) != null ?
+                        bdiMap.get(placeholderNoDelimiters).toString() : "";
+            }
         }
         return new AbstractMap.SimpleEntry(placeholder, placeholderValue);
     }
@@ -337,6 +399,8 @@ public class OpfabPublisherComponent {
         }
 
         ValidationData data = new ValidationData(eventMessageDto);
+        data.getPayload().getValidation().getValidationMessages().orElse(new ArrayList<>())
+                .forEach(v -> v.setMessage(fillValidationParams(v)));
         eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getSendingUser()
                 .ifPresent(u -> {
                     if (tsos.containsKey(u))
@@ -358,6 +422,26 @@ public class OpfabPublisherComponent {
                 data.setSendingUser(tsos.get(sendingUserEicCode).getName());
         }
         card.setData(data);
+    }
+
+    private static final String PARAM_START_IDENTIFIER = "<";
+    private static final String PARAM_END_IDENTIFIER = ">";
+
+    /**
+     * Fills placeholders in validation message from validation paramMap.
+     *
+     * @param validationResult validation message object
+     * @return properly filled message without validation placeholders to be displayed on GUI
+     */
+    private String fillValidationParams(ValidationMessageDto validationResult) {
+        Map<String, Object> paramMap = validationResult.getParams();
+        String message = validationResult.getMessage();
+        for (Map.Entry<String, Object> param : paramMap.entrySet()) {
+            String paramKey = param.getKey();
+            Object paramValue = paramMap.get(paramKey);
+            message = message.replace(PARAM_START_IDENTIFIER + paramKey + PARAM_END_IDENTIFIER, paramValue != null ? paramValue.toString() : "null");
+        }
+        return message;
     }
 
     Map<String, Object> generateCardData(EventMessageDto eventMessageDto, Long cardId) {

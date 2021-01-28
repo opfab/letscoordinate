@@ -1,0 +1,16 @@
+{
+  "header": {
+    "noun": "DfgMessageValidated",
+    "source": "source",
+    "properties": {
+      "businessDataIdentifier": {
+        "messageTypeName": "messageTypeName"
+      }
+    }
+  },
+  "payload": {
+    "validation": {
+      "result": "OK"
+    }
+  }
+}

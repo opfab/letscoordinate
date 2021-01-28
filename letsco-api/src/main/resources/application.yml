@@ -50,9 +50,20 @@ logging:
 #    file: '%d{yyyy-MM-dd HH:mm:ss} - %level - %logger{36} - %msg%n'
 
 letsco:
+  kafka:
+    topic-pattern: 'letsco_eventmessage_.*'
   input-file:
     dir: D:\_RTE_\tmp\input
     validation:
+#      change-source:
+#        OldSource:
+#          fromWhichLevel: BUSINESS_DATA_IDENTIFIER
+#          changingField: keyFieldForValue
+#      change-message-type-name:
+#        OldMessageTypeName: NewMessageTypeName
+#      ignore-processes:
+#        - processToIgnore
+#      business-day-from-optional: true
       accept-properties-ignore-case: true
       fail-on-unknown-properties: false
 #      unknown-eic-codes-process: WARNING
@@ -64,6 +75,12 @@ opfab:
   publisher: letsco_opensource
   url:
     cardsPub: http://localhost:2102/cards
+#  tags:
+#    processName:
+#      tag: "newTag"
+#      qcTagOk: "positive"
+#      qcTagWarning: "positivewithwarnings"
+#      qcTagError: "negative"
   feed:
     sourceA_messageTypeNameA:
       title: " AA - Validation - {{result::notificationTitle()}}"

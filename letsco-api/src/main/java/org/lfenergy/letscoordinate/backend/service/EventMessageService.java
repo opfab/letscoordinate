@@ -46,7 +46,10 @@ public class EventMessageService {
             UnknownEicCodesProcessEnum unknownEicCodesProcess =
                     letscoProperties.getInputFile().getValidation().getUnknownEicCodesProcess();
             if(unknownEicCodesProcess == UnknownEicCodesProcessEnum.EXCEPTION) {
-                if (!letscoProperties.getInputFile().getValidation().getAllowedEicCodes().containsAll(unknownEicCodes)) {
+                List<String> allowedEicCodesOpt = letscoProperties.getInputFile().getValidation().getAllowedEicCodes()
+                        .orElseThrow(() -> new InvalidInputFileException("Unknown eic_codes found! >>> " +
+                                unknownEicCodes.toString()));
+                if (!allowedEicCodesOpt.containsAll(unknownEicCodes)) {
                     throw new InvalidInputFileException("Unknown eic_codes found! >>> " + unknownEicCodes.toString());
                 }
             } else if (unknownEicCodesProcess == UnknownEicCodesProcessEnum.WARNING) {

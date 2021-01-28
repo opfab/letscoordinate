@@ -26,11 +26,13 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationMe
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 import org.lfenergy.letscoordinate.backend.model.opfab.ValidationData;
 import org.lfenergy.letscoordinate.backend.util.DateUtil;
+import org.lfenergy.letscoordinate.backend.util.JsonUtils;
 import org.lfenergy.operatorfabric.cards.model.Card;
 import org.lfenergy.operatorfabric.cards.model.RecipientEnum;
 import org.lfenergy.operatorfabric.cards.model.SeverityEnum;
 import org.lfenergy.operatorfabric.cards.model.TimeSpan;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -64,7 +66,7 @@ public class OpfabPublisherComponentTest {
     @BeforeEach
     public void before() {
 
-        opfabConfig = new OpfabConfig("publisher", new OpfabConfig.OpfabUrls(),
+        opfabConfig = new OpfabConfig("publisher", new OpfabConfig.OpfabUrls(), new HashMap<>(),
                 new HashMap<>(), new HashMap<>());
 
         CoordinationConfig coordinationConfig = new CoordinationConfig();
@@ -107,7 +109,6 @@ public class OpfabPublisherComponentTest {
 
     @Test
     public void setCardHeadersAndTags_OK() {
-
         Card card = new Card();
         Long id = 1L;
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
@@ -122,6 +123,29 @@ public class OpfabPublisherComponentTest {
                 () -> assertEquals("1", card.getProcessVersion()),
                 () -> assertEquals("initial", card.getState())
         );
+    }
+
+    @Test
+    public void setCardHeadersAndTags_MessageValidated_OK() throws IOException {
+        EventMessageDto eventMessageDto =
+                JsonUtils.jsonToObject("jsons/simpleMessageValidated_ok.json", EventMessageDto.class);
+        Card card = new Card();
+        Long id = 1L;
+        opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
+        List<String> expectedTags = Arrays.asList(source, messageTypeName, source + "_" + messageTypeName).stream()
+                .map(String::toLowerCase).collect(toList());
+        expectedTags.add(source.toLowerCase() + "_" + messageTypeName.toLowerCase() + "_ok");
+        assertEquals(expectedTags, card.getTags());
+
+        eventMessageDto.getPayload().getValidation().setResult(WARNING);
+        opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
+        expectedTags.set(3, source.toLowerCase() + "_" + messageTypeName.toLowerCase() + "_warning");
+        assertEquals(expectedTags, card.getTags());
+
+        eventMessageDto.getPayload().getValidation().setResult(ERROR);
+        opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
+        expectedTags.set(3, source.toLowerCase() + "_" + messageTypeName.toLowerCase() + "_error");
+        assertEquals(expectedTags, card.getTags());
     }
 
     @Test
@@ -485,5 +509,50 @@ public class OpfabPublisherComponentTest {
                 () -> assertEquals(Arrays.asList("TSO2", "TSO3"), dataObtained.get("recipient")),
                 () -> assertEquals(payload, dataObtained.get("payload"))
         );
+    }
+
+    @Test
+    public void generatePlaceholderValue_dateFormat_withZoneId() {
+        String placeholder = "{{businessDayFrom::dateFormat(dd/MM/yyyy HH:mm::Europe/Paris)}}";
+        Map.Entry<String, String> entry = new AbstractMap.SimpleEntry(placeholder, null);
+        Map<String, Object> bdiMap = Map.of("businessDayFrom", "2019-11-10T23:00:00Z");
+        Map.Entry<String, String> obtainedResult =
+                opfabPublisherComponent.generatePlaceholderValue(entry, bdiMap, null);
+        Map.Entry<String, String> expectedResult = new AbstractMap.SimpleEntry<>(placeholder, "11/11/2019 00:00");
+        assertEquals(expectedResult, obtainedResult);
+    }
+
+    @Test
+    public void generatePlaceholderValue_dateFormat_noZoneId() {
+        String placeholder = "{{businessDayFrom::dateFormat(dd/MM/yyyy HH:mm)}}";
+        Map.Entry<String, String> entry = new AbstractMap.SimpleEntry(placeholder, null);
+        Map<String, Object> bdiMap = Map.of("businessDayFrom", "2019-11-10T23:00:00Z");
+        Map.Entry<String, String> obtainedResult =
+                opfabPublisherComponent.generatePlaceholderValue(entry, bdiMap, null);
+        Map.Entry<String, String> expectedResult = new AbstractMap.SimpleEntry<>(placeholder, "11/11/2019 00:00");
+        assertEquals(expectedResult, obtainedResult);
+    }
+
+    @Test
+    public void generatePlaceholderValue_validationStatus() {
+        String placeholder = "{{validationStatus}}";
+        EventMessageDto eventMessageDto = EventMessageDto.builder().payload(PayloadDto.builder()
+                .validation(ValidationDto.builder().result(ERROR).build()).build()).build();
+        Map.Entry<String, String> entry = new AbstractMap.SimpleEntry(placeholder, null);
+        Map.Entry<String, String> obtainedResult =
+                opfabPublisherComponent.generatePlaceholderValue(entry, null, eventMessageDto);
+        Map.Entry<String, String> expectedResult = new AbstractMap.SimpleEntry<>(placeholder, "Negative");
+        assertEquals(expectedResult, obtainedResult);
+    }
+
+    @Test
+    public void generatePlaceholderValue_other() {
+        String placeholder = "{{anyPlaceholder}}";
+        Map<String, Object> bdiMap = Map.of("anyPlaceholder", "anyPlaceholderValue");
+        Map.Entry<String, String> entry = new AbstractMap.SimpleEntry(placeholder, null);
+        Map.Entry<String, String> obtainedResult =
+                opfabPublisherComponent.generatePlaceholderValue(entry, bdiMap, null);
+        Map.Entry<String, String> expectedResult = new AbstractMap.SimpleEntry<>(placeholder, "anyPlaceholderValue");
+        assertEquals(expectedResult, obtainedResult);
     }
 }

@@ -29,6 +29,9 @@ public class KafkaConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
+    @Value("${letsco.kafka.topic-pattern}")
+    private String kafkaTopicPattern;
+
     @Bean
     public Map<String, Object> consumerConfigs() {
         Map<String, Object> props = new HashMap<>();
@@ -53,4 +56,8 @@ public class KafkaConfig {
         return factory;
     }
 
+    @Bean
+    public String kafkaTopicPattern() {
+        return kafkaTopicPattern;
+    }
 }

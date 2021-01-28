@@ -30,6 +30,7 @@ public class ValidationMessageDto {
     private ValidationSeverityEnum severity;
     private String title;
     private String message;
-    private Instant timestamp;
+    private Instant businessTimestamp;
+    private Map<String, Object> params;
     private Map<String, Object> sourceDataRef;
 }
