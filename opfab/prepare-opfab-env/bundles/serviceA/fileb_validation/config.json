@@ -21,7 +21,7 @@
       "styles": [
         "main"
       ],
-      "acknowledgementAllowed": true
+      "acknowledgmentAllowed": "Always"
     },
     "positivevalidationwithwarnings": {
       "name": "positivevalidationwithwarnings.name",
@@ -32,7 +32,7 @@
       "styles": [
         "main"
       ],
-      "acknowledgementAllowed": true
+      "acknowledgmentAllowed": "Always"
     },
     "negativevalidation": {
       "name": "negativevalidation.name",
@@ -43,7 +43,7 @@
       "styles": [
         "main"
       ],
-      "acknowledgementAllowed": true
+      "acknowledgmentAllowed": "Always"
     }
   }
 }

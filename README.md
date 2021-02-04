@@ -106,7 +106,7 @@ To see more about the server.sh commands and options, please try:
 - In the data body value, put the content of one of the files from the directory "*message_models/json/card_feed/*" (e.g: *ProcessSuccessful.json*, *MessageValidated_NEGATIVE_ACK.json*, ...)
 - Click on *Execute*
 
-If you open a browser and connect to application ([http://localhost:2002/ui/](http://localhost:2002/ui/)) with the user [username:**user.test**/password:**test**], you should see the new card in the Feed (if it is not the case, please change the timeline view or/and period to include the card's dates: timestamp or/and business period).
+If you open a browser and connect to application ([http://localhost/ui/](http://localhost/ui/)) with the user [username:**user.test**/password:**test**], you should see the new card in the Feed (if it is not the case, please change the timeline view or/and period to include the card's dates: timestamp or/and business period).
 
 Feel free to test the other json samples from the directory "*message_models/json/card_feed/*" 
 
@@ -125,7 +125,7 @@ Feel free to test the other json samples from the directory "*message_models/jso
 - Past the previous copied token in the *Authorization* field
 - Click the *Browse...* button and choose the "*message_models/json/rsc_kpi_report/kpi_use_cases.json*" file.
 - Click on *Execute*
-- Connect to OpFab ([http://localhost:2002/ui/](http://localhost:2002/ui/)) with the user [username:**user.test**/password:**test**].
+- Connect to OpFab ([http://localhost/ui/](http://localhost/ui/)) with the user [username:**user.test**/password:**test**].
 - Select the *"RSC KPI Report"* menu.
 - Select the *RSC Service*, *Period*, *RSC* or *Region* and *Data type* and then click the *submit* button, you should see the generated RSC KPI Report.
 

@@ -20,7 +20,7 @@
       },
       "templateName": "freemessage",
       "styles": [],
-      "acknowledgementAllowed": true,
+      "acknowledgmentAllowed": "Always",
       "editAllowed": false
     }
   },
