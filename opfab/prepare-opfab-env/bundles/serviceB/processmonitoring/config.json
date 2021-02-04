@@ -21,7 +21,7 @@
       "styles": [
         "main"
       ],
-      "acknowledgementAllowed": true
+      "acknowledgmentAllowed": "Always"
     },
     "processfailed": {
       "name": "processfailed.name",
@@ -32,7 +32,7 @@
       "styles": [
         "main"
       ],
-      "acknowledgementAllowed": true
+      "acknowledgmentAllowed": "Always"
     }
   }
 }
