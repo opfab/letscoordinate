@@ -30,7 +30,10 @@ echo "LC_VERSION =" $LC_VERSION
 echo "OF_VERSION =" $OF_VERSION
 echo
 
-#sdk use java 8.0.275-zulu
+echo -e "\033[0;32mINSTALLING REQUIRED TOOLS...\033[0m"
+
+sdk install java 11.0.10-zulu
+sdk use java 11.0.10-zulu
 
 sdk install maven 3.5.3
 sdk use maven 3.5.3
