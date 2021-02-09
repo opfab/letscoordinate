@@ -30,7 +30,7 @@
 	</licenses>
 
 	<properties>
-		<java.version>1.8</java.version>
+		<java.version>11</java.version>
 		<mariadb.version>2.4.4</mariadb.version>
 		<keycloak.version>11.0.3</keycloak.version>
 	</properties>
