@@ -36,18 +36,7 @@
             <hr class="my-4">
 
             <div class="row">
-                <div class="col-sm-2"><b>Period</b></div>
-                <div class="col-sm-4"></div>
-                <div class="col-sm-6">
-                    <div class="col-sm-12 row">
-                        <div class="col-sm-5">
-                            From
-                        </div>
-                        <div class="col-sm-7">
-                            To
-                        </div>
-                    </div>
-                </div>
+                <div class="col-sm-2"><b>Data Granularity</b></div>
             </div>
 
             <div class="row">
@@ -61,7 +50,7 @@
                                id="DAILY_RADIO"
                                value="DAILY"
                                required>
-                        <label class="form-check-label" for="DAILY_RADIO">Daily view</label>
+                        <label class="form-check-label" for="DAILY_RADIO">Daily</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input"
@@ -71,9 +60,31 @@
                                id="MULTI_YEAR_RADIO"
                                value="MULTI_YEAR"
                                required>
-                        <label class="form-check-label" for="MULTI_YEAR_RADIO">Multi-year view</label>
+                        <label class="form-check-label" for="MULTI_YEAR_RADIO">Yearly</label>
                     </div>
                 </div>
+                <div class="col-sm-6"></div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="row">
+                <div class="col-sm-2"><b>Period</b></div>
+                <div class="col-sm-6">
+                    <div class="col-sm-12 row">
+                        <div class="col-sm-5">
+                            From
+                        </div>
+                        <div class="col-sm-7">
+                            To
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4"></div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-2"></div>
                 <div class="col-sm-6">
                     <div class="col-sm-12 row" *ngIf="selectedViewType === 'DAILY'">
                         <div class="col-sm-5">
@@ -114,7 +125,7 @@
                         <div class="col-sm-2"></div>
                     </div>
                 </div>
-
+                <div class="col-sm-4"></div>
             </div>
 
             <hr class="my-4">
