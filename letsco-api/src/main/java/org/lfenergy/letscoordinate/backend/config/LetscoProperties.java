@@ -39,6 +39,8 @@ public class LetscoProperties {
             @Getter(AccessLevel.NONE)
             private List<String> ignoreProcesses = new ArrayList<>();
             @Getter(AccessLevel.NONE)
+            private List<String> ignoreMessageTypeNames = new ArrayList<>();
+            @Getter(AccessLevel.NONE)
             private Map<String, ChangeSource> changeSource;
             @Getter(AccessLevel.NONE)
             private Map<String, String> changeMessageTypeName = new HashMap<>();
@@ -55,6 +57,10 @@ public class LetscoProperties {
 
             public Optional<List<String>> getIgnoreProcesses() {
                 return Optional.ofNullable(ignoreProcesses);
+            }
+
+            public Optional<List<String>> getIgnoreMessageTypeNames() {
+                return Optional.ofNullable(ignoreMessageTypeNames);
             }
 
             public Optional<Map<String, String>> getChangeMessageTypeName() {

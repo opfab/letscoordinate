@@ -91,15 +91,25 @@ public class LetscoKafkaListener {
     }
 
     void verifyData(EventMessageDto eventMessageDto) {
+        BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        changeSourceIfNeeded(eventMessageDto.getHeader().getSource(), eventMessageDto);
+        changeMessageTypeNameIfNeeded(
+                eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getMessageTypeName(), bdi);
         String source = eventMessageDto.getHeader().getSource();
         String messageTypeName = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getMessageTypeName();
         String process = source + "_" + messageTypeName;
-        BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
         ignoreProcessIfNeeded(process);
+        ignoreMessageTypeNameIfNeeded(messageTypeName);
         ignorePositiveTechnicalQualityCheck(eventMessageDto);
         processIfBusinessDayFromOptional(bdi, eventMessageDto.getHeader().getTimestamp());
-        changeMessageTypeNameIfNeeded(messageTypeName, bdi);
-        changeSourceIfNeeded(source, eventMessageDto);
+    }
+
+    void ignoreMessageTypeNameIfNeeded(String messageTypeName) {
+        letscoProperties.getInputFile().getValidation().getIgnoreMessageTypeNames().ifPresent(messageTypeNamesToIgnore -> {
+            if (messageTypeNamesToIgnore.contains(messageTypeName)) {
+                throw new IgnoreProcessException("Json message ignored. Message type name: " + messageTypeName);
+            }
+        });
     }
 
     void ignoreProcessIfNeeded(String process) {
@@ -112,7 +122,7 @@ public class LetscoKafkaListener {
 
     void ignorePositiveTechnicalQualityCheck(EventMessageDto eventMessageDto) {
         if (MESSAGE_VALIDATED.equals(eventMessageDto.getHeader().getNoun())) {
-            ValidationDto validationDto = eventMessageDto.getPayload().getValidation();
+            ValidationDto validationDto = eventMessageDto.getPayload().getValidation().get();
             if (validationDto.getResult() == ValidationSeverityEnum.OK &&
                     validationDto.getValidationType() == ValidationTypeEnum.TECHNICAL) {
                 throw new PositiveTechnicalQualityCheckException("Positive technical quality check => no need to process it");

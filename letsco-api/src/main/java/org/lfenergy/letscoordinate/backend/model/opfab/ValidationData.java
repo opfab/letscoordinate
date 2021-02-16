@@ -23,6 +23,7 @@ public class ValidationData extends EventMessageDto {
 
     List<ValidationMessageDto> warnings;
     List<ValidationMessageDto> errors;
+    String tso;
     String sendingUser;
 
     public ValidationData(EventMessageDto eventMessageDto) {

@@ -137,12 +137,12 @@ public class OpfabPublisherComponentTest {
         expectedTags.add(source.toLowerCase() + "_" + messageTypeName.toLowerCase() + "_ok");
         assertEquals(expectedTags, card.getTags());
 
-        eventMessageDto.getPayload().getValidation().setResult(WARNING);
+        eventMessageDto.getPayload().getValidation().get().setResult(WARNING);
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
         expectedTags.set(3, source.toLowerCase() + "_" + messageTypeName.toLowerCase() + "_warning");
         assertEquals(expectedTags, card.getTags());
 
-        eventMessageDto.getPayload().getValidation().setResult(ERROR);
+        eventMessageDto.getPayload().getValidation().get().setResult(ERROR);
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
         expectedTags.set(3, source.toLowerCase() + "_" + messageTypeName.toLowerCase() + "_error");
         assertEquals(expectedTags, card.getTags());
@@ -153,8 +153,7 @@ public class OpfabPublisherComponentTest {
 
         Card card = new Card();
         List<TimeSpan> expectedTimeSpans = Collections.singletonList(
-                new TimeSpan().start(businessDayFrom).end(businessDayTo)
-        );
+                new TimeSpan().start(timestamp));
         opfabPublisherComponent.setOpfabCardDates(card, eventMessageDto);
         assertAll(
                 () -> assertEquals(expectedTimeSpans, card.getTimeSpans()),
@@ -436,7 +435,7 @@ public class OpfabPublisherComponentTest {
                 "{{businessDayTo::dateFormat(dd/MM/yyyy HH:mm)}} - {{fileName}} - {{incorrectPlaceholder}} - " +
                 "{{messageTypeName::incorrectMethod}}";
         String obtained = opfabPublisherComponent.replacePlaceholders(strWithPlaceholders, eventMessageDto);
-        String expected = "Custom title - 25/08/2020 10:00-30/08/2020 10:00 - my filename -  - my messageTypeName";
+        String expected = "Custom title - 25/08/2020 12:00-30/08/2020 12:00 - my filename -  - my messageTypeName";
         assertEquals(expected, obtained);
     }
 
@@ -534,13 +533,25 @@ public class OpfabPublisherComponentTest {
     }
 
     @Test
+    public void generatePlaceholderValue_dateFormat_dateAbsent() {
+        String placeholder = "{{businessDayFrom::dateFormat(dd/MM/yyyy HH:mm)}}";
+        Map.Entry<String, String> entry = new AbstractMap.SimpleEntry(placeholder, null);
+        Map<String, Object> bdiMap = new HashMap<>();
+        bdiMap.put("businessDayFrom", null);
+        Map.Entry<String, String> obtainedResult =
+                opfabPublisherComponent.generatePlaceholderValue(entry, bdiMap, null);
+        Map.Entry<String, String> expectedResult = new AbstractMap.SimpleEntry<>(placeholder, "");
+        assertEquals(expectedResult, obtainedResult);
+    }
+
+    @Test
     public void generatePlaceholderValue_validationStatus() {
         String placeholder = "{{validationStatus}}";
         EventMessageDto eventMessageDto = EventMessageDto.builder().payload(PayloadDto.builder()
                 .validation(ValidationDto.builder().result(ERROR).build()).build()).build();
         Map.Entry<String, String> entry = new AbstractMap.SimpleEntry(placeholder, null);
         Map.Entry<String, String> obtainedResult =
-                opfabPublisherComponent.generatePlaceholderValue(entry, null, eventMessageDto);
+                opfabPublisherComponent.generatePlaceholderValue(entry, new HashMap<>(), eventMessageDto);
         Map.Entry<String, String> expectedResult = new AbstractMap.SimpleEntry<>(placeholder, "Negative");
         assertEquals(expectedResult, obtainedResult);
     }

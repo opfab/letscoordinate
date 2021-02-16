@@ -43,7 +43,12 @@ public class OpfabConfig {
     @Setter
     public static class OpfabEntityRecipients {
         private boolean addRscs;
+        @Getter(AccessLevel.NONE)
         private String notAllowed;
+
+        public Optional<String> getNotAllowed() {
+            return Optional.ofNullable(notAllowed);
+        }
     }
 
     @Getter

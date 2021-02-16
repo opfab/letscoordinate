@@ -63,6 +63,8 @@ letsco:
 #        OldMessageTypeName: NewMessageTypeName
 #      ignore-processes:
 #        - processToIgnore
+#      ignore-message-type-names:
+#        - messageTypeNameToIgnore
 #      business-day-from-optional: true
       accept-properties-ignore-case: true
       fail-on-unknown-properties: false
