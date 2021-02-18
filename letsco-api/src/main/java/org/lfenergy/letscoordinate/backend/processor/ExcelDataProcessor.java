@@ -491,7 +491,7 @@ public class ExcelDataProcessor implements DataProcessor {
                     cell.setCellValue("KPI " + kpiDataSubtypeEnum.name() + (kpiDataSubtype != null ? " - " + kpiDataSubtype.getName() : ""));
                     cell.setCellStyle(COLUMN_TITLE_STYLE);
 
-                    if (rscKpiReportDataDto.getSubmittedFormData().getViewTypeEnum() == ViewTypeEnum.DAILY) { // CASE: DAILY VIEW
+                    if (rscKpiReportDataDto.getSubmittedFormData().getDataGranularity() == DataGranularityEnum.DAILY) { // CASE: DAILY VIEW
                         // Prepare data (letscoEntityList) to be used to do sheetMergeRegion for the first coming row (graph_legend_row)
                         // and to be used as data for the second coming row (letsco_entity_row)
                         List<CoordinationConfig.LetscoEntity> letscoEntityList = new ArrayList<>();

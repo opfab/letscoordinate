@@ -23,7 +23,7 @@ import {KpiSubmittedForm} from "../models/kpi-submitted-form.model";
 import {ReportTypeEnum} from "../enums/report-type-enum";
 import {AuthService} from "./auth.service";
 import {Region, RegionAdapter} from "../models/region.model";
-import {ViewTypeEnum} from "../enums/view-type-enum";
+import {DataGranularityEnum} from "../enums/data-granularity-enum";
 
 
 @Injectable({
@@ -98,30 +98,30 @@ export class KpiReportService {
             );
     }
 
-    getReportingData(selectedViewType: ViewTypeEnum ,startModel: NgbDateStruct, endModel: NgbDateStruct, startYear: number, endYear: number,
+    getReportingData(selectedDataGranularity: DataGranularityEnum , startModel: NgbDateStruct, endModel: NgbDateStruct, startYear: number, endYear: number,
                      rsc: Rsc, rscs: Rsc[], region: Region, regions: Region[], rscService: RscService, kpiDataType: KpiDataType) {
         let rscKpiTypedData: RscKpiTypedData[] = [];
-        const startDate = selectedViewType === ViewTypeEnum.DAILY
+        const startDate = selectedDataGranularity === DataGranularityEnum.DAILY
             ? new Date(Date.UTC(startModel.year, startModel.month - 1, startModel.day))
             : new Date(Date.UTC(startYear, 0, 1));
-        const endDate = selectedViewType === ViewTypeEnum.DAILY
+        const endDate = selectedDataGranularity === DataGranularityEnum.DAILY
             ? new Date(Date.UTC(endModel.year, endModel.month - 1, endModel.day))
             : new Date(Date.UTC(endYear, 11, 31));
         const submittedForm = {
-            viewTypeEnum: selectedViewType,
+            dataGranularity: selectedDataGranularity,
             startDate: startDate,
             endDate: endDate,
-            rscs: (selectedViewType === ViewTypeEnum.DAILY ? (rsc ? [rsc] : []) : rscs),
-            regions: (selectedViewType === ViewTypeEnum.DAILY ? (region ? [region] : []) : regions),
+            rscs: (selectedDataGranularity === DataGranularityEnum.DAILY ? (rsc ? [rsc] : []) : rscs),
+            regions: (selectedDataGranularity === DataGranularityEnum.DAILY ? (region ? [region] : []) : regions),
             rscService: rscService,
             kpiDataType: kpiDataType
         }
         const requestBody = {
-            viewTypeEnum: selectedViewType,
+            dataGranularity: selectedDataGranularity,
             startDate: startDate,
             endDate: endDate,
-            rscCodes: (selectedViewType === ViewTypeEnum.DAILY ? (rsc ? [rsc.eicCode] : []) : rscs.map(rsc => rsc.eicCode)),
-            regionCodes: (selectedViewType === ViewTypeEnum.DAILY ? (region ? [region.eicCode] : []) : regions.map(region => region.eicCode)),
+            rscCodes: (selectedDataGranularity === DataGranularityEnum.DAILY ? (rsc ? [rsc.eicCode] : []) : rscs.map(rsc => rsc.eicCode)),
+            regionCodes: (selectedDataGranularity === DataGranularityEnum.DAILY ? (region ? [region.eicCode] : []) : regions.map(region => region.eicCode)),
             rscServiceCode: rscService.code,
             kpiDataTypeCode: kpiDataType.code
         };
@@ -137,11 +137,11 @@ export class KpiReportService {
         );
         this.rscKpiReportData = new RscKpiReportData(
             new KpiSubmittedForm(
-                selectedViewType,
+                selectedDataGranularity,
                 startDate,
                 endDate,
-                (selectedViewType === ViewTypeEnum.DAILY ? (rsc ? [rsc] : []) : rscs),
-                (selectedViewType === ViewTypeEnum.DAILY ? (region ? [region] : []) : regions),
+                (selectedDataGranularity === DataGranularityEnum.DAILY ? (rsc ? [rsc] : []) : rscs),
+                (selectedDataGranularity === DataGranularityEnum.DAILY ? (region ? [region] : []) : regions),
                 rscService,
                 kpiDataType),
             rscKpiTypedData
@@ -150,7 +150,7 @@ export class KpiReportService {
 
     downloadRscKpiReport(reportTypeEnum: ReportTypeEnum) {
         const requestBody = {
-            viewTypeEnum: this.rscKpiReportData.submittedForm.viewTypeEnum,
+            dataGranularity: this.rscKpiReportData.submittedForm.dataGranularity,
             startDate: this.rscKpiReportData.submittedForm.startDate,
             endDate: this.rscKpiReportData.submittedForm.endDate,
             rscCodes: this.rscKpiReportData.submittedForm.rscs.map(r=>r.eicCode),

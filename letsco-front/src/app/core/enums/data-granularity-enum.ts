@@ -9,7 +9,7 @@
  * This file is part of the Let’s Coordinate project.
  */
 
-export enum ViewTypeEnum {
-    DAILY = "DAILY",
-    MULTI_YEAR = "MULTI_YEAR"
+export enum DataGranularityEnum {
+    DAILY = "D",
+    YEARLY = "Y"
 }

@@ -15,7 +15,6 @@ import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.dto.reporting.*;
 import org.lfenergy.letscoordinate.backend.enums.KpiDataSubtypeEnum;
 import org.lfenergy.letscoordinate.backend.enums.KpiDataTypeEnum;
-import org.lfenergy.letscoordinate.backend.enums.ViewTypeEnum;
 import org.lfenergy.letscoordinate.backend.model.RscKpi;
 import org.lfenergy.letscoordinate.backend.model.RscKpiData;
 import org.lfenergy.letscoordinate.backend.model.RscKpiDataDetails;
@@ -129,6 +128,7 @@ public class RscKpiReportMapper {
         return Optional.ofNullable(rscKpiData)
                 .map(data -> RscKpiDto.DataDto.builder()
                         .timestamp(rscKpiData.getTimestamp().toLocalDate())
+                        .dataGranularity(rscKpiData.getGranularity())
                         .label(rscKpiData.getLabel())
                         .details(rscKpiData.getRscKpiDataDetails().stream()
                                 .map(RscKpiReportMapper::toDto)

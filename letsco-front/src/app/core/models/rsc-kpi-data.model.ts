@@ -14,7 +14,7 @@ import {Adapter} from "../utils/adapter";
 import {RscKpiTemporalData, RscKpiTemporalDataAdapter} from "./rsc-kpi-temporal-data.model";
 import {KpiChartOptions} from "./kpi-chart-options.model";
 import {formatDate} from "@angular/common";
-import {ViewTypeEnum} from "../enums/view-type-enum";
+import {DataGranularityEnum} from "../enums/data-granularity-enum";
 import {RscKpiRegionalDataAdapter} from "./rsc-kpi-regional-data.model";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import * as Chart from "chart.js";
@@ -38,7 +38,7 @@ export class RscKpiDataAdapter implements Adapter<RscKpiData>{
     adapt(entry: any, ...extraParams: any[]): RscKpiData {
         let kpiSubtypeCode = extraParams[1]; // GPx or BPx (while x in [1..n])
         let submittedFormData = extraParams[0][0][0]; // values selected in the config page
-        if (submittedFormData.viewTypeEnum === ViewTypeEnum.DAILY) { // CASE: DAILY VIEW
+        if (submittedFormData.dataGranularity === DataGranularityEnum.DAILY) { // CASE: DAILY GRANULARITY
             let key = entry[0]; // used later as label for graph
             let value = entry[1]; // graph values
             let rscKpiTemporalData: RscKpiTemporalData[] = [];
@@ -84,7 +84,7 @@ export class RscKpiDataAdapter implements Adapter<RscKpiData>{
                 extraParams[2], // kpiGraphId (e.g: BP1-graph0, GP1-graph1, ...)
                 rscKpiTemporalData
             );
-        } else { // CASE: MULTI-YEAR VIEW
+        } else { // CASE: YEARLY GRANULARITY
             let key = entry[0]; // GPx or BPx (while x in [1..n])
             let value = entry[1]; // Map (key: graph legend, value: list of {timestamp, label, details} objects)
             let startYear = new Date(submittedFormData.startDate).getFullYear();
