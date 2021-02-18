@@ -137,6 +137,7 @@ public class EventMessageMapper {
         rscKpiData.setId(null);
         rscKpiData.setRscKpi(rscKpi);
         rscKpiData.setTimestamp(rscKpiDataDetailsDto.getTimestamp());
+        rscKpiData.setGranularity(rscKpiDataDetailsDto.getGranularity());
         rscKpiData.setLabel(rscKpiDataDetailsDto.getLabel());
         rscKpiData.setRscKpiDataDetails(rscKpiDataDetailsDto.getDetail().stream()
                         .map(rscKpiDataDetails -> EventMessageMapper.fromDto(rscKpiDataDetails, rscKpiData))

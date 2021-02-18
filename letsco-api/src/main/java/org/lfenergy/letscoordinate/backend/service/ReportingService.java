@@ -17,8 +17,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.dto.reporting.*;
+import org.lfenergy.letscoordinate.backend.enums.DataGranularityEnum;
 import org.lfenergy.letscoordinate.backend.enums.ReportTypeEnum;
-import org.lfenergy.letscoordinate.backend.enums.ViewTypeEnum;
 import org.lfenergy.letscoordinate.backend.mapper.RscKpiReportMapper;
 import org.lfenergy.letscoordinate.backend.model.RscKpi;
 import org.lfenergy.letscoordinate.backend.model.RscKpiData;
@@ -110,7 +110,7 @@ public class ReportingService {
      */
     private List<RscKpi> getRscKpiListForWebReport(RscKpiReportSubmittedFormDataDto submittedFormDataDto) {
         return getRscKpiList(
-                submittedFormDataDto.getViewTypeEnum(),
+                submittedFormDataDto.getDataGranularity(),
                 submittedFormDataDto.getStartDate(),
                 submittedFormDataDto.getEndDate(),
                 submittedFormDataDto.getKpiDataTypeCode(),
@@ -141,7 +141,7 @@ public class ReportingService {
             }
         }
         return getRscKpiList(
-                submittedFormDataDto.getViewTypeEnum(),
+                submittedFormDataDto.getDataGranularity(),
                 submittedFormDataDto.getStartDate(),
                 submittedFormDataDto.getEndDate(),
                 submittedFormDataDto.getKpiDataTypeCode(),
@@ -150,24 +150,19 @@ public class ReportingService {
         );
     }
 
-    private List<RscKpi> getRscKpiList(ViewTypeEnum viewTypeEnum,
+    private List<RscKpi> getRscKpiList(DataGranularityEnum dataGranularity,
                                        LocalDate startDate,
                                        LocalDate endDate,
                                        String kpiDataTypeCode,
                                        String rscServiceCode,
                                        List<String> letscoEntityCodes) {
         List<RscKpiData> rscKpiDataList = rscKpiDataRepository.findReportingKpis(
+                dataGranularity != null ? dataGranularity.name() : "",
                 startDate,
                 endDate,
                 Constants.ALL_DATA_TYPE_CODE.equalsIgnoreCase(kpiDataTypeCode) ? "" : kpiDataTypeCode,
                 rscServiceCode,
                 letscoEntityCodes);
-        // filter by view type
-        boolean isDailyView = viewTypeEnum == ViewTypeEnum.DAILY;
-        rscKpiDataList = rscKpiDataList.stream()
-                .filter(d -> (isDailyView && d.getTimestamp().toOffsetTime().equals(OffsetTime.of(LocalTime.MIDNIGHT, d.getTimestamp().getOffset())))
-                        || (!isDailyView && d.getTimestamp().toOffsetTime().equals(OffsetTime.of(LocalTime.NOON, d.getTimestamp().getOffset())) && d.getLabel().matches("[0-9]{0,4}")))
-                .collect(Collectors.toList());
         // filter by eicCode
         rscKpiDataList = rscKpiDataList.stream()
                 .map(rscKpiData -> {
@@ -223,9 +218,9 @@ public class ReportingService {
                 .append("_")
                 .append(getSelectedEntitiesForExportFileName(submittedFormDataDto))
                 .append("_")
-                .append(submittedFormDataDto.getViewTypeEnum() == ViewTypeEnum.DAILY ? DateTimeFormatter.BASIC_ISO_DATE.format(submittedFormDataDto.getStartDate()) : submittedFormDataDto.getStartDate().getYear())
+                .append(submittedFormDataDto.getDataGranularity() == DataGranularityEnum.DAILY ? DateTimeFormatter.BASIC_ISO_DATE.format(submittedFormDataDto.getStartDate()) : submittedFormDataDto.getStartDate().getYear())
                 .append("_")
-                .append(submittedFormDataDto.getViewTypeEnum() == ViewTypeEnum.DAILY ? DateTimeFormatter.BASIC_ISO_DATE.format(submittedFormDataDto.getEndDate()) : submittedFormDataDto.getEndDate().getYear());
+                .append(submittedFormDataDto.getDataGranularity() == DataGranularityEnum.DAILY ? DateTimeFormatter.BASIC_ISO_DATE.format(submittedFormDataDto.getEndDate()) : submittedFormDataDto.getEndDate().getYear());
         return fileNameBuilder.toString();
     }
 

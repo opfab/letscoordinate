@@ -12,6 +12,7 @@
 package org.lfenergy.letscoordinate.backend.dto.eventmessage.payload;
 
 import lombok.Data;
+import org.lfenergy.letscoordinate.backend.enums.DataGranularityEnum;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.List;
 @Data
 public class RscKpiDataDetailsDto implements IPayloadDataDetails {
     private OffsetDateTime timestamp;
+    private DataGranularityEnum granularity;
     private String label;
     private List<RscKpiTemporalDataDto> detail = new ArrayList<>();
 }

@@ -14,6 +14,7 @@ package org.lfenergy.letscoordinate.backend.dto.reporting;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.lfenergy.letscoordinate.backend.enums.DataGranularityEnum;
 import org.lfenergy.letscoordinate.backend.enums.KpiDataSubtypeEnum;
 import org.lfenergy.letscoordinate.backend.enums.KpiDataTypeEnum;
 
@@ -34,6 +35,7 @@ public class RscKpiDto {
     @Setter
     public static class DataDto {
         private LocalDate timestamp;
+        private DataGranularityEnum dataGranularity;
         private String label;
         private List<DetailsDto> details;
 

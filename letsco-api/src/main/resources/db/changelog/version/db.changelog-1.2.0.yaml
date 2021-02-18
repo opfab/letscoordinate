@@ -10,3 +10,5 @@
 databaseChangeLog:
   - include:
       file: db/changelog/version/1.2.0/001_update_columns_size.sql
+  - include:
+      file: db/changelog/version/1.2.0/002_add_columns.sql

@@ -12,7 +12,7 @@
 import {RscKpiData, RscKpiDataAdapter} from "./rsc-kpi-data.model";
 import {Injectable} from "@angular/core";
 import {Adapter} from "../utils/adapter";
-import {ViewTypeEnum} from "../enums/view-type-enum";
+import {DataGranularityEnum} from "../enums/data-granularity-enum";
 
 export class RscKpi {
     constructor(public code: string,
@@ -36,7 +36,7 @@ export class RscKpiAdapter implements Adapter<RscKpi>{
         let kpiSubtype = extraParams[0][1] ? extraParams[0][1][key] : null; // the full name of the GPx or BPx
         let submittedFormData = extraParams[0][0]; // values selected in the config page
 
-        if (submittedFormData.viewTypeEnum === ViewTypeEnum.DAILY) { // CASE: DAILY VIEW
+        if (submittedFormData.dataGranularity === DataGranularityEnum.DAILY) { // CASE: DAILY VIEW
             if (Array.from(Object.entries(value)).length === 0) {
                 rscKpiData.push(this.rscKpiDataAdapter.adapt([kpiSubtype ? kpiSubtype.name : key, []], extraParams, key, key + '-graph0'))
             } else {

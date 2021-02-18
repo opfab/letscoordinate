@@ -12,7 +12,7 @@
 import {Injectable} from '@angular/core';
 import {ChartOptions} from 'chart.js';
 import {Theme} from "../models/theme.model";
-import {ViewTypeEnum} from "../enums/view-type-enum";
+import {DataGranularityEnum} from "../enums/data-granularity-enum";
 
 @Injectable({
   providedIn: 'root'
@@ -41,17 +41,17 @@ export class ThemeService {
     }
   }
 
-  updateChartColors(options: ChartOptions, viewTypeEnum: ViewTypeEnum) {
+  updateChartColors(options: ChartOptions, dataGranularity: DataGranularityEnum) {
     if (options) {
       options.legend = {
         labels: {
           fontColor: this.currentTheme.color
         },
-        position: (viewTypeEnum === ViewTypeEnum.MULTI_YEAR ? 'bottom' : 'top')
+        position: (dataGranularity === DataGranularityEnum.YEARLY ? 'bottom' : 'top')
       };
       options.layout = {
         padding: {
-          top: (viewTypeEnum === ViewTypeEnum.MULTI_YEAR ? 15 : 0)
+          top: (dataGranularity === DataGranularityEnum.YEARLY ? 15 : 0)
         }
       }
 

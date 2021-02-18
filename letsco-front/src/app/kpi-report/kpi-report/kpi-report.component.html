@@ -19,8 +19,8 @@
 
     <h4 class="my-3 synthesisTitle" style="text-align: center;" *ngIf="rscKpiReportData">
         <b>{{ rscKpiReportData.submittedForm.rscService.name }} Service<br/>
-            Synthesis from {{ rscKpiReportData.submittedForm.viewTypeEnum === 'DAILY' ? (rscKpiReportData.submittedForm.startDate | date:'fullDate') : rscKpiReportData.submittedForm.startDate.getFullYear() }}
-            to {{ rscKpiReportData.submittedForm.viewTypeEnum === 'DAILY' ? (rscKpiReportData.submittedForm.endDate | date:'fullDate') : rscKpiReportData.submittedForm.endDate.getFullYear() }}<br/>
+            Synthesis from {{ rscKpiReportData.submittedForm.dataGranularity === 'DAILY' ? (rscKpiReportData.submittedForm.startDate | date:'fullDate') : rscKpiReportData.submittedForm.startDate.getFullYear() }}
+            to {{ rscKpiReportData.submittedForm.dataGranularity === 'DAILY' ? (rscKpiReportData.submittedForm.endDate | date:'fullDate') : rscKpiReportData.submittedForm.endDate.getFullYear() }}<br/>
             {{rscsOrRegionsToString}} {{selectedEntityType}}{{isDailyView ? '' : 's'}} Report</b>
     </h4>
 
@@ -53,7 +53,7 @@
 
                                     <app-kpi-chart [kpiChartId]="rscKpiDatum.kpiChartId"
                                                    [kpiChartOptions]="rscKpiDatum.kpiChartOptions"
-                                                   [viewTypeEnum]="rscKpiReportData.submittedForm.viewTypeEnum"></app-kpi-chart>
+                                                   [dataGranularity]="rscKpiReportData.submittedForm.dataGranularity"></app-kpi-chart>
 
                                     <div class="col-sm-12">
                                         <label [for]="'comment-'+rscKpi.code+'-'+k" [textContent]="'Comment ('+(255-rscKpiDatum.comment.length)+' char. left)'"></label>

@@ -22,7 +22,7 @@ import {KpiDataTypeFullNamePipe} from "../../core/pipes/kpi-data-type-full-name.
 import {KpiSubmittedForm} from "../../core/models/kpi-submitted-form.model";
 import * as jsPDF from 'jspdf';
 import {ThemeService} from "../../core/services/theme.service";
-import {ViewTypeEnum} from "../../core/enums/view-type-enum";
+import {DataGranularityEnum} from "../../core/enums/data-granularity-enum";
 
 const pdfConstants = {
   logoLetsco: {
@@ -254,7 +254,7 @@ export class KpiReportComponent implements OnInit {
   }
 
   get isDailyView() : boolean {
-    return this.kpiReportService.rscKpiReportData.submittedForm.viewTypeEnum === ViewTypeEnum.DAILY
+    return this.kpiReportService.rscKpiReportData.submittedForm.dataGranularity === DataGranularityEnum.DAILY
   }
 
   get isRscsSelected() : boolean {
