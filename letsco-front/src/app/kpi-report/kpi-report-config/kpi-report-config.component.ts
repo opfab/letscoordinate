@@ -17,7 +17,7 @@ import {RscService} from "../../core/models/rsc-service.model";
 import {KpiDataType} from "../../core/models/kpi-data-type.model";
 import {Router} from "@angular/router";
 import {Region} from "../../core/models/region.model";
-import {ViewTypeEnum} from "../../core/enums/view-type-enum";
+import {DataGranularityEnum} from "../../core/enums/data-granularity-enum";
 
 const PERIOD_INTERVAL = 4;
 const MIN_YEAR = 0;
@@ -42,7 +42,7 @@ export class KpiReportConfigComponent implements OnInit {
   selectedRscService: RscService;
   selectedKpiDataType: KpiDataType;
 
-  selectedViewType: ViewTypeEnum;
+  selectedDataGranularity: DataGranularityEnum;
   startModel: NgbDateStruct;
   endModel: NgbDateStruct;
   startYear: any;
@@ -57,7 +57,7 @@ export class KpiReportConfigComponent implements OnInit {
     this.endModel = {year: currentYear, month: 12, day: 31};
     this.startYear = currentYear;
     this.endYear = currentYear + PERIOD_INTERVAL;
-    this.selectedViewType = ViewTypeEnum.DAILY;
+    this.selectedDataGranularity = DataGranularityEnum.DAILY;
 
     this.kpiReportService.initConfigData();
 
@@ -105,18 +105,18 @@ export class KpiReportConfigComponent implements OnInit {
   }
 
   private isValidPeriod(): boolean {
-    return (this.selectedViewType===ViewTypeEnum.DAILY && this.startModel !== null && this.endModel !== null)
-        || (this.selectedViewType===ViewTypeEnum.MULTI_YEAR && this.startYear !== null && this.endYear !== null)
+    return (this.selectedDataGranularity===DataGranularityEnum.DAILY && this.startModel !== null && this.endModel !== null)
+        || (this.selectedDataGranularity===DataGranularityEnum.YEARLY && this.startYear !== null && this.endYear !== null)
   }
 
   private isValidRscOrRegion(): boolean {
-    return (this.selectedViewType===ViewTypeEnum.DAILY && (this.selectedRsc !== null || this.selectedRegion !== null))
-        || (this.selectedViewType===ViewTypeEnum.MULTI_YEAR && (this.selectedRscs.length > 0 || this.selectedRegions.length > 0))
+    return (this.selectedDataGranularity===DataGranularityEnum.DAILY && (this.selectedRsc !== null || this.selectedRegion !== null))
+        || (this.selectedDataGranularity===DataGranularityEnum.YEARLY && (this.selectedRscs.length > 0 || this.selectedRegions.length > 0))
   }
 
   onSubmit() {
     this.kpiReportService.getReportingData (
-        this.selectedViewType,
+        this.selectedDataGranularity,
         this.startModel,
         this.endModel,
         this.startYear,

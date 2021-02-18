@@ -11,6 +11,7 @@
 
 package org.lfenergy.letscoordinate.backend.repository;
 
+import org.lfenergy.letscoordinate.backend.enums.DataGranularityEnum;
 import org.lfenergy.letscoordinate.backend.model.RscKpiData;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -24,14 +25,16 @@ public interface RscKpiDataRepository extends CrudRepository<RscKpiData, Long> {
             "join event_message e on e.id = k.id_event_message " +
             "join rsc_kpi_data d on d.id_rsc_kpi = k.id " +
             "join rsc_kpi_data_details dd on dd.id_rsc_kpi_data = d.id " +
-            "where d.timestamp >= :startDate and d.timestamp <= :endDate " +
+            "where d.granularity = :dataGranularity " +
+            "and d.timestamp >= :startDate and d.timestamp <= :endDate " +
             "and e.source like CONCAT('%',:rscServiceCode,'%') " +
             "and (" +
             "(UPPER(k.name) like 'GP%' and UPPER(k.name) like CONCAT('%',UPPER(:kpiDataTypeCode),'%')) " +
             "or " +
             "(UPPER(k.name) like 'BP%' and UPPER(k.name) like CONCAT('%',UPPER(:kpiDataTypeCode),'%') and dd.eic_code in :eicCodes) " +
             ") ", nativeQuery = true)
-    List<RscKpiData> findReportingKpis(@Param("startDate") LocalDate startDate,
+    List<RscKpiData> findReportingKpis(@Param("dataGranularity") String dataGranularity,
+                                       @Param("startDate") LocalDate startDate,
                                        @Param("endDate") LocalDate endDate,
                                        @Param("kpiDataTypeCode") String kpiDataTypeCode,
                                        @Param("rscServiceCode") String rscServiceCode,

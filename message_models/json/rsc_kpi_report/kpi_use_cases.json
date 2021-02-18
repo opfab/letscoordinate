@@ -40,6 +40,7 @@
           "data": [
             {
               "timestamp": "2020-06-30T22:00:00Z",
+              "granularity": "D",
               "label": "Process successful",
               "detail": [
                 {
@@ -48,6 +49,7 @@
               ]
             },{
               "timestamp": "2020-09-01T22:00:00Z",
+              "granularity": "D",
               "label": "Process successful",
               "detail": [
                 {
@@ -56,6 +58,7 @@
               ]
             },{
               "timestamp": "2020-10-02T22:00:00Z",
+              "granularity": "D",
               "label": "Process successful",
               "detail": [
                 {
@@ -65,6 +68,7 @@
             },
             {
               "timestamp": "2020-01-01T11:00:00Z",
+              "granularity": "Y",
               "label": "2020",
               "detail": [
                 {
@@ -74,6 +78,7 @@
             },
             {
               "timestamp": "2021-01-01T11:00:00Z",
+              "granularity": "Y",
               "label": "2021",
               "detail": [
                 {
@@ -83,6 +88,7 @@
             },
             {
               "timestamp": "2022-01-01T11:00:00Z",
+              "granularity": "Y",
               "label": "2022",
               "detail": [
                 {
@@ -92,6 +98,7 @@
             },
             {
               "timestamp": "2023-01-01T11:00:00Z",
+              "granularity": "Y",
               "label": "2023",
               "detail": [
                 {
@@ -101,6 +108,7 @@
             },
             {
               "timestamp": "2024-01-01T11:00:00Z",
+              "granularity": "Y",
               "label": "2024",
               "detail": [
                 {
@@ -110,6 +118,7 @@
             },
             {
               "timestamp": "2022-02-01T11:00:00Z",
+              "granularity": "Y",
               "label": "2022",
               "detail": [
                 {
@@ -124,6 +133,7 @@
             },
             {
               "timestamp": "2022-03-01T11:00:00Z",
+              "granularity": "Y",
               "label": "2022",
               "detail": [
                 {
@@ -143,6 +153,7 @@
           "data": [
             {
               "timestamp": "2020-07-31T22:00:00Z",
+              "granularity": "D",
               "label": "Process successful",
               "detail": [
                 {
@@ -151,6 +162,7 @@
               ]
             },{
               "timestamp": "2020-08-15T22:00:00Z",
+              "granularity": "D",
               "label": "Process successful",
               "detail": [
                 {
@@ -159,6 +171,7 @@
               ]
             },{
               "timestamp": "2020-09-22T22:00:00Z",
+              "granularity": "D",
               "label": "Process successful",
               "detail": [
                 {
@@ -168,6 +181,7 @@
             },
             {
               "timestamp": "2020-01-01T11:00:00Z",
+              "granularity": "Y",
               "label": "2020",
               "detail": [
                 {
@@ -177,6 +191,7 @@
             },
             {
               "timestamp": "2021-01-01T11:00:00Z",
+              "granularity": "Y",
               "label": "2021",
               "detail": [
                 {
@@ -186,6 +201,7 @@
             },
             {
               "timestamp": "2021-01-01T11:00:00Z",
+              "granularity": "Y",
               "label": "2022",
               "detail": [
                 {
@@ -195,6 +211,7 @@
             },
             {
               "timestamp": "2021-01-01T11:00:00Z",
+              "granularity": "Y",
               "label": "2023",
               "detail": [
                 {
@@ -204,6 +221,7 @@
             },
             {
               "timestamp": "2021-01-01T11:00:00Z",
+              "granularity": "Y",
               "label": "2024",
               "detail": [
                 {
@@ -218,6 +236,7 @@
           "data": [
             {
               "timestamp": "2020-08-01T22:00:00Z",
+              "granularity": "D",
               "label": "Process successful",
               "detail": [
                 {
@@ -280,6 +299,7 @@
             },
             {
               "timestamp": "2020-09-30T22:00:00Z",
+              "granularity": "D",
               "label": "Process successful",
               "detail": [
                 {
@@ -342,6 +362,7 @@
             },
             {
               "timestamp": "2020-01-01T11:00:00Z",
+              "granularity": "Y",
               "label": "2020",
               "detail": [
                 {
@@ -404,6 +425,7 @@
             },
             {
               "timestamp": "2022-01-01T11:00:00Z",
+              "granularity": "Y",
               "label": "2021",
               "detail": [
                 {
@@ -466,6 +488,7 @@
             },
             {
               "timestamp": "2022-01-01T11:00:00Z",
+              "granularity": "Y",
               "label": "2022",
               "detail": [
                 {
@@ -524,6 +547,7 @@
             },
             {
               "timestamp": "2024-01-01T11:00:00Z",
+              "granularity": "Y",
               "label": "2024",
               "detail": [
                 {
@@ -591,6 +615,7 @@
           "data": [
             {
               "timestamp": "2020-03-31T22:00:00Z",
+              "granularity": "D",
               "label": "Process successful",
               "detail": [
                 {
@@ -653,6 +678,7 @@
             },
             {
               "timestamp": "2020-05-31T22:00:00Z",
+              "granularity": "D",
               "label": "Process successful",
               "detail": [
                 {
@@ -715,6 +741,7 @@
             },
             {
               "timestamp": "2020-05-31T22:00:00Z",
+              "granularity": "D",
               "label": "Process failed",
               "detail": [
                 {
@@ -777,6 +804,7 @@
             },
             {
               "timestamp": "2020-01-01T11:00:00Z",
+              "granularity": "Y",
               "label": "2020",
               "detail": [
                 {
@@ -839,6 +867,7 @@
             },
             {
               "timestamp": "2022-01-01T11:00:00Z",
+              "granularity": "Y",
               "label": "2022",
               "detail": [
                 {

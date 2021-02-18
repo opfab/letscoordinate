@@ -44,23 +44,23 @@
                 <div class="col-sm-4">
                     <div class="form-check form-check-inline">
                         <input class="form-check-input"
-                               [(ngModel)]="selectedViewType"
+                               [(ngModel)]="selectedDataGranularity"
                                type="radio"
                                name="radioPeriodType"
                                id="DAILY_RADIO"
-                               value="DAILY"
+                               value="D"
                                required>
                         <label class="form-check-label" for="DAILY_RADIO">Daily</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input"
-                               [(ngModel)]="selectedViewType"
+                               [(ngModel)]="selectedDataGranularity"
                                type="radio"
                                name="radioPeriodType"
-                               id="MULTI_YEAR_RADIO"
-                               value="MULTI_YEAR"
+                               id="YEARLY_RADIO"
+                               value="Y"
                                required>
-                        <label class="form-check-label" for="MULTI_YEAR_RADIO">Yearly</label>
+                        <label class="form-check-label" for="YEARLY_RADIO">Yearly</label>
                     </div>
                 </div>
                 <div class="col-sm-6"></div>
@@ -86,7 +86,7 @@
             <div class="row">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-6">
-                    <div class="col-sm-12 row" *ngIf="selectedViewType === 'DAILY'">
+                    <div class="col-sm-12 row" *ngIf="selectedDataGranularity === 'D'">
                         <div class="col-sm-5">
                             <div class="input-group">
                                 <input class="form-control" placeholder="yyyy-mm-dd"
@@ -113,7 +113,7 @@
                         </div>
                         <div class="col-sm-2"></div>
                     </div>
-                    <div class="col-sm-12 row" *ngIf="selectedViewType === 'MULTI_YEAR'">
+                    <div class="col-sm-12 row" *ngIf="selectedDataGranularity === 'Y'">
                         <div class="col-sm-5">
                             <input type="text" placeholder="yyyy" size="4" maxlength="4" [(ngModel)]="startYear" name="startYear"
                                    (keypress)="isNumeralInput($event.charCode)" (change)="checkEndYear()" autocomplete="off" required>
@@ -134,7 +134,7 @@
                 <div class="col-sm-2"><b>RSC</b></div>
             </div>
 
-            <div class="row" *ngIf="selectedViewType === 'MULTI_YEAR'">
+            <div class="row" *ngIf="selectedDataGranularity === 'Y'">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-10">
                     <a href="javascript: void(0)" (click)="isAllRscsChecked() ? uncheckAllRscs() : checkAllRscs()">
@@ -144,7 +144,7 @@
             </div>
             <div class="row">
                 <div class="col-sm-2"></div>
-                <div class="col-sm-10" *ngIf="selectedViewType === 'DAILY'">
+                <div class="col-sm-10" *ngIf="selectedDataGranularity === 'D'">
                     <div class="form-check form-check-inline" *ngFor="let rsc of rscs">
                         <input class="form-check-input"
                                type="radio"
@@ -155,7 +155,7 @@
                         <label class="form-check-label" [for]="rsc.eicCode + '_radiobox'">{{rsc.name}}</label>
                     </div>
                 </div>
-                <div class="col-sm-10" *ngIf="selectedViewType === 'MULTI_YEAR'">
+                <div class="col-sm-10" *ngIf="selectedDataGranularity === 'Y'">
                     <div class="form-check form-check-inline" *ngFor="let rsc of rscs">
                         <input class="form-check-input"
                                type="checkbox"
@@ -176,7 +176,7 @@
                 <div class="col-sm-2"><b>Region/CCR</b></div>
             </div>
 
-            <div class="row" *ngIf="selectedViewType === 'MULTI_YEAR'">
+            <div class="row" *ngIf="selectedDataGranularity === 'Y'">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-10">
                     <a href="javascript: void(0)" (click)="isAllRegionsChecked() ? uncheckAllRegions() : checkAllRegions()">
@@ -186,7 +186,7 @@
             </div>
             <div class="row">
                 <div class="col-sm-2"></div>
-                <div class="col-sm-10" *ngIf="selectedViewType === 'DAILY'">
+                <div class="col-sm-10" *ngIf="selectedDataGranularity === 'D'">
                     <div class="form-check form-check-inline" *ngFor="let region of regions">
                         <input class="form-check-input"
                                type="radio"
@@ -197,7 +197,7 @@
                         <label class="form-check-label" [for]="region.eicCode + '_radiobox'">{{region.name}}</label>
                     </div>
                 </div>
-                <div class="col-sm-10" *ngIf="selectedViewType === 'MULTI_YEAR'">
+                <div class="col-sm-10" *ngIf="selectedDataGranularity === 'Y'">
                     <div class="form-check form-check-inline" *ngFor="let region of regions">
                         <input class="form-check-input"
                                type="checkbox"
