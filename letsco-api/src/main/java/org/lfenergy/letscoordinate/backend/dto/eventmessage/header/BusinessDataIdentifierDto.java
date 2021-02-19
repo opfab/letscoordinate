@@ -26,6 +26,7 @@ public class BusinessDataIdentifierDto {
 
     @Getter(AccessLevel.NONE)
     private List<String> recipients;
+    private String businessApplication;
     private String messageType;
     private String messageTypeName;
     private Instant businessDayFrom;
