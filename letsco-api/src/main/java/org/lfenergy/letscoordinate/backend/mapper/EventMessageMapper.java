@@ -45,6 +45,7 @@ public class EventMessageMapper {
                 eventMessage.setFormat(propertiesDto.getFormat());
                 if(propertiesDto.getBusinessDataIdentifier() != null) {
                     final BusinessDataIdentifierDto businessDataIdentifierDto = propertiesDto.getBusinessDataIdentifier();
+                    eventMessage.setBusinessApplication(businessDataIdentifierDto.getBusinessApplication());
                     eventMessage.setMessageType(businessDataIdentifierDto.getMessageType());
                     eventMessage.setMessageTypeName(businessDataIdentifierDto.getMessageTypeName());
                     eventMessage.setBusinessDayFrom(businessDataIdentifierDto.getBusinessDayFrom());
@@ -123,6 +124,7 @@ public class EventMessageMapper {
         RscKpi rscKpi = new RscKpi();
         rscKpi.setId(null);
         rscKpi.setName(rscKpiDataDto.getName());
+        rscKpi.setJoinGraph(rscKpiDataDto.getJoinGraph());
         rscKpi.setRscKpiDatas(rscKpiDataDto.getData().stream()
                         .map(rscKpiData -> EventMessageMapper.fromDto(rscKpiData, rscKpi))
                         .collect(Collectors.toList()));

@@ -18,5 +18,6 @@ import java.util.List;
 @Data
 public abstract class AbstractPayloadComplexData<T extends IPayloadDataDetails> implements IPayloadData {
     private String name;
+    private Boolean joinGraph;
     private List<T> data;
 }

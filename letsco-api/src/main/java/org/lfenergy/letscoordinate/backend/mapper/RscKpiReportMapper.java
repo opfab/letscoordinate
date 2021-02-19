@@ -117,6 +117,7 @@ public class RscKpiReportMapper {
             return null;
         return RscKpiDto.builder()
                 .name(rscKpi.getName())
+                .joinGraph(rscKpi.getJoinGraph())
                 .dataMap(rscKpi.getRscKpiDatas().stream()
                         .sorted(Comparator.comparing(RscKpiData::getTimestamp))
                         .map(RscKpiReportMapper::toDto)
