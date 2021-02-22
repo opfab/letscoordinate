@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
@@ -24,14 +25,19 @@ import java.util.Optional;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ValidationMessageDto {
-
+    @NotNull
     private String code;
+    @NotNull
     private ValidationSeverityEnum severity;
+    @NotNull
     private String title;
+    @NotNull
     private String message;
     private Instant businessTimestamp;
     @Getter(AccessLevel.NONE)
     private Map<String, Object> params;
+    @NotNull
+    private Instant timestamp;
     private Map<String, Object> sourceDataRef;
 
     public Optional<Map<String, Object>> getParams() {

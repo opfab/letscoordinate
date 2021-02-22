@@ -15,12 +15,16 @@ import io.vavr.control.Validation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
+import org.lfenergy.letscoordinate.backend.dto.ResponseErrorMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.monitoring.MonitoredTaskDto;
+import org.lfenergy.letscoordinate.backend.enums.ResponseErrorSeverityEnum;
 import org.lfenergy.letscoordinate.backend.mapper.MonitoringMapper;
 import org.lfenergy.letscoordinate.backend.model.MonitoredTask;
 import org.lfenergy.letscoordinate.backend.repository.MonitoredTaskRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
 
 @Service
 @Slf4j
@@ -38,8 +42,11 @@ public class MonitoringService {
             return Validation.invalid(ResponseErrorDto.builder()
                     .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                     .code("ERROR") // TODO specific error code to be defined!
-                    .message("Error occurred during saving monitored task \"{}\"" + monitoredTaskDto.getUuid() + "!")
-                    .detail(e.getMessage())
+                    .messages(Collections.singletonList(ResponseErrorMessageDto.builder()
+                            .severity(ResponseErrorSeverityEnum.ERROR)
+                            .message("Error occurred during saving monitored task \"{}\"" + monitoredTaskDto.getUuid() + "!")
+                            .detail(e.getMessage())
+                            .build()))
                     .build());
         }
     }

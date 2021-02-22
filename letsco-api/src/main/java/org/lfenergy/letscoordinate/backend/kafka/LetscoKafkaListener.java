@@ -12,10 +12,12 @@
 package org.lfenergy.letscoordinate.backend.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.vavr.control.Validation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.lfenergy.letscoordinate.backend.component.OpfabPublisherComponent;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
+import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationDto;
@@ -62,14 +64,21 @@ public class LetscoKafkaListener {
     private final LetscoProperties letscoProperties;
 
     @KafkaListener(topicPattern = "#{@kafkaTopicPattern}")
-    public void handleLetscoData(@Payload String data,
-                                 @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition,
-                                 @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
-                                 @Header(KafkaHeaders.RECEIVED_TIMESTAMP) long ts) throws Exception {
+    public void handleLetscoEventMessages(@Payload String data,
+                                          @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition,
+                                          @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
+                                          @Header(KafkaHeaders.RECEIVED_TIMESTAMP) long ts) throws Exception {
+
         log.info("Data receiced from topic \"{}\" (kafka_receivedTimestamp = {}, kafka_receivedPartitionId = {})", topic,
                 DateTimeFormatter.ISO_INSTANT.format(Instant.ofEpochMilli(ts)), partition);
         log.debug("Received data:\n {}", data);
-        EventMessageDto eventMessageDto = jsonDataProcessor.inputStreamToPojo(new ByteArrayInputStream(data.getBytes()));
+
+        Validation<ResponseErrorDto, EventMessageDto> validation = jsonDataProcessor.inputStreamToPojo(new ByteArrayInputStream(data.getBytes()));
+        if (validation.isInvalid()) {
+            log.error(validation.getError().toString());
+            return;
+        }
+        EventMessageDto eventMessageDto = validation.get();
 
         String noun = eventMessageDto.getHeader().getNoun();
         if (!isGenericNoun(noun)) {
@@ -107,7 +116,6 @@ public class LetscoKafkaListener {
         bdi.setBusinessDayTo(bdi.getBusinessDayTo() == null ?
                 bdi.getBusinessDayFrom().plus(Duration.ofHours(24)).minus(Duration.ofSeconds(1)) :
                 bdi.getBusinessDayTo().minus(Duration.ofSeconds(1)));
-
     }
 
     void ignoreMessageTypeNameIfNeeded(String messageTypeName) {

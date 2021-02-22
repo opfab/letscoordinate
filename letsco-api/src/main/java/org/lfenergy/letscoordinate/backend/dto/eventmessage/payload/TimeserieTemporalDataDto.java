@@ -13,6 +13,7 @@ package org.lfenergy.letscoordinate.backend.dto.eventmessage.payload;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -21,6 +22,7 @@ public class TimeserieTemporalDataDto implements IPayloadTemporalData {
     private String id;
     private String label;
     private List<String> eicCode;
+    @NotNull
     private String value;
     // Output fields
     private Integer accept;

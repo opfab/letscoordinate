@@ -10,6 +10,7 @@
       "properties": {
         "format": "JSON",
         "businessDataIdentifier": {
+          "businessApplication": "PanEuropeanServiceBTool",
           "messageType": "101",
           "messageTypeName": "PositiveValidation",
           "businessDayFrom": "2021-09-18T22:00:00Z",
@@ -30,11 +31,13 @@
       "links": [
         {
           "name": "file1_link",
-          "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf"
+          "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf",
+          "eicCode": ["22XCORESO------S", "38X-BALTIC-RSC-H"]
         },
         {
           "name": "file2_link",
-          "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf"
+          "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf",
+          "eicCode": ["22XCORESO------S", "38X-BALTIC-RSC-H"]
         }
       ]
     }

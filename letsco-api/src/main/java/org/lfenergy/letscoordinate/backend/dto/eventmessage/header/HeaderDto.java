@@ -16,6 +16,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 
 @Data
@@ -24,11 +26,17 @@ import java.time.Instant;
 @AllArgsConstructor
 public class HeaderDto {
 
+    @NotNull
     private String verb;
+    @NotNull
     private String noun;
+    @NotNull
     private Instant timestamp;
+    @NotNull
     private String source;
+    @NotNull
     private String messageId;
+    @Valid @NotNull
     private PropertiesDto properties = new PropertiesDto();
 
 }

@@ -14,6 +14,7 @@ package org.lfenergy.letscoordinate.backend.dto.eventmessage.header;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -26,9 +27,10 @@ public class BusinessDataIdentifierDto {
 
     @Getter(AccessLevel.NONE)
     private List<String> recipients;
-    private String businessApplication;
     private String messageType;
+    @NotNull
     private String messageTypeName;
+    @NotNull
     private Instant businessDayFrom;
     private Instant businessDayTo;
     @Getter(AccessLevel.NONE)

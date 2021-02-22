@@ -45,7 +45,7 @@ public class EventMessageMapper {
                 eventMessage.setFormat(propertiesDto.getFormat());
                 if(propertiesDto.getBusinessDataIdentifier() != null) {
                     final BusinessDataIdentifierDto businessDataIdentifierDto = propertiesDto.getBusinessDataIdentifier();
-                    eventMessage.setBusinessApplication(businessDataIdentifierDto.getBusinessApplication());
+                    eventMessage.setBusinessApplication(businessDataIdentifierDto.getBusinessApplication().orElse(null));
                     eventMessage.setMessageType(businessDataIdentifierDto.getMessageType());
                     eventMessage.setMessageTypeName(businessDataIdentifierDto.getMessageTypeName());
                     eventMessage.setBusinessDayFrom(businessDataIdentifierDto.getBusinessDayFrom());

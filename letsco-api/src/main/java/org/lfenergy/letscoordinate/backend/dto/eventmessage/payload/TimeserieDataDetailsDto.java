@@ -13,12 +13,19 @@ package org.lfenergy.letscoordinate.backend.dto.eventmessage.payload;
 
 import lombok.Data;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 public class TimeserieDataDetailsDto implements IPayloadDataDetails {
+    @NotNull
     private OffsetDateTime timestamp;
+    @NotNull
+    @NotEmpty
+    @Valid
     private List<TimeserieTemporalDataDto> detail = new ArrayList<>();
 }

@@ -10,6 +10,7 @@
       "properties": {
         "format": "JSON",
         "businessDataIdentifier": {
+          "businessApplication": "PanEuropeanServiceBTool",
           "messageTypeName": "ProcessFailed",
           "businessDayFrom": "2021-07-17T22:00:00Z",
           "businessDayTo": "2021-09-16T22:00:00Z",

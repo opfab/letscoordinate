@@ -80,10 +80,9 @@ public class LetscoKafkaListenerTest {
     public void handleLetscoData() throws Exception {
         EventMessage eventMessage = EventMessageMapper.fromDto(eventMessageDto);
         eventMessage.setId(1L);
-        when(jsonDataProcessor.inputStreamToPojo(any())).thenReturn(eventMessageDto);
         when(eventMessageRepository.save(any())).thenReturn(eventMessage);
         doNothing().when(opfabPublisherComponent).publishOpfabCard(eventMessageDto, eventMessage.getId());
-        letscoKafkaListener.handleLetscoData("", 0, "", 0L);
+        letscoKafkaListener.handleLetscoEventMessages("", 0, "", 0L);
     }
 
     @Test
