@@ -11,6 +11,7 @@
 
 package org.lfenergy.letscoordinate.backend.processor;
 
+import io.vavr.control.Validation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -21,6 +22,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
+import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.*;
 import org.lfenergy.letscoordinate.backend.dto.reporting.RscKpiDto;
@@ -61,7 +63,7 @@ public class ExcelDataProcessor implements DataProcessor {
 
     private final List<String> headerExclusiveColNames = Arrays.asList("verb", "noun", "timestamp", "source", "messageId");
     private final List<String> headerPropertiesExclusiveColNames = Arrays.asList("format");
-    private final List<String> headerBusinessDateIdentifierColNames = Arrays.asList("messageType", "messageTypeName", "businessDayFrom",
+    private final List<String> headerBusinessDateIdentifierColNames = Arrays.asList("businessApplication", "messageType", "messageTypeName", "businessDayFrom",
             "businessDayTo", "processStep", "timeframe", "timeframeNumber", "sendingUser", "fileName", "tso", "biddingZone");
     private final List<String> headerPropertiesColNames = Stream.of(headerPropertiesExclusiveColNames, headerBusinessDateIdentifierColNames)
             .flatMap(Collection::stream).collect(Collectors.toList());
@@ -84,24 +86,24 @@ public class ExcelDataProcessor implements DataProcessor {
             .flatMap(Collection::stream).collect(Collectors.toList());
 
 
-    public EventMessageDto inputStreamToPojo(String filePath, InputStream inputStream)
+    public Validation<ResponseErrorDto, EventMessageDto> inputStreamToPojo(String filePath, InputStream inputStream)
             throws IOException, NoSuchFieldException, IllegalAccessException, InstantiationException, InvalidInputFileException {
         Workbook workbook = new XSSFWorkbook(inputStream);
 
         EventMessageDto eventMessageDto = new EventMessageDto();
         eventMessageDto.setXmlns(XMLNS);
 
+        // Validation of the file's structure (existence of header and payload blocks, column names, ...)
         Map<ExcelBlocEnum, Map<String, Integer>> columnIndexMap = validateExcelFileAndMapColTitlesIndexesByBloc(workbook);
 
         Sheet sheet = workbook.getSheetAt(EFFECTIVE_DATA_SHEET_INDEX);
         initEventMessageHeader(eventMessageDto, sheet, columnIndexMap.get(ExcelBlocEnum.HEADER));
         initEventMessagePayload(eventMessageDto, sheet, columnIndexMap.get(ExcelBlocEnum.PAYLOAD));
 
-        eventMessageService.checkEicCodes(eventMessageDto);
-
         log.info("POJO Generated from Excel file \"{}\" => {}", filePath, eventMessageDto);
 
-        return eventMessageDto;
+        // Validation of the file's content
+        return eventMessageService.validateEventMessageDto(eventMessageDto);
     }
 
     /**

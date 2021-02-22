@@ -16,6 +16,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Data
@@ -23,9 +24,14 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PayloadDto {
+    @Valid
     private List<TextDataDto> text;
+    @Valid
     private List<LinkDataDto> links;
+    @Valid
     private List<RscKpiDataDto> rscKpi;
+    @Valid
     private List<TimeserieDataDto> timeserie;
+    @Valid
     private ValidationDto validation;
 }

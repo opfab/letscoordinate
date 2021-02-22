@@ -10,6 +10,7 @@
       "properties": {
         "format": "JSON",
         "businessDataIdentifier": {
+          "businessApplication": "business_application_name",
           "messageTypeName": "NotificationTypeA",
           "businessDayFrom": "2020-03-12T23:00:00Z",
           "businessDayTo": "2020-03-19T23:00:00Z",
@@ -31,7 +32,8 @@
       "links": [
         {
           "name": "ServiceA_Report",
-          "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf"
+          "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf",
+          "eicCode": ["EIC-CODE-------1"]
         }
       ],
       "rscKpi": [
@@ -40,6 +42,7 @@
           "data": [
             {
               "timestamp": "2020-05-04T01:00:00Z",
+              "granularity": "D",
               "label": "ProcessSuccessCount",
               "detail": [
                 {

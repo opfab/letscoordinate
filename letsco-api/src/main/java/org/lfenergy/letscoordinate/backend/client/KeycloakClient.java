@@ -18,8 +18,12 @@ import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.token.TokenManager;
 import org.lfenergy.letscoordinate.backend.config.KeycloakConfig;
 import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
+import org.lfenergy.letscoordinate.backend.dto.ResponseErrorMessageDto;
+import org.lfenergy.letscoordinate.backend.enums.ResponseErrorSeverityEnum;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+
+import java.util.Collections;
 
 @Component
 @RequiredArgsConstructor
@@ -44,8 +48,11 @@ public class KeycloakClient {
             return Validation.invalid(ResponseErrorDto.builder()
                     .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                     .code("TOKEN_GENERATION_ERROR")
-                    .message("Error while generating access token for user: " + username)
-                    .detail(e.getMessage())
+                    .messages(Collections.singletonList(ResponseErrorMessageDto.builder()
+                            .severity(ResponseErrorSeverityEnum.ERROR)
+                            .message("Error while generating access token for user: " + username)
+                            .detail(e.getMessage())
+                            .build()))
                     .build());
         }
     }

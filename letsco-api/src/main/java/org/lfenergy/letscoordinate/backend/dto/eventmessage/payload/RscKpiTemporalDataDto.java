@@ -13,9 +13,12 @@ package org.lfenergy.letscoordinate.backend.dto.eventmessage.payload;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
 @Data
 public class RscKpiTemporalDataDto implements IPayloadTemporalData {
     private String id;
     private String eicCode;
+    @NotNull
     private Integer value;
 }
