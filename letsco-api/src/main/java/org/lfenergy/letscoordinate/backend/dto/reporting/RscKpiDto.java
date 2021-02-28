@@ -28,6 +28,7 @@ import java.util.Optional;
 @Setter
 public class RscKpiDto {
     private String name;
+    private Boolean joinGraph;
     private Map<String, List<DataDto>> dataMap;
 
     @Builder

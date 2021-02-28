@@ -54,6 +54,9 @@ public class EventMessage implements java.io.Serializable {
     @Column(name = "format", nullable = false, length = 10)
     private String format;
 
+    @Column(name = "business_application", nullable = false, length = 250)
+    private String businessApplication;
+
     @Column(name = "message_type", nullable = false, length = 100)
     private String messageType;
 

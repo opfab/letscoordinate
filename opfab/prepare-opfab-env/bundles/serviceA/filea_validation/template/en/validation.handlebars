@@ -14,8 +14,7 @@
     <div class="m-3" style="overflow: hidden;">
       <h6>
         {{#with header.properties.businessDataIdentifier}}
-          {{timeframe}}{{timeframeNumber}}
-          {{dateFormat (math businessDayFrom.epochSecond '*' 1000) format='DD/MM/YYYY HH:mm'}} -
+          Business period: {{dateFormat (math businessDayFrom.epochSecond '*' 1000) format='DD/MM/YYYY HH:mm'}} -
           {{dateFormat (math businessDayTo.epochSecond '*' 1000) format='DD/MM/YYYY HH:mm'}}
         {{/with}}
       </h6>
