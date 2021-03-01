@@ -1,6 +1,8 @@
 {
   "license": "MPL-2.0",
   "title": "Let's Coordinate",
+  "environmentName": "Let’s Co OS",
+  "environmentColor": "green",
   "archive": {
     "filters": {
       "page": {
@@ -170,7 +172,7 @@
       "operatorfabric": {
         "name": "OperatorFabric",
         "rank": 0,
-        "version": "1.8.0.RELEASE"
+        "version": "2.1.0.RELEASE"
       },
       "letscoordinate": {
         "name": "Let's Coordinate OS",

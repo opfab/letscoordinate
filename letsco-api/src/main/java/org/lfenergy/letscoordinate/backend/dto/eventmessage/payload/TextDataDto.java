@@ -11,10 +11,15 @@
 
 package org.lfenergy.letscoordinate.backend.dto.eventmessage.payload;
 
+import lombok.Builder;
 import lombok.Data;
+
+import javax.validation.constraints.NotNull;
 
 @Data
 public class TextDataDto implements IPayloadData {
+    @NotNull
     private String name;
+    @NotNull
     private String value;
 }

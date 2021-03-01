@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018-2020, RTE (https://www.rte-france.com)
- * Copyright (c) 2019-2020 RTE international (https://www.rte-international.com)
+ * Copyright (c) 2020-2021, RTE (https://www.rte-france.com)
+ * Copyright (c) 2020-2021 RTE international (https://www.rte-international.com)
  * See AUTHORS.txt
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,13 +13,12 @@ package org.lfenergy.letscoordinate.backend.dto;
 
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
+import org.lfenergy.letscoordinate.backend.enums.ResponseErrorSeverityEnum;
 
 @Builder
 @Data
-public class ResponseErrorDto {
-    private int status;     // http status (e.g 500, 201, 403, ...)
-    private String code;    // Error code (internal id of the error)
-    private List<ResponseErrorMessageDto> messages; // Error message (for end users)
+public class ResponseErrorMessageDto {
+    private ResponseErrorSeverityEnum severity;
+    private String message;
+    private String detail; // Optional
 }

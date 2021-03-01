@@ -13,11 +13,17 @@ package org.lfenergy.letscoordinate.backend.dto.eventmessage.payload;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
 public class LinkDataDto implements IPayloadData {
+    @NotNull
     private String name;
+    @NotNull
     private String value;
+    @NotNull
+    @NotEmpty
     private List<String> eicCode;
 }

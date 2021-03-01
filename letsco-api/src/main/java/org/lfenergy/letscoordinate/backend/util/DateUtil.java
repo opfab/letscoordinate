@@ -37,4 +37,14 @@ public final class DateUtil {
     public static String formatDate(TemporalAccessor dateTime, String format) {
         return DateTimeFormatter.ofPattern(format).format(dateTime);
     }
+
+    public static boolean isValidJsonDate(String dateStr) {
+        try {
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(dateStr);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
 }

@@ -13,11 +13,18 @@ package org.lfenergy.letscoordinate.backend.dto.eventmessage.payload;
 
 import lombok.Data;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
 public abstract class AbstractPayloadComplexData<T extends IPayloadDataDetails> implements IPayloadData {
+    @NotNull
     private String name;
     private Boolean joinGraph;
+    @NotNull
+    @NotEmpty
+    @Valid
     private List<T> data;
 }

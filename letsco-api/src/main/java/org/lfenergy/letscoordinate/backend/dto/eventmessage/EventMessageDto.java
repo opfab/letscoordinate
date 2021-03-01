@@ -18,12 +18,18 @@ import lombok.NoArgsConstructor;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.HeaderDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.PayloadDto;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 @Data
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
 public class EventMessageDto {
+    @NotNull
     private String xmlns;
+    @Valid @NotNull
     private HeaderDto header = new HeaderDto();
+    @Valid @NotNull
     private PayloadDto payload = new PayloadDto();
 }
