@@ -1,7 +1,7 @@
 {
   "license": "MPL-2.0",
   "process": {
-    "label": "Service A"
+    "label": "Other notifications"
   },
   "freeMessage": {
     "title": "Free message 1"
