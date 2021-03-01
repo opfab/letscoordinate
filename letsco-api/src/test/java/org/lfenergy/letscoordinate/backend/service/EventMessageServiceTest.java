@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2020-2021, RTE (https://www.rte-france.com)
+ * Copyright (c) 2020-2021 RTE international (https://www.rte-international.com)
+ * See AUTHORS.txt
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * SPDX-License-Identifier: MPL-2.0
+ * This file is part of the Let’s Coordinate project.
+ */
+
 package org.lfenergy.letscoordinate.backend.service;
 
 import org.assertj.core.api.Assertions;
@@ -56,110 +67,106 @@ public class EventMessageServiceTest {
 
         EventMessageDto eventMessageDto = initEventMessageDto();
 
-        Assertions.assertThat(Arrays.asList(
-                "xmlns",
-                "header.verb",
-                "header.noun",
-                "header.timestamp",
-                "header.source",
-                "header.messageId",
-                "header.properties.format",
-                "header.properties.businessDataIdentifier.businessApplication",
-                "header.properties.businessDataIdentifier.messageTypeName",
-                "header.properties.businessDataIdentifier.businessDayFrom",
-                "payload.text[0].name",
-                "payload.text[0].value",
-                "payload.links[0].name",
-                "payload.links[0].value",
-                "payload.links[0].eicCode",
-                "payload.rscKpi[0].name",
-                "payload.rscKpi[0].data[0].timestamp",
-                "payload.rscKpi[0].data[0].granularity",
-                "payload.rscKpi[0].data[0].label",
-                "payload.rscKpi[0].data[0].detail[0].value",
-                "payload.timeserie[0].name",
-                "payload.timeserie[0].data[0].timestamp",
-                "payload.timeserie[0].data[0].detail[0].value",
-                "payload.validation.status",
-                "payload.validation.result",
-                "payload.validation.validationType",
-                "payload.validation.validationMessages[0].code",
-                "payload.validation.validationMessages[0].title",
-                "payload.validation.validationMessages[0].timestamp",
-                "payload.validation.validationMessages[0].severity",
-                "payload.validation.validationMessages[0].message"
-                )
-        ).containsAll(eventMessageService.getMissingMandatoryFields(eventMessageDto));
+        Assertions.assertThat(eventMessageService.getMissingMandatoryFields(eventMessageDto))
+                .containsAll(Arrays.asList(
+                        "xmlns",
+                        "header.verb",
+                        "header.noun",
+                        "header.timestamp",
+                        "header.source",
+                        "header.messageId",
+                        "header.properties.format",
+                        "header.properties.businessDataIdentifier.businessApplication",
+                        "header.properties.businessDataIdentifier.messageTypeName",
+                        "header.properties.businessDataIdentifier.businessDayFrom",
+                        "payload.text[0].name",
+                        "payload.text[0].value",
+                        "payload.links[0].name",
+                        "payload.links[0].value",
+                        "payload.links[0].eicCode",
+                        "payload.rscKpi[0].name",
+                        "payload.rscKpi[0].data[0].timestamp",
+                        "payload.rscKpi[0].data[0].granularity",
+                        "payload.rscKpi[0].data[0].detail[0].value",
+                        "payload.timeserie[0].name",
+                        "payload.timeserie[0].data[0].timestamp",
+                        "payload.timeserie[0].data[0].detail[0].value",
+                        "payload.validation.status",
+                        "payload.validation.result",
+                        "payload.validation.validationType",
+                        "payload.validation.validationMessages[0].code",
+                        "payload.validation.validationMessages[0].title",
+                        "payload.validation.validationMessages[0].timestamp",
+                        "payload.validation.validationMessages[0].severity",
+                        "payload.validation.validationMessages[0].message")
+                );
 
         eventMessageDto.getHeader().getProperties().setBusinessDataIdentifier(null);
         eventMessageDto.getPayload().getRscKpi().get(0).getData().get(0).setDetail(null);
         eventMessageDto.getPayload().getTimeserie().get(0).getData().get(0).setDetail(null);
         eventMessageDto.getPayload().getValidation().setValidationMessages(null);
 
-        Assertions.assertThat(Arrays.asList(
-                "xmlns",
-                "header.verb",
-                "header.noun",
-                "header.timestamp",
-                "header.source",
-                "header.messageId",
-                "header.properties.format",
-                "header.properties.businessDataIdentifier",
-                "payload.text[0].name",
-                "payload.text[0].value",
-                "payload.links[0].name",
-                "payload.links[0].value",
-                "payload.links[0].eicCode",
-                "payload.rscKpi[0].name",
-                "payload.rscKpi[0].data[0].timestamp",
-                "payload.rscKpi[0].data[0].granularity",
-                "payload.rscKpi[0].data[0].label",
-                "payload.rscKpi[0].data[0].detail",
-                "payload.timeserie[0].name",
-                "payload.timeserie[0].data[0].timestamp",
-                "payload.timeserie[0].data[0].detail",
-                "payload.validation.status",
-                "payload.validation.result",
-                "payload.validation.validationType",
-                "payload.validation.validationMessages"
-                )
-        ).containsAll(eventMessageService.getMissingMandatoryFields(eventMessageDto));
+        Assertions.assertThat(eventMessageService.getMissingMandatoryFields(eventMessageDto))
+                .containsAll(Arrays.asList(
+                        "xmlns",
+                        "header.verb",
+                        "header.noun",
+                        "header.timestamp",
+                        "header.source",
+                        "header.messageId",
+                        "header.properties.format",
+                        "header.properties.businessDataIdentifier",
+                        "payload.text[0].name",
+                        "payload.text[0].value",
+                        "payload.links[0].name",
+                        "payload.links[0].value",
+                        "payload.links[0].eicCode",
+                        "payload.rscKpi[0].name",
+                        "payload.rscKpi[0].data[0].timestamp",
+                        "payload.rscKpi[0].data[0].granularity",
+                        "payload.rscKpi[0].data[0].detail",
+                        "payload.timeserie[0].name",
+                        "payload.timeserie[0].data[0].timestamp",
+                        "payload.timeserie[0].data[0].detail",
+                        "payload.validation.status",
+                        "payload.validation.result",
+                        "payload.validation.validationType",
+                        "payload.validation.validationMessages")
+                );
 
         eventMessageDto.getHeader().setProperties(null);
         eventMessageDto.getPayload().getRscKpi().get(0).setData(null);
         eventMessageDto.getPayload().getTimeserie().get(0).setData(null);
 
-        Assertions.assertThat(Arrays.asList(
-                "xmlns",
-                "header.verb",
-                "header.noun",
-                "header.timestamp",
-                "header.source",
-                "header.messageId",
-                "header.properties",
-                "payload.text[0].name",
-                "payload.text[0].value",
-                "payload.links[0].name",
-                "payload.links[0].value",
-                "payload.links[0].eicCode",
-                "payload.rscKpi[0].name",
-                "payload.rscKpi[0].data",
-                "payload.timeserie[0].name",
-                "payload.timeserie[0].data",
-                "payload.validation.status",
-                "payload.validation.result",
-                "payload.validation.validationType",
-                "payload.validation.validationMessages"
-                )
-        ).containsAll(eventMessageService.getMissingMandatoryFields(eventMessageDto));
+        Assertions.assertThat(eventMessageService.getMissingMandatoryFields(eventMessageDto))
+                .containsAll(Arrays.asList(
+                        "xmlns",
+                        "header.verb",
+                        "header.noun",
+                        "header.timestamp",
+                        "header.source",
+                        "header.messageId",
+                        "header.properties",
+                        "payload.text[0].name",
+                        "payload.text[0].value",
+                        "payload.links[0].name",
+                        "payload.links[0].value",
+                        "payload.links[0].eicCode",
+                        "payload.rscKpi[0].name",
+                        "payload.rscKpi[0].data",
+                        "payload.timeserie[0].name",
+                        "payload.timeserie[0].data",
+                        "payload.validation.status",
+                        "payload.validation.result",
+                        "payload.validation.validationType",
+                        "payload.validation.validationMessages")
+                );
 
         eventMessageDto.setHeader(null);
         eventMessageDto.setPayload(null);
 
-        Assertions.assertThat(Arrays.asList(
-                "xmlns", "header", "payload"
-                )
-        ).containsAll(eventMessageService.getMissingMandatoryFields(eventMessageDto));
+        Assertions.assertThat(eventMessageService.getMissingMandatoryFields(eventMessageDto))
+                .containsAll(Arrays.asList("xmlns", "header", "payload"));
     }
 
 }

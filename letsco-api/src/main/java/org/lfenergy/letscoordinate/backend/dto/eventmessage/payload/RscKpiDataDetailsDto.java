@@ -27,7 +27,6 @@ public class RscKpiDataDetailsDto implements IPayloadDataDetails {
     private OffsetDateTime timestamp;
     @NotNull
     private DataGranularityEnum granularity;
-    @NotNull
     private String label;
     @NotNull
     @NotEmpty
