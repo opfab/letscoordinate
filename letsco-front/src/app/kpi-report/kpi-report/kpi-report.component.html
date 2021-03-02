@@ -19,8 +19,8 @@
 
     <h4 class="my-3 synthesisTitle" style="text-align: center;" *ngIf="rscKpiReportData">
         <b>{{ rscKpiReportData.submittedForm.rscService.name }} Service<br/>
-            Synthesis from {{ rscKpiReportData.submittedForm.dataGranularity === 'DAILY' ? (rscKpiReportData.submittedForm.startDate | date:'fullDate') : rscKpiReportData.submittedForm.startDate.getFullYear() }}
-            to {{ rscKpiReportData.submittedForm.dataGranularity === 'DAILY' ? (rscKpiReportData.submittedForm.endDate | date:'fullDate') : rscKpiReportData.submittedForm.endDate.getFullYear() }}<br/>
+            Synthesis from {{ rscKpiReportData.submittedForm.dataGranularity === 'D' ? (rscKpiReportData.submittedForm.startDate | date:'fullDate') : rscKpiReportData.submittedForm.startDate.getFullYear() }}
+            to {{ rscKpiReportData.submittedForm.dataGranularity === 'D' ? (rscKpiReportData.submittedForm.endDate | date:'fullDate') : rscKpiReportData.submittedForm.endDate.getFullYear() }}<br/>
             {{rscsOrRegionsToString}} {{selectedEntityType}}{{isDailyView ? '' : 's'}} Report</b>
     </h4>
 
