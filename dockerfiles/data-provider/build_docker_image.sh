@@ -20,4 +20,4 @@ fi
 cp -r ${LC_HOME}/letsco-data-provider/target/letsco-data-provider-${LC_VERSION}*-exec.jar ${LC_HOME}/dockerfiles/data-provider/letsco-data-provider.jar
 
 docker build --tag=letscoordinate/letsco-data-provider:latest -f ./Dockerfile .
-docker build --tag=letscoordinate/letsco-data-provider:${tag} -f ./Dockerfile .
+#docker build --tag=letscoordinate/letsco-data-provider:${tag} -f ./Dockerfile .

@@ -27,6 +27,6 @@ JS_FILES=$(ls letsco-front/ | grep -E '(\.js|\.css|assets)' | xargs echo)
 cd letsco-front/ && mv $JS_FILES letsco && cd ${LC_HOME}/dockerfiles/front
 
 docker build --tag=letscoordinate/letsco-front:latest -f ./Dockerfile . && \
-docker build --tag=letscoordinate/letsco-front:${tag} -f ./Dockerfile . && \
+#docker build --tag=letscoordinate/letsco-front:${tag} -f ./Dockerfile . && \
 docker stop letsco-front ; docker rm letsco-front ; \
 docker run -d -p 4200:8080 --name letsco-front letscoordinate/letsco-front:latest
