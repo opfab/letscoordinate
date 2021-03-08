@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.dto.reporting.*;
 import org.lfenergy.letscoordinate.backend.enums.DataGranularityEnum;
+import org.lfenergy.letscoordinate.backend.enums.KpiDataSubtypeEnum;
 import org.lfenergy.letscoordinate.backend.enums.ReportTypeEnum;
 import org.lfenergy.letscoordinate.backend.mapper.RscKpiReportMapper;
 import org.lfenergy.letscoordinate.backend.model.RscKpi;
@@ -84,7 +85,7 @@ public class ReportingService {
         return RscKpiReportDataDto.builder()
                 .submittedFormData(submittedFormDataDto)
                 .rscKpiTypedDataMap(RscKpiReportMapper.toMap(rscKpiList, coordinationConfig.getKpiDataTypeMapByServiceCode(submittedFormDataDto.getRscServiceCode()), submittedFormDataDto.getKpiDataTypeCode()))
-                .rscKpiSubtypedDataMap(coordinationConfig.getKpiDataSubtypesByServiceCode(submittedFormDataDto.getRscServiceCode()))
+                .rscKpiSubtypedDataMap(fillKpiDataSubtypeWithJoinGraphValues(coordinationConfig.getKpiDataSubtypesByServiceCode(submittedFormDataDto.getRscServiceCode()), rscKpiList))
                 .reportFileName(generateReportFileNameWithoutExtension(submittedFormDataDto))
                 .build();
     }
@@ -95,9 +96,27 @@ public class ReportingService {
         return RscKpiReportDataDto.builder()
                 .submittedFormData(submittedFormDataDto)
                 .rscKpiTypedDataMap(RscKpiReportMapper.toMap(rscKpiList, coordinationConfig.getKpiDataTypeMapByServiceCode(submittedFormDataDto.getRscServiceCode()), submittedFormDataDto.getKpiDataTypeCode()))
-                .rscKpiSubtypedDataMap(coordinationConfig.getKpiDataSubtypesByServiceCode(submittedFormDataDto.getRscServiceCode()))
+                .rscKpiSubtypedDataMap(fillKpiDataSubtypeWithJoinGraphValues(coordinationConfig.getKpiDataSubtypesByServiceCode(submittedFormDataDto.getRscServiceCode()), rscKpiList))
                 .reportFileName(generateReportFileNameWithoutExtension(submittedFormDataDto))
                 .build();
+    }
+
+    private Map<String, CoordinationConfig.KpiDataSubtype> fillKpiDataSubtypeWithJoinGraphValues(Map<String, CoordinationConfig.KpiDataSubtype> kpiDataSubtypeMap,
+                                                                                                 List<RscKpi> rscKpiList) {
+        if (rscKpiList == null || kpiDataSubtypeMap == null)
+            return null;
+        List<RscKpi> descSortedRscKpiList = rscKpiList.stream()
+                .sorted(Comparator.comparing(RscKpi::getId).reversed())
+                .collect(Collectors.toList());
+        for (CoordinationConfig.KpiDataSubtype kpiDataSubtype : kpiDataSubtypeMap.values()) {
+            for (RscKpi rscKpi : descSortedRscKpiList) {
+                if (kpiDataSubtype.getCode() != null && kpiDataSubtype.getCode().equalsIgnoreCase(rscKpi.getName())) {
+                    kpiDataSubtype.setJoinGraph(rscKpi.getJoinGraph());
+                    break;
+                }
+            }
+        }
+        return kpiDataSubtypeMap;
     }
 
     /**

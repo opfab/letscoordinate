@@ -38,10 +38,14 @@ export class RscKpiAdapter implements Adapter<RscKpi>{
 
         if (submittedFormData.dataGranularity === DataGranularityEnum.DAILY) { // CASE: DAILY VIEW
             if (Array.from(Object.entries(value)).length === 0) {
-                rscKpiData.push(this.rscKpiDataAdapter.adapt([kpiSubtype ? kpiSubtype.name : key, []], extraParams, key, key + '-graph0'))
+                rscKpiData.push(this.rscKpiDataAdapter.adapt([[kpiSubtype ? kpiSubtype.name : key, []]], extraParams, key, key + '-graph0'))
             } else {
-                Array.from(Object.entries(value))
-                    .forEach((entry, index) => rscKpiData.push(this.rscKpiDataAdapter.adapt(entry, extraParams, key, key + '-graph' + index)));
+                if (kpiSubtype.joinGraph === undefined || kpiSubtype.joinGraph === true) {
+                    rscKpiData.push(this.rscKpiDataAdapter.adapt(Array.from(Object.entries(value)), extraParams, key, key + '-graph0'));
+                } else {
+                    Array.from(Object.entries(value))
+                        .forEach((entry2, index) => rscKpiData.push(this.rscKpiDataAdapter.adapt([entry2], extraParams, key, key + '-graph' + index)));
+                }
             }
         } else { // CASE: MULTI-YEAR VIEW
             if (Array.from(Object.entries(value)).length === 0) {

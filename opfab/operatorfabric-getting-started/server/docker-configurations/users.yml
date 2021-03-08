@@ -52,16 +52,647 @@ operatorfabric.users.default:
     - id: TRANS
       name: TRANS name
       description: Transnational Group
-#  entities:
-#    - id: ENTITY1
-#      name: Entity 1 name
-#      description: Entity 1 short description
-#    - id: ENTITY2
-#      name: Entity 2 name
-#      description: Entity 2 short description
-#    - id: ENTITY3
-#      name: Entity 3 name
-#      description: Entity 3 short description
-#    - id: ENTITY4
-#      name: Entity 4 name
-#      description: Entity 4 short description
+  entities:
+
+# Generic entities
+
+    - id: EICCODE-ALL-RSCS
+      name: All RSCs
+      description: All RSCs
+
+    - id: EICCODE-ALL-TSOS
+      name: All TSOs
+      description: All TSOs
+
+# RSCs and their TSOs
+
+    - id: RSC-BALTIC-AND-TSOS
+      name: Baltic RSC & TSOs
+      description: Baltic RSC & TSOs
+
+    - id: RSC-CORESO-AND-TSOS
+      name: CORESO & TSOs
+      description: CORESO & TSOs
+
+    - id: RSC-NORDIC-AND-TSOS
+      name: Nordic & TSOs
+      description: Nordic & TSOs
+
+    - id: RSC-SCC-AND-TSOS
+      name: SCC & TSOs
+      description: SCC & TSOs
+
+    - id: RSC-SELENE-CC-AND-TSOS
+      name: SEleNe CC & TSOs
+      description: SEleNe CC & TSOs
+
+    - id: RSC-TSCNET-AND-TSOS
+      name: TSCNET & TSOs
+      description: TSCNET & TSOs
+
+# Region/CCR and their TSOs and RSCs
+
+    - id: REGION-BALTIC-AND-RSCS-TSOS
+      name: Baltic CCR & RSCs & TSOs
+      description: Baltic CCR & RSCs & TSOs
+
+    - id: REGION-CHANNEL-AND-RSCS-TSOS
+      name: Channel CCR & RSCs & TSOs
+      description: Channel CCR & RSCs & TSOs
+
+    - id: REGION-CORE-AND-RSCS-TSOS
+      name: CORE CCR & RSCs & TSOs
+      description: CORE CCR & RSCs & TSOs
+
+    - id: REGION-GRIT-AND-RSCS-TSOS
+      name: Greece Italy CCR (GRIT) & RSCs & TSOs
+      description: Greece Italy CCR (GRIT) & RSCs & TSOs
+
+    - id: REGION-HANSA-AND-RSCS-TSOS
+      name: Hansa CCR & RSCs & TSOs
+      description: Hansa CCR & RSCs & TSOs
+
+    - id: ITALY-NORTH-REGION-AND-RSCS-TSOS
+      name: Italy North CCR & RSCs & TSOs
+      description: Italy North CCR & RSCs & TSOs
+
+    - id: IU-REGION-AND-RSCS-TSOS
+      name: Ireland and United Kingdom CCR (IU) & RSCs & TSOs
+      description: Ireland and United Kingdom CCR (IU) & RSCs & TSOs
+
+    - id: SEE-REGION-AND-RSCS-TSOS
+      name: South East Europe CCR (SEE) & RSCs & TSOs
+      description: South East Europe CCR (SEE) & RSCs & TSOs
+
+    - id: SWE-REGION-AND-RSCS-TSOS
+      name: South West Europe CCR (SWE) & RSCs & TSOs
+      description: South West Europe CCR (SWE) & RSCs & TSOs
+
+    - id: NORDIC-REGION-AND-RSCS-TSOS
+      name: Nordic CCR & RSCs & TSOs
+      description: Nordic CCR & RSCs & TSOs
+
+# Region / CCR
+
+    - id: EICCODE-REGION-0
+      name: Baltic CCR
+      description: Baltic CCR
+      parents:
+        - REGION-BALTIC-AND-RSCS-TSOS
+
+    - id: EICCODE-REGION-1
+      name: Channel CCR
+      description: Channel CCR
+      parents:
+        - REGION-CHANNEL-AND-RSCS-TSOS
+
+    - id: EICCODE-REGION-2
+      name: CORE CCR
+      description: CORE CCR
+      parents:
+        - REGION-CORE-AND-RSCS-TSOS
+
+    - id: EICCODE-REGION-3
+      name: Greece Italy CCR (GRIT)
+      description: Greece Italy CCR (GRIT)
+      parents:
+        - REGION-GRIT-AND-RSCS-TSOS
+
+    - id: EICCODE-REGION-4
+      name: Hansa CCR
+      description: Hansa CCR
+      parents:
+        - REGION-HANSA-AND-RSCS-TSOS
+
+    - id: EICCODE-REGION-5
+      name: Italy North CCR
+      description: Italy North CCR
+      parents:
+        - ITALY-NORTH-REGION-AND-RSCS-TSOS
+
+    - id: EICCODE-REGION-6
+      name: Ireland and United Kingdom CCR (IU)
+      description: Ireland and United Kingdom CCR (IU)
+      parents:
+        - IU-REGION-AND-RSCS-TSOS
+
+    - id: EICCODE-REGION-8
+      name: South East Europe CCR (SEE)
+      description: South East Europe CCR (SEE)
+      parents:
+        - SEE-REGION-AND-RSCS-TSOS
+
+    - id: EICCODE-REGION-9
+      name: South West Europe CCR (SWE)
+      description: South West Europe CCR (SWE)
+      parents:
+        - SWE-REGION-AND-RSCS-TSOS
+
+    - id: EICCODE-REGION-7
+      name: Nordic CCR
+      description: Nordic CCR
+      parents:
+        - NORDIC-REGION-AND-RSCS-TSOS
+
+# RSC
+
+    - id: 38X-BALTIC-RSC-H
+      name: Baltic RSC
+      description: Baltic RSC
+      parents:
+        - EICCODE-REGION-0
+        - EICCODE-ALL-RSCS
+        - RSC-BALTIC-AND-TSOS
+        - REGION-BALTIC-AND-RSCS-TSOS
+
+    - id: 22XCORESO------S
+      name: CORESO
+      description: CORESO
+      parents:
+        - EICCODE-REGION-1
+        - EICCODE-REGION-2
+        - EICCODE-REGION-3
+        - EICCODE-REGION-5
+        - EICCODE-REGION-6
+        - EICCODE-REGION-9
+        - EICCODE-ALL-RSCS
+        - RSC-CORESO-AND-TSOS
+        - REGION-CHANNEL-AND-RSCS-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+        - REGION-GRIT-AND-RSCS-TSOS
+        - ITALY-NORTH-REGION-AND-RSCS-TSOS
+        - IU-REGION-AND-RSCS-TSOS
+        - SWE-REGION-AND-RSCS-TSOS
+
+    - id: 10X1001C--00008J
+      name: Nordic RSC
+      description: Nordic RSC
+      parents:
+        - EICCODE-REGION-0
+        - EICCODE-REGION-4
+        - EICCODE-REGION-7
+        - EICCODE-ALL-RSCS
+        - RSC-NORDIC-AND-TSOS
+        - REGION-BALTIC-AND-RSCS-TSOS
+        - REGION-HANSA-AND-RSCS-TSOS
+        - NORDIC-REGION-AND-RSCS-TSOS
+
+    - id: 34X-0000000068-Q
+      name: SCC
+      description: SCC
+      parents:
+        - EICCODE-REGION-3
+        - EICCODE-REGION-8
+        - EICCODE-ALL-RSCS
+        - RSC-SCC-AND-TSOS
+        - REGION-GRIT-AND-RSCS-TSOS
+        - SEE-REGION-AND-RSCS-TSOS
+
+    - id: EICCODE-SELENECC
+      name: SEleNe CC
+      description: SEleNe CC
+      parents:
+        - EICCODE-REGION-2
+        - EICCODE-REGION-3
+        - EICCODE-REGION-8
+        - EICCODE-ALL-RSCS
+        - RSC-SELENE-CC-AND-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+        - REGION-GRIT-AND-RSCS-TSOS
+        - SEE-REGION-AND-RSCS-TSOS
+
+    - id: 10X1001C--00003T
+      name: TSCNET
+      description: TSCNET
+      parents:
+        - EICCODE-REGION-0
+        - EICCODE-REGION-1
+        - EICCODE-REGION-2
+        - EICCODE-REGION-4
+        - EICCODE-REGION-5
+        - EICCODE-ALL-RSCS
+        - RSC-TSCNET-AND-TSOS
+        - REGION-BALTIC-AND-RSCS-TSOS
+        - REGION-CHANNEL-AND-RSCS-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+        - REGION-HANSA-AND-RSCS-TSOS
+        - ITALY-NORTH-REGION-AND-RSCS-TSOS
+
+# TSO
+
+    - id: 10X1001A1001A39W
+      name: Elering
+      description: Elering
+      parents:
+        - 38X-BALTIC-RSC-H
+        - EICCODE-REGION-0
+        - EICCODE-ALL-TSOS
+        - RSC-BALTIC-AND-TSOS
+        - REGION-BALTIC-AND-RSCS-TSOS
+
+    - id: 10X1001A1001A55Y
+      name: Litgrid
+      description: Litgrid
+      parents:
+        - 38X-BALTIC-RSC-H
+        - EICCODE-REGION-0
+        - EICCODE-ALL-TSOS
+        - RSC-BALTIC-AND-TSOS
+        - REGION-BALTIC-AND-RSCS-TSOS
+
+    - id: 10X1001A1001B54W
+      name: AST
+      description: AST
+      parents:
+        - 38X-BALTIC-RSC-H
+        - EICCODE-REGION-0
+        - EICCODE-ALL-TSOS
+        - RSC-BALTIC-AND-TSOS
+        - REGION-BALTIC-AND-RSCS-TSOS
+
+    - id: 10X1001A1001A094
+      name: Elia
+      description: Elia
+      parents:
+        - 22XCORESO------S
+        - EICCODE-REGION-2
+        - EICCODE-ALL-TSOS
+        - RSC-CORESO-AND-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+
+    - id: 10XES-REE------E
+      name: REE
+      description: REE
+      parents:
+        - 22XCORESO------S
+        - EICCODE-REGION-9
+        - EICCODE-ALL-TSOS
+        - RSC-CORESO-AND-TSOS
+        - SWE-REGION-AND-RSCS-TSOS
+
+    - id: 10XFR-RTE------Q
+      name: RTE
+      description: RTE
+      parents:
+        - 22XCORESO------S
+        - EICCODE-REGION-1
+        - EICCODE-REGION-2
+        - EICCODE-REGION-5
+        - EICCODE-REGION-9
+        - EICCODE-ALL-TSOS
+        - RSC-CORESO-AND-TSOS
+        - REGION-CHANNEL-AND-RSCS-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+        - ITALY-NORTH-REGION-AND-RSCS-TSOS
+
+    - id: 21X-GB-A-A0A0A-7
+      name: National Grid
+      description: National Grid
+      parents:
+        - 22XCORESO------S
+        - EICCODE-REGION-1
+        - EICCODE-REGION-6
+        - EICCODE-ALL-TSOS
+        - RSC-CORESO-AND-TSOS
+        - REGION-CHANNEL-AND-RSCS-TSOS
+        - IU-REGION-AND-RSCS-TSOS
+
+    - id: 10X1001A1001A531
+      name: EirGrid
+      description: EirGrid
+      parents:
+        - 22XCORESO------S
+        - EICCODE-REGION-6
+        - EICCODE-ALL-TSOS
+        - RSC-CORESO-AND-TSOS
+        - IU-REGION-AND-RSCS-TSOS
+
+    - id: 10X1001A1001A345
+      name: Terna
+      description: Terna
+      parents:
+        - 22XCORESO------S
+        - EICCODE-REGION-3
+        - EICCODE-REGION-5
+        - EICCODE-ALL-TSOS
+        - RSC-CORESO-AND-TSOS
+        - REGION-GRIT-AND-RSCS-TSOS
+        - ITALY-NORTH-REGION-AND-RSCS-TSOS
+
+    - id: 10XNITSO-12345-O
+      name: SONI
+      description: SONI
+      parents:
+        - 22XCORESO------S
+        - EICCODE-REGION-6
+        - EICCODE-ALL-TSOS
+        - RSC-CORESO-AND-TSOS
+        - IU-REGION-AND-RSCS-TSOS
+
+    - id: 10XPT-REN------9
+      name: REN
+      description: REN
+      parents:
+        - 22XCORESO------S
+        - EICCODE-REGION-9
+        - EICCODE-ALL-TSOS
+        - RSC-CORESO-AND-TSOS
+        - SWE-REGION-AND-RSCS-TSOS
+
+    - id: 10X1001A1001A248
+      name: Energinet
+      description: Energinet
+      parents:
+        - 10X1001C--00008J
+        - EICCODE-REGION-4
+        - EICCODE-REGION-7
+        - RSC-NORDIC-AND-TSOS
+        - REGION-HANSA-AND-RSCS-TSOS
+        - NORDIC-REGION-AND-RSCS-TSOS
+
+    - id: 10X1001A1001A264
+      name: Fingrid
+      description: Fingrid
+      parents:
+        - 10X1001C--00008J
+        - EICCODE-REGION-0
+        - EICCODE-REGION-7
+        - EICCODE-ALL-TSOS
+        - RSC-NORDIC-AND-TSOS
+        - REGION-BALTIC-AND-RSCS-TSOS
+
+    - id: 10X1001A1001A38Y
+      name: Statnett
+      description: Statnett
+      parents:
+        - 10X1001C--00008J
+        - EICCODE-REGION-7
+        - EICCODE-ALL-TSOS
+        - RSC-NORDIC-AND-TSOS
+        - NORDIC-REGION-AND-RSCS-TSOS
+
+    - id: 10X1001A1001A418
+      name: Svenska kraftnät
+      description: Svenska kraftnät
+      parents:
+        - 10X1001C--00008J
+        - EICCODE-REGION-0
+        - EICCODE-REGION-4
+        - EICCODE-REGION-7
+        - EICCODE-ALL-TSOS
+        - RSC-NORDIC-AND-TSOS
+        - REGION-BALTIC-AND-RSCS-TSOS
+        - REGION-HANSA-AND-RSCS-TSOS
+        - NORDIC-REGION-AND-RSCS-TSOS
+
+    - id: 10XAL-KESH-----J
+      name: OST
+      description: OST
+      parents:
+        - 34X-0000000068-Q
+        - EICCODE-ALL-TSOS
+        - RSC-SCC-AND-TSOS
+
+    - id: 10XBA-JPCCZEKC-K
+      name: NOS BiH
+      description: NOS BiH
+      parents:
+        - 34X-0000000068-Q
+        - EICCODE-ALL-TSOS
+        - RSC-SCC-AND-TSOS
+
+    - id: 10XBG-ESO------A
+      name: ESO
+      description: ESO
+      parents:
+        - 34X-0000000068-Q
+        - EICCODE-SELENECC
+        - EICCODE-REGION-8
+        - EICCODE-ALL-TSOS
+        - RSC-SCC-AND-TSOS
+        - RSC-SELENE-CC-AND-TSOS
+        - SEE-REGION-AND-RSCS-TSOS
+
+    - id: 10XGR-HTSO-----B
+      name: IPTO
+      description: IPTO
+      parents:
+        - 34X-0000000068-Q
+        - EICCODE-SELENECC
+        - EICCODE-REGION-3
+        - EICCODE-REGION-8
+        - EICCODE-ALL-TSOS
+        - RSC-SCC-AND-TSOS
+        - RSC-SELENE-CC-AND-TSOS
+        - REGION-GRIT-AND-RSCS-TSOS
+        - SEE-REGION-AND-RSCS-TSOS
+
+    - id: 10XCS-CG-TSO---5
+      name: CGES
+      description: CGES
+      parents:
+        - 34X-0000000068-Q
+        - EICCODE-ALL-TSOS
+        - RSC-SCC-AND-TSOS
+
+    - id: 10XMK-MEPSO----M
+      name: MEPSO
+      description: MEPSO
+      parents:
+        - 34X-0000000068-Q
+        - EICCODE-ALL-TSOS
+        - RSC-SCC-AND-TSOS
+
+    - id: 10XCS-SERBIATSO8
+      name: EMS
+      description: EMS
+      parents:
+        - 34X-0000000068-Q
+        - EICCODE-ALL-TSOS
+        - RSC-SCC-AND-TSOS
+
+    - id: 10XTR-TEIAS----9
+      name: TEIAS
+      description: TEIAS
+      parents:
+        - 34X-0000000068-Q
+        - EICCODE-ALL-TSOS
+        - RSC-SCC-AND-TSOS
+
+    - id: 10XRO-TEL------2
+      name: Transelectrica
+      description: Transelectrica
+      parents:
+        - EICCODE-SELENECC
+        - 10X1001C--00003T
+        - EICCODE-REGION-2
+        - EICCODE-REGION-8
+        - EICCODE-ALL-TSOS
+        - RSC-SELENE-CC-AND-TSOS
+        - RSC-TSCNET-AND-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+        - SEE-REGION-AND-RSCS-TSOS
+
+    - id: 10XAT-APG------Z
+      name: APG
+      description: APG
+      parents:
+        - 10X1001C--00003T
+        - EICCODE-REGION-2
+        - EICCODE-REGION-5
+        - EICCODE-ALL-TSOS
+        - RSC-TSCNET-AND-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+        - ITALY-NORTH-REGION-AND-RSCS-TSOS
+
+    - id: 10XCH-SWISSGRIDC
+      name: Swissgrid
+      description: Swissgrid
+      parents:
+        - 10X1001C--00003T
+        - EICCODE-REGION-2
+        - EICCODE-REGION-5
+        - EICCODE-ALL-TSOS
+        - RSC-TSCNET-AND-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+        - ITALY-NORTH-REGION-AND-RSCS-TSOS
+
+    - id: 10XCZ-CEPS-GRIDE
+      name: CEPS
+      description: CEPS
+      parents:
+        - 10X1001C--00003T
+        - EICCODE-REGION-2
+        - EICCODE-ALL-TSOS
+        - RSC-TSCNET-AND-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+
+    - id: 10XDE-VE-TRANSMK
+      name: 50Hertz
+      description: 50Hertz
+      parents:
+        - 10X1001C--00003T
+        - EICCODE-REGION-2
+        - EICCODE-REGION-4
+        - EICCODE-ALL-TSOS
+        - RSC-TSCNET-AND-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+        - REGION-HANSA-AND-RSCS-TSOS
+
+    - id: 10XDE-RWENET---W
+      name: Amprion
+      description: Amprion
+      parents:
+        - 10X1001C--00003T
+        - EICCODE-REGION-2
+        - EICCODE-ALL-TSOS
+        - RSC-TSCNET-AND-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+
+    - id: 10XDE-EON-NETZ-C
+      name: TenneT DE
+      description: TenneT DE
+      parents:
+        - 10X1001C--00003T
+        - EICCODE-REGION-2
+        - EICCODE-REGION-4
+        - EICCODE-ALL-TSOS
+        - RSC-TSCNET-AND-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+        - REGION-HANSA-AND-RSCS-TSOS
+
+    - id: 10XDE-ENBW--TNGX
+      name: TransnetBW
+      description: TransnetBW
+      parents:
+        - 10X1001C--00003T
+        - EICCODE-REGION-2
+        - EICCODE-ALL-TSOS
+        - RSC-TSCNET-AND-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+
+    - id: 10XHR-HEP-OPS--A
+      name: HOPS
+      description: HOPS
+      parents:
+        - 10X1001C--00003T
+        - EICCODE-REGION-2
+        - EICCODE-ALL-TSOS
+        - RSC-TSCNET-AND-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+
+    - id: 10X1001A1001A329
+      name: MAVIR
+      description: MAVIR
+      parents:
+        - 10X1001C--00003T
+        - EICCODE-REGION-2
+        - EICCODE-ALL-TSOS
+        - RSC-TSCNET-AND-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+
+    - id: 21X000000001333E
+      name: Creos
+      description: Creos
+      parents:
+        - 10X1001C--00003T
+        - EICCODE-REGION-2
+        - EICCODE-ALL-TSOS
+        - RSC-TSCNET-AND-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+
+    - id: 10X1001A1001A361
+      name: TenneT NL
+      description: TenneT NL
+      parents:
+        - 10X1001C--00003T
+        - EICCODE-REGION-1
+        - EICCODE-REGION-2
+        - EICCODE-ALL-TSOS
+        - RSC-TSCNET-AND-TSOS
+        - REGION-CHANNEL-AND-RSCS-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+
+    - id: 10XPL-TSO------P
+      name: PSE
+      description: PSE
+      parents:
+        - 10X1001C--00003T
+        - EICCODE-REGION-0
+        - EICCODE-REGION-2
+        - EICCODE-REGION-4
+        - EICCODE-ALL-TSOS
+        - RSC-TSCNET-AND-TSOS
+        - REGION-BALTIC-AND-RSCS-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+        - REGION-HANSA-AND-RSCS-TSOS
+
+    - id: 10XSI-ELES-----1
+      name: ELES
+      description: ELES
+      parents:
+        - 10X1001C--00003T
+        - EICCODE-REGION-2
+        - EICCODE-REGION-5
+        - EICCODE-ALL-TSOS
+        - RSC-TSCNET-AND-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+        - ITALY-NORTH-REGION-AND-RSCS-TSOS
+
+    - id: 10XSK-SEPS-GRIDB
+      name: SEPS
+      description: SEPS
+      parents:
+        - 10X1001C--00003T
+        - EICCODE-REGION-2
+        - EICCODE-ALL-TSOS
+        - RSC-TSCNET-AND-TSOS
+        - REGION-CORE-AND-RSCS-TSOS
+
+    - id: 10XAT-VKW-UNG—-Y
+      name: Vuen
+      description: Vuen
+      parents:
+        - 10X1001C--00003T
+        - EICCODE-ALL-TSOS
+        - RSC-TSCNET-AND-TSOS

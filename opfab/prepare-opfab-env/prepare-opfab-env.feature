@@ -54,68 +54,6 @@ Feature: Prepare OpFab env. for Let's Co open source
     And match response.name == group.name
     And match response.id == group.id
 
-  Scenario: Create entity group
-
-    * def group =
-"""
-{
-  "id" : "ENTITY_GROUP_1",
-  "name" : "Entity group 1",
-  "description" : "A group for entities Terna and RTE"
-}
-"""
-
-    Given url opfabUrl + 'users/entities'
-    And header Authorization = 'Bearer ' + authToken
-    And request group
-    When method post
-    Then assert responseStatus == 200 || responseStatus == 201
-    And match response.description == group.description
-    And match response.name == group.name
-    And match response.id == group.id
-
-  Scenario: Create entity Terna
-
-    * def entity =
-"""
-{
-  "id" : "10X1001A1001A345",
-  "name" : "Terna",
-  "description" : "The Terna entity",
-  "parents": ["ENTITY_GROUP_1"]
-}
-"""
-
-    Given url opfabUrl + 'users/entities'
-    And header Authorization = 'Bearer ' + authToken
-    And request entity
-    When method post
-    Then assert responseStatus == 200 || responseStatus == 201
-    And match response.description == entity.description
-    And match response.name == entity.name
-    And match response.id == entity.id
-
-  Scenario: Create entity RTE
-
-    * def entity =
-"""
-{
-  "id" : "10XFR-RTE------Q",
-  "name" : "RTE",
-  "description" : "The RTE entity",
-  "parents": ["ENTITY_GROUP_1"]
-}
-"""
-
-    Given url opfabUrl + 'users/entities'
-    And header Authorization = 'Bearer ' + authToken
-    And request entity
-    When method post
-    Then assert responseStatus == 200 || responseStatus == 201
-    And match response.description == entity.description
-    And match response.name == entity.name
-    And match response.id == entity.id
-
   Scenario: Create user user.test
 
     * def user =
