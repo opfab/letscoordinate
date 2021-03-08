@@ -53,7 +53,7 @@ export class KpiChartOptions {
     chartType: ChartType;
     chartOptions: ChartOptions;
     chartLabels: Label[] = [];
-    chartDataSets: ChartDataSets[] = [{ data: [], label: null }];
+    chartDataSets: ChartDataSets[] = [];
     chartLegend: boolean = true;
     chartHeight: number = 75;
     chartPlugins: any[] = [];

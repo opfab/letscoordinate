@@ -12,7 +12,6 @@
     {
       "id": "processgroup_serviceb",
       "processes": [
-
         "serviceb_processmonitoring",
         "serviceb_filea_validation",
         "serviceb_fileb_validation",

@@ -39,44 +39,49 @@ export class RscKpiDataAdapter implements Adapter<RscKpiData>{
         let kpiSubtypeCode = extraParams[1]; // GPx or BPx (while x in [1..n])
         let submittedFormData = extraParams[0][0][0]; // values selected in the config page
         if (submittedFormData.dataGranularity === DataGranularityEnum.DAILY) { // CASE: DAILY GRANULARITY
-            let key = entry[0]; // used later as label for graph
-            let value = entry[1]; // graph values
-            let rscKpiTemporalData: RscKpiTemporalData[] = [];
-            if (Array.from(value).length === 0) {
-                rscKpiTemporalData.push(this.rscKpiTemporalDataAdapter.adapt({details: [{}]}));
-            } else {
-                value.forEach(rscKpiTmprlData => rscKpiTemporalData.push(this.rscKpiTemporalDataAdapter.adapt(rscKpiTmprlData)));
-            }
             let chartOptions = new KpiChartOptions(extraParams[0][0][1][kpiSubtypeCode].graphType);
-            // ChartDataLabels should be unregistered to hide values in DAILY VIEW graphs
-            Chart.plugins.unregister(ChartDataLabels);
-            // set the main graph legend
-            chartOptions.chartDataSets[0].label = key;
-            // use of a temporary data array to be able to delete found elements (to improve searching performance)
-            let tmpRscKpiTemporalData = rscKpiTemporalData;
-            let startDate = new Date(submittedFormData.startDate);
-            let endDate = new Date(submittedFormData.endDate);
-            let graphDatePattern = 'dd/MM/yyyy';
-            // loop on all dates between the startDate and the endDate
-            for (let date = startDate; date <= endDate; date.setUTCDate(date.getUTCDate() + 1)) {
-                // set dates as labels for the x axis of the chart
-                chartOptions.chartLabels.push(formatDate(date, graphDatePattern, 'en_US', '+0000'));
-                let tmpDataIndex: Number = null;
-                // search for the appropriate data from the temporary array
-                for (let [index, tmpData] of Object.entries(tmpRscKpiTemporalData)) {
-                    if (this.dateEquals(date, new Date(tmpData.timestamp))) {
-                        // set found data for the main graph
-                        chartOptions.chartDataSets[0].data.push(tmpData.value);
-                        // index to be used to remove the found data from the temporary array
-                        tmpDataIndex = parseInt(index);
-                        break;
-                    }
+            let key, value;
+            let rscKpiTemporalData: RscKpiTemporalData[];
+            Array.from(Object.entries(entry)).forEach( (entryTmp, index0) => {
+                key = entryTmp[1][0]; // used later as label for graph
+                value = entryTmp[1][1]; // graph values
+                rscKpiTemporalData = [];
+                if (Array.from(value).length === 0) {
+                    rscKpiTemporalData.push(this.rscKpiTemporalDataAdapter.adapt({details: [{}]}));
+                } else {
+                    value.forEach(rscKpiTmprlData => rscKpiTemporalData.push(this.rscKpiTemporalDataAdapter.adapt(rscKpiTmprlData)));
                 }
-                if (tmpDataIndex !== null) // remove found element by its index
-                    tmpRscKpiTemporalData.splice(tmpDataIndex.valueOf(), 1);
-                else // push 0 as value when no data found for any date
-                    chartOptions.chartDataSets[0].data.push(0);
-            }
+                // ChartDataLabels should be unregistered to hide values in DAILY VIEW graphs
+                Chart.plugins.unregister(ChartDataLabels);
+                // set the main graph legend
+                chartOptions.chartDataSets[index0] = { data: [], label: key };
+                // use of a temporary data array to be able to delete found elements (to improve searching performance)
+                let tmpRscKpiTemporalData = rscKpiTemporalData;
+                let startDate = new Date(submittedFormData.startDate);
+                let endDate = new Date(submittedFormData.endDate);
+                let graphDatePattern = 'dd/MM/yyyy';
+                // loop on all dates between the startDate and the endDate
+                for (let date = startDate; date <= endDate; date.setUTCDate(date.getUTCDate() + 1)) {
+                    // set dates as labels for the x axis of the chart (only once)
+                    if (index0 === 0)
+                        chartOptions.chartLabels.push(formatDate(date, graphDatePattern, 'en_US', '+0000'));
+                    let tmpDataIndex: Number = null;
+                    // search for the appropriate data from the temporary array
+                    for (let [index1, tmpData] of Object.entries(tmpRscKpiTemporalData)) {
+                        if (this.dateEquals(date, new Date(tmpData.timestamp))) {
+                            // set found data for the main graph
+                            chartOptions.chartDataSets[index0].data.push(tmpData.value);
+                            // index to be used to remove the found data from the temporary array
+                            tmpDataIndex = parseInt(index1);
+                            break;
+                        }
+                    }
+                    if (tmpDataIndex !== null) // remove found element by its index
+                        tmpRscKpiTemporalData.splice(tmpDataIndex.valueOf(), 1);
+                    else // push 0 as value when no data found for any date
+                        chartOptions.chartDataSets[index0].data.push(0);
+                }
+            });
             return new RscKpiData(
                 key,
                 "",
