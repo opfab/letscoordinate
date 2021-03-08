@@ -150,6 +150,7 @@ public class CoordinationConfig {
         private String code;
         private String name;
         private String graphType;
+        private Boolean joinGraph; // this field will be set from DB with the rscKpi.joinGraph value
     }
 
     public interface LetscoEntity {
