@@ -154,12 +154,13 @@
       "expire-claim": "exp",
       "login-claim": "preferred_username"
     },
-    "logout-url": "http://keycloak:8080/auth/realms/dev/protocol/openid-connect/logout?redirect_uri=http://web-ui:2002/ui/",
+    "logout-url": "http://keycloak:8080/auth/realms/dev/protocol/openid-connect/logout?redirect_uri=http://localhost/ui/",
     "oauth2": {
       "client-id": "opfab-client",
+      "client-secret": "opfab-keycloak-secret",
       "flow": {
-        "delagate-url": "http://keycloak:8080/auth/realms/dev/protocol/openid-connect/auth?response_type=code&client_id=opfab-client",
-        "mode": "PASSWORD",
+        "delegate-url": "http://keycloak:8080/auth/realms/dev",
+        "mode": "IMPLICIT",
         "provider": "Opfab Keycloak"
       }
     },
@@ -195,7 +196,7 @@
     "styleWhenNightDayModeDesactivated" : "NIGHT",
     "timeFormat": "HH:mm",
     "dateFormat": "DD/MM/YYYY",
-    "dateTimeFormat": "HH:mm DD/MM/YYYY"
+    "dateTimeFormat": "DD/MM/YYYY HH:mm"
   },
   "time": {
     "pulse": 5000

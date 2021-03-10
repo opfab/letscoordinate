@@ -21,7 +21,7 @@ export class ThemeService {
 
   themeMap: Map<string, Theme> = new Map<string, Theme>([
       ['DAY', {color: 'black', bgColor:'white', gridLinesColor: 'rgba(0, 0, 0, 0.1)', textComponentColor: '#343940', textComponentBgColor: 'white'}],
-      ['NIGHT', {color: '#e0e0e0', bgColor:'#343940', gridLinesColor: 'rgba(255,255,255,0.1)', textComponentColor: '#343940', textComponentBgColor: '#e0e0e0'}]
+      ['NIGHT', {color: '#bababa', bgColor:'#262f3d', gridLinesColor: 'rgba(255,255,255,0.1)', textComponentColor: '#343940', textComponentBgColor: '#e0e0e0'}]
   ]);
   currentThemeCode : string = 'NIGHT';
 
