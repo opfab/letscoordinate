@@ -38,14 +38,18 @@ function startCommand() {
   echo -e "\033[0;32mSTARTING LET'S COORDINATE SERVER...\033[0m"
   cd ${LC_HOME}/bin
   docker-compose up -d
+  docker stop letsco-front # TODO to be removed after adding letsco-front to docker-compose
+  docker rm letsco-front # TODO to be removed after adding letsco-front to docker-compose
+  docker run -d -p 4200:8080 --name letsco-front letscoordinate/letsco-front:latest # TODO to be removed after adding letsco-front to docker-compose
 }
 
 function stopCommand() {
-  echo -e "\033[0;32mSTOPPING OPERATORFABRIC SERVER...\033[0m"
-  cd ${LC_HOME}/opfab/operatorfabric-getting-started/server
-  docker-compose stop
   echo -e "\033[0;32mSTOPPING LET'S COORDINATE SERVER...\033[0m"
   cd ${LC_HOME}/bin
+  docker-compose stop
+  docker stop letsco-front # TODO to be removed after adding letsco-front to docker-compose
+  echo -e "\033[0;32mSTOPPING OPERATORFABRIC SERVER...\033[0m"
+  cd ${LC_HOME}/opfab/operatorfabric-getting-started/server
   docker-compose stop
 }
 
