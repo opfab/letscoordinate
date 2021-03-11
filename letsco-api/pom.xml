@@ -33,6 +33,9 @@
 		<java.version>11</java.version>
 		<mariadb.version>2.4.4</mariadb.version>
 		<keycloak.version>11.0.3</keycloak.version>
+		<sonar.projectKey>org.lfenergy.operatorfabric:letscoordinate</sonar.projectKey>
+		<sonar.organization>opfab</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 
 	<dependencies>
@@ -174,7 +177,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.1</version>
+				<version>0.8.6</version>
 				<executions>
 					<execution>
 						<id>pre-unit-tests</id>
