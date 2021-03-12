@@ -7,7 +7,7 @@
 -- SPDX-License-Identifier: MPL-2.0
 -- This file is part of the Let’s Coordinate project.
 
-ALTER TABLE event_message ADD COLUMN business_application VARCHAR(250) NOT NULL DEFAULT 'business_application_name';
+ALTER TABLE event_message ADD COLUMN business_application VARCHAR(250);
 
 ALTER TABLE rsc_kpi_data ADD COLUMN granularity VARCHAR(25) NOT NULL DEFAULT 'DAILY';
 

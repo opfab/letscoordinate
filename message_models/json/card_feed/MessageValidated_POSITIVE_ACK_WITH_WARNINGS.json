@@ -32,7 +32,7 @@
             "severity": "WARNING",
             "title": "Rule_A_Violated",
             "message": "Application check: Warning 01 detected in input file",
-            "timestamp": "2021-05-26T14:24:38Z",
+            "businessTimestamp": "2021-05-26T14:24:38Z",
             "sourceDataRef": {
               "relatedElement": "timeseries",
               "relatedTimeseriesId": "Timeseries_12345",
@@ -45,7 +45,7 @@
             "severity": "WARNING",
             "title": "Rule_B_Violated",
             "message": "Application check: Warning 02 detected in input file",
-            "timestamp": "2021-07-26T14:24:46Z",
+            "businessTimestamp": "2021-07-26T14:24:46Z",
             "sourceDataRef": {
               "relatedElement": "header"
             }
@@ -60,8 +60,7 @@
         },
         {
           "name": "file 4_link",
-          "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf",
-          "eicCode": ["22XCORESO------S", "38X-BALTIC-RSC-H"]
+          "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf"
         }
       ]
     }

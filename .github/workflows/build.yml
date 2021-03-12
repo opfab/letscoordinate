@@ -11,7 +11,6 @@ name: Build
 on:
   push:
     branches:
-      - feature/LC-150
       - develop
       - master
   pull_request:
@@ -28,6 +27,10 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+      - name: Install OpFab cards-client dependancy
+        run: |
+          cp bin/cards-client-data-2.1.0.RELEASE.jar /home/runner/work/letscoordinate/letscoordinate/cards-client-data-2.1.0.RELEASE.jar
+          mvn install:install-file -Dfile=cards-client-data-2.1.0.RELEASE.jar -DgroupId=org.lfenergy.operatorfabric -DartifactId=cards-client -Dversion=2.1.0.RELEASE -Dpackaging=jar
       - name: Cache SonarCloud packages
         uses: actions/cache@v1
         with:

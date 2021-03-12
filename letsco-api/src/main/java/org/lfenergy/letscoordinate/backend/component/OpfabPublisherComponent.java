@@ -121,7 +121,7 @@ public class OpfabPublisherComponent {
             // LC-208 MR-1: If the card contains validation errors and/or warnings, we display a bubble in the timeline
             // for each error and/or warning found. No bubble to display for the card’s arrival time in this case.
             timeSpans = validation.getValidationMessages().get().stream()
-                    .map(validationMessage -> new TimeSpan().start(validationMessage.getTimestamp()))
+                    .map(validationMessage -> new TimeSpan().start(validationMessage.getBusinessTimestamp()))
                     .collect(Collectors.toList());
         } else {
             // LC-207 MR-1 & LC-208 MR-2: If the card does not contain any validation error or warning, we display only

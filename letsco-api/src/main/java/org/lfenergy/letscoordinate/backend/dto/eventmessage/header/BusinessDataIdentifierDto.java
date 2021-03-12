@@ -25,7 +25,6 @@ import java.util.Optional;
 @AllArgsConstructor
 public class BusinessDataIdentifierDto {
 
-    @NotNull
     private String businessApplication;
     @Getter(AccessLevel.NONE)
     private List<String> recipients;

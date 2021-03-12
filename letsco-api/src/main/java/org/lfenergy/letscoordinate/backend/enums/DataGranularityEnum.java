@@ -12,4 +12,14 @@ public enum DataGranularityEnum {
     @Getter
     @JsonValue
     private String value;
+
+    public static DataGranularityEnum getByValue(String value) {
+        if (value == null)
+            return null;
+        for (DataGranularityEnum dataGranularityEnum : values()) {
+            if (dataGranularityEnum.getValue().equals(value))
+                return dataGranularityEnum;
+        }
+        return null;
+    }
 }

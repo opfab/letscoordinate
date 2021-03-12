@@ -23,7 +23,5 @@ public class LinkDataDto implements IPayloadData {
     private String name;
     @NotNull
     private String value;
-    @NotNull
-    @NotEmpty
     private List<String> eicCode;
 }
