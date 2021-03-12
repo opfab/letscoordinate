@@ -48,6 +48,7 @@
           "data": [
             {
               "timestamp": "2020-03-18T01:00:00Z",
+              "granularity": "D",
               "label": "TEST_LONG_TEXTE_TEST_LONG_TEXTE_TEST_LONG_TEXTE_TEST_LONG_TEXTE_TEST_LONG_TEXTE_TEST_LONG_TEXTE_TEST_TEST_LONG_TEXTE_TEST_LONG_TEXTE_TEST_LONG_TEXTE_TEST_LONG_TEXTE_TEST_LONG_TEXTE_TEST_LONG_TEXTE_TEST_TEST_LONG_TEXTE_TEST_LONG_TEXTE_TEST_LONG_TEXTE_",
               "detail": [
                 {

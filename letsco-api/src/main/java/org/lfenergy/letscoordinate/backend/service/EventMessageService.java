@@ -157,7 +157,7 @@ public class EventMessageService {
         }
     }
 
-    private List<String> getKnownEicCodes(Set<String> eicCodes) {
+    public List<String> getKnownEicCodes(Set<String> eicCodes) {
         return coordinationConfig.getAllEicCodes().stream()
                 .filter(eicCode -> eicCodes.contains(eicCode))
                 .collect(Collectors.toList());
@@ -272,7 +272,7 @@ public class EventMessageService {
             if(payloadDto.getValidation().isPresent() && payloadDto.getValidation().get().getValidationMessages().isPresent()) {
                 timestamps.addAll(payloadDto.getValidation().get().getValidationMessages().get().stream()
                         .filter(Objects::nonNull)
-                        .map(ValidationMessageDto::getTimestamp)
+                        .map(ValidationMessageDto::getBusinessTimestamp)
                         .filter(Objects::nonNull)
                         .map(Instant::toString)
                         .collect(Collectors.toList()));
