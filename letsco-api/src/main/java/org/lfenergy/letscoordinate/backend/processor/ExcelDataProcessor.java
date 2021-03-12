@@ -74,12 +74,13 @@ public class ExcelDataProcessor implements DataProcessor {
     private final String dataTypeColName = "dataType";
     private final String nameColName = "name";
     private final String labelColName = "label";
+    private final String granularityColName = "granularity";
     private final String timestampColName = "timestamp";
     private final String eicCodeColName = "eicCode";
     private final String valueColName = "value";
     private final List<String> payloadTextDataColNames = Arrays.asList(nameColName, valueColName);
     private final List<String> payloadLinkDataColNames = Arrays.asList(nameColName, valueColName, eicCodeColName);
-    private final List<String> payloadDataColNames = Arrays.asList("id", labelColName, timestampColName, eicCodeColName, valueColName,
+    private final List<String> payloadDataColNames = Arrays.asList("id", labelColName, granularityColName, timestampColName, eicCodeColName, valueColName,
             "accept", "reject", "explanation", "comment");
 
     private final List<String> payloadColNames = Stream.of(Arrays.asList(dataTypeColName, nameColName), payloadDataColNames)
@@ -212,8 +213,8 @@ public class ExcelDataProcessor implements DataProcessor {
      * @see ExcelDataProcessor#getPayloadDataDetails(Map, DataTypeEnum, Class)
      */
     public void initEventMessagePayload(EventMessageDto eventMessageDto,
-                                               Sheet sheet,
-                                               Map<String, Integer> columnIndexMap)
+                                        Sheet sheet,
+                                        Map<String, Integer> columnIndexMap)
             throws NoSuchFieldException, InstantiationException, IllegalAccessException {
         if (eventMessageDto != null && sheet != null && columnIndexMap != null) {
             Map<DataTypeEnum, Map<String, List<IPayloadData>>> payloadMap = buildPayloadAsMap(sheet, columnIndexMap);
@@ -301,10 +302,12 @@ public class ExcelDataProcessor implements DataProcessor {
     }
 
     private void createRscKpiDataAndAddToDataList(Map<String, Integer> columnIndexMap,
-                                                         Row currentRow,
-                                                         List nameDataList) throws NoSuchFieldException, IllegalAccessException {
+                                                  Row currentRow,
+                                                  List nameDataList) throws NoSuchFieldException, IllegalAccessException {
         OffsetDateTime offsetDateTime = DateUtil.toOffsetDateTime(getCellValueAsString(currentRow.getCell(columnIndexMap.get(timestampColName))));
         String label = getCellValueAsString(currentRow.getCell(columnIndexMap.get(labelColName)));
+        Integer granularityIndex = columnIndexMap.get(granularityColName);
+        String granularityStr = granularityIndex != null ? getCellValueAsString(currentRow.getCell(granularityIndex)) : null;
         RscKpiDataDetailsDto dataDetailsDto = null;
         for (Object data : nameDataList) {
             if (data != null && data instanceof RscKpiDataDetailsDto
@@ -320,6 +323,7 @@ public class ExcelDataProcessor implements DataProcessor {
             dataDetailsDto = new RscKpiDataDetailsDto();
             dataDetailsDto.setTimestamp(offsetDateTime);
             dataDetailsDto.setLabel(label);
+            dataDetailsDto.setGranularity(DataGranularityEnum.getByValue(granularityStr));
             nameDataList.add(dataDetailsDto);
         }
         RscKpiTemporalDataDto temporalDataDto = new RscKpiTemporalDataDto();
@@ -330,8 +334,8 @@ public class ExcelDataProcessor implements DataProcessor {
     }
 
     private void createTimeserieDataAndAddToDataList(Map<String, Integer> columnIndexMap,
-                                                            Row currentRow,
-                                                            List nameDataList) throws NoSuchFieldException, IllegalAccessException {
+                                                     Row currentRow,
+                                                     List nameDataList) throws NoSuchFieldException, IllegalAccessException {
         OffsetDateTime offsetDateTime = DateUtil.toOffsetDateTime(getCellValueAsString(currentRow.getCell(columnIndexMap.get(timestampColName))));
         TimeserieDataDetailsDto dataDetailsDto = null;
         for (Object data : nameDataList) {

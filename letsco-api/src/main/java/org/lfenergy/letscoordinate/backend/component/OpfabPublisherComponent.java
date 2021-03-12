@@ -198,15 +198,11 @@ public class OpfabPublisherComponent {
         Optional<ValidationDto> validationOpt = eventMessageDto.getPayload().getValidation();
         if (validationOpt.isPresent() && validationOpt.get().getValidationMessages().isPresent() &&
                 !validationOpt.get().getValidationMessages().get().isEmpty()) {
-            // LC-208 MR-1: If the card contains validation errors and/or warnings, we display a bubble in the timeline
-            // for each error and/or warning found. No bubble to display for the card’s arrival time in this case.
             timeSpans = validationOpt.get().getValidationMessages().get().stream()
                     .filter(validationMessage -> validationMessage.getBusinessTimestamp() != null)
                     .map(validationMessage -> new TimeSpan().start(validationMessage.getBusinessTimestamp()))
                     .collect(Collectors.toList());
         } else {
-            // LC-207 MR-1 & LC-208 MR-2: If the card does not contain any validation error or warning, we display only
-            // one bubble for the card’s arrival time in feed
             timeSpans.add(new TimeSpan().start(timestamp));
         }
 
