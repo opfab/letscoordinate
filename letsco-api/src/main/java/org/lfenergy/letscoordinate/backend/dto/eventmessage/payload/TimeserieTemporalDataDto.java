@@ -22,6 +22,7 @@ public class TimeserieTemporalDataDto implements IPayloadTemporalData {
     private String id;
     private String label;
     private List<String> eicCode;
+    @NotNull
     private String value;
     // Output fields
     private Integer accept;
