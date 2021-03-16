@@ -34,7 +34,6 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -143,7 +142,7 @@ public class EventMessageService {
         }
     }
 
-    private List<String> getKnownEicCodes(Set<String> eicCodes) {
+    public List<String> getKnownEicCodes(Set<String> eicCodes) {
         return coordinationConfig.getAllEicCodes().stream()
                 .filter(eicCode -> eicCodes.contains(eicCode))
                 .collect(Collectors.toList());
@@ -258,7 +257,7 @@ public class EventMessageService {
             if(payloadDto.getValidation() != null && payloadDto.getValidation().getValidationMessages().isPresent()) {
                 timestamps.addAll(payloadDto.getValidation().getValidationMessages().get().stream()
                         .filter(Objects::nonNull)
-                        .map(ValidationMessageDto::getTimestamp)
+                        .map(ValidationMessageDto::getBusinessTimestamp)
                         .filter(Objects::nonNull)
                         .map(Instant::toString)
                         .collect(Collectors.toList()));

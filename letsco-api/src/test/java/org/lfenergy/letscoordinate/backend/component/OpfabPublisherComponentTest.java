@@ -50,8 +50,8 @@ public class OpfabPublisherComponentTest {
     private OpfabPublisherComponent opfabPublisherComponent;
     private EventMessageDto eventMessageDto;
     private String noun = "noun";
-    private String source = "source";
-    private String messageTypeName = "messageTypeName";
+    private String source = "Service A";
+    private String messageTypeName = "ProcessSuccessful";
     private Instant timestamp = Instant.parse("2020-05-03T22:00:00.00Z");
     private Instant businessDayFrom = Instant.parse("2020-06-10T00:00:00Z");
     private Instant businessDayTo = Instant.parse("2020-06-17T00:00:00Z");
@@ -113,16 +113,16 @@ public class OpfabPublisherComponentTest {
         Card card = new Card();
         Long id = 1L;
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
-        List<String> expectedTags = Arrays.asList(source, messageTypeName, source + "_" + messageTypeName, noun, source + "_" + noun + "_" + messageTypeName)
+        List<String> expectedTags = Arrays.asList("servicea", "processsuccessful", "servicea_processmonitoring", "servicea_processmonitoring_processsuccessful")
                 .stream().map(String::toLowerCase).collect(toList());
-        String process = StringUtil.toLowercaseIdentifier(source) + "_" + StringUtil.toLowercaseIdentifier(messageTypeName);
+        String process = "servicea_processmonitoring";
         assertAll(
                 () -> assertEquals(expectedTags.stream().sorted().collect(toList()), card.getTags().stream().sorted().collect(toList())),
                 () -> assertEquals(process, card.getProcess()),
                 () -> assertEquals(process + "_" + id, card.getProcessInstanceId()),
                 () -> assertEquals(opfabConfig.getPublisher(), card.getPublisher()),
                 () -> assertEquals("1", card.getProcessVersion()),
-                () -> assertEquals("initial", card.getState())
+                () -> assertEquals("processsuccessful", card.getState())
         );
     }
 
@@ -173,7 +173,7 @@ public class OpfabPublisherComponentTest {
         opfabPublisherComponent.setCardRecipients(card, eventMessageDto);
         assertAll(
                 () -> assertEquals(RecipientEnum.GROUP, card.getRecipient().getType()),
-                () -> assertEquals(source, card.getRecipient().getIdentity()),
+                () -> assertEquals("servicea", card.getRecipient().getIdentity()),
                 () -> assertEquals(Collections.EMPTY_LIST, card.getEntityRecipients())
         );
         businessDataIdentifier.setSendingUser(sendingUser);
@@ -189,7 +189,7 @@ public class OpfabPublisherComponentTest {
         opfabPublisherComponent.setCardRecipients(card, eventMessageDto);
         assertAll(
                 () -> assertEquals(RecipientEnum.GROUP, card.getRecipient().getType()),
-                () -> assertEquals(source, card.getRecipient().getIdentity()),
+                () -> assertEquals("servicea", card.getRecipient().getIdentity()),
                 () -> assertEquals(recipient.stream().sorted().collect(Collectors.toList()),
                         card.getEntityRecipients().stream().sorted().collect(Collectors.toList()))
         );
@@ -205,7 +205,7 @@ public class OpfabPublisherComponentTest {
         opfabPublisherComponent.setCardRecipients(card, eventMessageDto);
         assertAll(
                 () -> assertEquals(RecipientEnum.GROUP, card.getRecipient().getType()),
-                () -> assertEquals(source, card.getRecipient().getIdentity()),
+                () -> assertEquals("servicea", card.getRecipient().getIdentity()),
                 () -> assertEquals(Arrays.asList(sendingUser), card.getEntityRecipients())
         );
         businessDataIdentifier.setRecipients(recipient);
@@ -220,7 +220,7 @@ public class OpfabPublisherComponentTest {
         expectedEntityRecipients.addAll(recipient);
         assertAll(
                 () -> assertEquals(RecipientEnum.GROUP, card.getRecipient().getType()),
-                () -> assertEquals(source, card.getRecipient().getIdentity()),
+                () -> assertEquals("servicea", card.getRecipient().getIdentity()),
                 () -> assertEquals(expectedEntityRecipients.stream().sorted().collect(Collectors.toList()),
                         card.getEntityRecipients().stream().sorted().collect(toList()))
         );

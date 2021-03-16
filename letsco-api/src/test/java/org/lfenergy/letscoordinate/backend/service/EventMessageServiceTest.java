@@ -23,6 +23,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RunWith(SpringRunner.class)
 public class EventMessageServiceTest {
@@ -67,106 +70,110 @@ public class EventMessageServiceTest {
 
         EventMessageDto eventMessageDto = initEventMessageDto();
 
-        Assertions.assertThat(eventMessageService.getMissingMandatoryFields(eventMessageDto))
-                .containsAll(Arrays.asList(
-                        "xmlns",
-                        "header.verb",
-                        "header.noun",
-                        "header.timestamp",
-                        "header.source",
-                        "header.messageId",
-                        "header.properties.format",
-                        "header.properties.businessDataIdentifier.businessApplication",
-                        "header.properties.businessDataIdentifier.messageTypeName",
-                        "header.properties.businessDataIdentifier.businessDayFrom",
-                        "payload.text[0].name",
-                        "payload.text[0].value",
-                        "payload.links[0].name",
-                        "payload.links[0].value",
-                        "payload.links[0].eicCode",
-                        "payload.rscKpi[0].name",
-                        "payload.rscKpi[0].data[0].timestamp",
-                        "payload.rscKpi[0].data[0].granularity",
-                        "payload.rscKpi[0].data[0].detail[0].value",
-                        "payload.timeserie[0].name",
-                        "payload.timeserie[0].data[0].timestamp",
-                        "payload.timeserie[0].data[0].detail[0].value",
-                        "payload.validation.status",
-                        "payload.validation.result",
-                        "payload.validation.validationType",
-                        "payload.validation.validationMessages[0].code",
-                        "payload.validation.validationMessages[0].title",
-                        "payload.validation.validationMessages[0].timestamp",
-                        "payload.validation.validationMessages[0].severity",
-                        "payload.validation.validationMessages[0].message")
-                );
+        Set<String> validationResultSet = eventMessageService.getMissingMandatoryFields(eventMessageDto);
+        Set<String> expectedSet = Stream.of(
+                "xmlns",
+                "header.verb",
+                "header.noun",
+                "header.timestamp",
+                "header.source",
+                "header.messageId",
+                "header.properties.format",
+                "header.properties.businessDataIdentifier.messageTypeName",
+                "header.properties.businessDataIdentifier.businessDayFrom",
+                "payload.text[0].name",
+                "payload.text[0].value",
+                "payload.links[0].name",
+                "payload.links[0].value",
+                "payload.rscKpi[0].name",
+                "payload.rscKpi[0].data[0].timestamp",
+                "payload.rscKpi[0].data[0].granularity",
+                "payload.rscKpi[0].data[0].detail[0].value",
+                "payload.timeserie[0].name",
+                "payload.timeserie[0].data[0].timestamp",
+                "payload.timeserie[0].data[0].detail[0].value",
+                "payload.validation.status",
+                "payload.validation.result",
+                "payload.validation.validationType",
+                "payload.validation.validationMessages[0].code",
+                "payload.validation.validationMessages[0].title",
+                "payload.validation.validationMessages[0].businessTimestamp",
+                "payload.validation.validationMessages[0].severity",
+                "payload.validation.validationMessages[0].message"
+        ).collect(Collectors.toSet());
+        Assertions.assertThat(validationResultSet.size()).isEqualTo(expectedSet.size());
+        Assertions.assertThat(validationResultSet).containsAll(expectedSet);
 
         eventMessageDto.getHeader().getProperties().setBusinessDataIdentifier(null);
         eventMessageDto.getPayload().getRscKpi().get(0).getData().get(0).setDetail(null);
         eventMessageDto.getPayload().getTimeserie().get(0).getData().get(0).setDetail(null);
         eventMessageDto.getPayload().getValidation().setValidationMessages(null);
 
-        Assertions.assertThat(eventMessageService.getMissingMandatoryFields(eventMessageDto))
-                .containsAll(Arrays.asList(
-                        "xmlns",
-                        "header.verb",
-                        "header.noun",
-                        "header.timestamp",
-                        "header.source",
-                        "header.messageId",
-                        "header.properties.format",
-                        "header.properties.businessDataIdentifier",
-                        "payload.text[0].name",
-                        "payload.text[0].value",
-                        "payload.links[0].name",
-                        "payload.links[0].value",
-                        "payload.links[0].eicCode",
-                        "payload.rscKpi[0].name",
-                        "payload.rscKpi[0].data[0].timestamp",
-                        "payload.rscKpi[0].data[0].granularity",
-                        "payload.rscKpi[0].data[0].detail",
-                        "payload.timeserie[0].name",
-                        "payload.timeserie[0].data[0].timestamp",
-                        "payload.timeserie[0].data[0].detail",
-                        "payload.validation.status",
-                        "payload.validation.result",
-                        "payload.validation.validationType",
-                        "payload.validation.validationMessages")
-                );
+        validationResultSet = eventMessageService.getMissingMandatoryFields(eventMessageDto);
+        expectedSet = Stream.of(
+                "xmlns",
+                "header.verb",
+                "header.noun",
+                "header.timestamp",
+                "header.source",
+                "header.messageId",
+                "header.properties.format",
+                "header.properties.businessDataIdentifier",
+                "payload.text[0].name",
+                "payload.text[0].value",
+                "payload.links[0].name",
+                "payload.links[0].value",
+                "payload.rscKpi[0].name",
+                "payload.rscKpi[0].data[0].timestamp",
+                "payload.rscKpi[0].data[0].granularity",
+                "payload.rscKpi[0].data[0].detail",
+                "payload.timeserie[0].name",
+                "payload.timeserie[0].data[0].timestamp",
+                "payload.timeserie[0].data[0].detail",
+                "payload.validation.status",
+                "payload.validation.result",
+                "payload.validation.validationType",
+                "payload.validation.validationMessages"
+        ).collect(Collectors.toSet());
+        Assertions.assertThat(validationResultSet.size()).isEqualTo(expectedSet.size());
+        Assertions.assertThat(validationResultSet).containsAll(expectedSet);
 
         eventMessageDto.getHeader().setProperties(null);
         eventMessageDto.getPayload().getRscKpi().get(0).setData(null);
         eventMessageDto.getPayload().getTimeserie().get(0).setData(null);
 
-        Assertions.assertThat(eventMessageService.getMissingMandatoryFields(eventMessageDto))
-                .containsAll(Arrays.asList(
-                        "xmlns",
-                        "header.verb",
-                        "header.noun",
-                        "header.timestamp",
-                        "header.source",
-                        "header.messageId",
-                        "header.properties",
-                        "payload.text[0].name",
-                        "payload.text[0].value",
-                        "payload.links[0].name",
-                        "payload.links[0].value",
-                        "payload.links[0].eicCode",
-                        "payload.rscKpi[0].name",
-                        "payload.rscKpi[0].data",
-                        "payload.timeserie[0].name",
-                        "payload.timeserie[0].data",
-                        "payload.validation.status",
-                        "payload.validation.result",
-                        "payload.validation.validationType",
-                        "payload.validation.validationMessages")
-                );
+        validationResultSet = eventMessageService.getMissingMandatoryFields(eventMessageDto);
+        expectedSet = Stream.of(
+                "xmlns",
+                "header.verb",
+                "header.noun",
+                "header.timestamp",
+                "header.source",
+                "header.messageId",
+                "header.properties",
+                "payload.text[0].name",
+                "payload.text[0].value",
+                "payload.links[0].name",
+                "payload.links[0].value",
+                "payload.rscKpi[0].name",
+                "payload.rscKpi[0].data",
+                "payload.timeserie[0].name",
+                "payload.timeserie[0].data",
+                "payload.validation.status",
+                "payload.validation.result",
+                "payload.validation.validationType",
+                "payload.validation.validationMessages"
+        ).collect(Collectors.toSet());
+        Assertions.assertThat(validationResultSet.size()).isEqualTo(expectedSet.size());
+        Assertions.assertThat(validationResultSet).containsAll(expectedSet);
 
         eventMessageDto.setHeader(null);
         eventMessageDto.setPayload(null);
 
-        Assertions.assertThat(eventMessageService.getMissingMandatoryFields(eventMessageDto))
-                .containsAll(Arrays.asList("xmlns", "header", "payload"));
+        validationResultSet = eventMessageService.getMissingMandatoryFields(eventMessageDto);
+        expectedSet = Stream.of("xmlns", "header", "payload").collect(Collectors.toSet());
+        Assertions.assertThat(validationResultSet.size()).isEqualTo(expectedSet.size());
+        Assertions.assertThat(validationResultSet).containsAll(expectedSet);
     }
 
 }
