@@ -23,12 +23,14 @@ import org.lfenergy.letscoordinate.backend.enums.ChangeJsonDataFromWhichEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationTypeEnum;
 import org.lfenergy.letscoordinate.backend.exception.IgnoreProcessException;
+import org.lfenergy.letscoordinate.backend.exception.JsonDataMandatoryFieldNullException;
 import org.lfenergy.letscoordinate.backend.exception.PositiveTechnicalQualityCheckException;
 import org.lfenergy.letscoordinate.backend.mapper.EventMessageMapper;
 import org.lfenergy.letscoordinate.backend.model.EventMessage;
 import org.lfenergy.letscoordinate.backend.processor.JsonDataProcessor;
 import org.lfenergy.letscoordinate.backend.repository.EventMessageRepository;
 import org.lfenergy.letscoordinate.backend.util.HttpUtil;
+import org.lfenergy.letscoordinate.backend.util.OpfabUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
@@ -59,7 +61,7 @@ public class LetscoKafkaListener {
     private final LetscoProperties letscoProperties;
 
     @KafkaListener(topicPattern = "#{@kafkaTopicPattern}")
-    public void handleLetscoOpcMergeResult(@Payload String data,
+    public void handleLetscoData(@Payload String data,
                                            @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition,
                                            @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
                                            @Header(KafkaHeaders.RECEIVED_TIMESTAMP) long ts) throws Exception {
@@ -85,21 +87,30 @@ public class LetscoKafkaListener {
 
             opfabPublisherComponent.publishOpfabCard(eventMessageDto, eventMessage.getId());
 
-        } catch (IgnoreProcessException | PositiveTechnicalQualityCheckException e) {
+        } catch (IgnoreProcessException | PositiveTechnicalQualityCheckException | JsonDataMandatoryFieldNullException e) {
             log.info(e.getMessage());
         }
     }
 
     void verifyData(EventMessageDto eventMessageDto) {
-        String source = eventMessageDto.getHeader().getSource();
-        String messageTypeName = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getMessageTypeName();
-        String process = source + "_" + messageTypeName;
         BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        changeSourceIfNeeded(eventMessageDto);
+        changeMessageTypeNameIfNeeded(bdi);
+        String messageTypeName =
+                eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getMessageTypeName();
+        String process = OpfabUtil.generateProcess(eventMessageDto);
         ignoreProcessIfNeeded(process);
+        ignoreMessageTypeNameIfNeeded(messageTypeName);
         ignorePositiveTechnicalQualityCheck(eventMessageDto);
-        processIfBusinessDayFromOptional(bdi, eventMessageDto.getHeader().getTimestamp());
-        changeMessageTypeNameIfNeeded(messageTypeName, bdi);
-        changeSourceIfNeeded(source, eventMessageDto);
+        processIfBusinessDayFromOptional(eventMessageDto);
+    }
+
+    void ignoreMessageTypeNameIfNeeded(String messageTypeName) {
+        letscoProperties.getInputFile().getValidation().getIgnoreMessageTypeNames().ifPresent(messageTypeNamesToIgnore -> {
+            if (messageTypeNamesToIgnore.contains(messageTypeName)) {
+                throw new IgnoreProcessException("Json message ignored. Message type name: " + messageTypeName);
+            }
+        });
     }
 
     void ignoreProcessIfNeeded(String process) {
@@ -112,7 +123,7 @@ public class LetscoKafkaListener {
 
     void ignorePositiveTechnicalQualityCheck(EventMessageDto eventMessageDto) {
         if (MESSAGE_VALIDATED.equals(eventMessageDto.getHeader().getNoun())) {
-            ValidationDto validationDto = eventMessageDto.getPayload().getValidation();
+            ValidationDto validationDto = eventMessageDto.getPayload().getValidation().get();
             if (validationDto.getResult() == ValidationSeverityEnum.OK &&
                     validationDto.getValidationType() == ValidationTypeEnum.TECHNICAL) {
                 throw new PositiveTechnicalQualityCheckException("Positive technical quality check => no need to process it");
@@ -120,15 +131,22 @@ public class LetscoKafkaListener {
         }
     }
 
-    void processIfBusinessDayFromOptional(BusinessDataIdentifierDto bdi, Instant timestamp) {
+    void processIfBusinessDayFromOptional(EventMessageDto eventMessageDto) {
+        BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        Instant timestamp = eventMessageDto.getHeader().getTimestamp();
         if (letscoProperties.getInputFile().getValidation().isBusinessDayFromOptional()) {
             if (Objects.isNull(bdi.getBusinessDayFrom())) {
                 bdi.setBusinessDayFrom(timestamp);
             }
+        } else {
+            if (bdi.getBusinessDayFrom() == null) {
+                throw new JsonDataMandatoryFieldNullException("businessDayFrom");
+            }
         }
     }
 
-    void changeMessageTypeNameIfNeeded(String messageTypeName, BusinessDataIdentifierDto bdi) {
+    void changeMessageTypeNameIfNeeded(BusinessDataIdentifierDto bdi) {
+        String messageTypeName = bdi.getMessageTypeName();
         letscoProperties.getInputFile().getValidation().getChangeMessageTypeName().ifPresent(m -> {
             if (m.containsKey(messageTypeName)) {
                 bdi.setMessageTypeName(m.get(messageTypeName));
@@ -136,7 +154,8 @@ public class LetscoKafkaListener {
         });
     }
 
-    void changeSourceIfNeeded(String source, EventMessageDto eventMessageDto) {
+    void changeSourceIfNeeded(EventMessageDto eventMessageDto) {
+        String source = eventMessageDto.getHeader().getSource();
         letscoProperties.getInputFile().getValidation().getChangeSource().ifPresent(m -> {
             if (m.containsKey(source)) {
                 if (m.get(source).getFromWhichLevel() == ChangeJsonDataFromWhichEnum.HEADER) {

@@ -11,12 +11,11 @@
 
 package org.lfenergy.letscoordinate.backend.dto.eventmessage.payload;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Builder
@@ -27,5 +26,15 @@ public class PayloadDto {
     private List<LinkDataDto> links;
     private List<RscKpiDataDto> rscKpi;
     private List<TimeserieDataDto> timeserie;
+    @Getter(AccessLevel.NONE)
     private ValidationDto validation;
+
+    public Optional<ValidationDto> getValidation() {
+        return Optional.ofNullable(validation);
+    }
+
+    @JsonProperty("validation")
+    public ValidationDto getValidationSimple() {
+        return validation;
+    }
 }

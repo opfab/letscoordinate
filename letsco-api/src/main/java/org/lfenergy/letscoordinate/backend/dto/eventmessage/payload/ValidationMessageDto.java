@@ -11,14 +11,13 @@
 
 package org.lfenergy.letscoordinate.backend.dto.eventmessage.payload;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 
 @Data
 @Builder
@@ -31,6 +30,16 @@ public class ValidationMessageDto {
     private String title;
     private String message;
     private Instant businessTimestamp;
+    @Getter(AccessLevel.NONE)
     private Map<String, Object> params;
     private Map<String, Object> sourceDataRef;
+
+    public Optional<Map<String, Object>> getParams() {
+        return Optional.ofNullable(params);
+    }
+
+    @JsonProperty("params")
+    public Map<String, Object> getParamsSimple() {
+        return params;
+    }
 }

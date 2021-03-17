@@ -27,4 +27,6 @@ public class TimeserieTemporalDataDto implements IPayloadTemporalData {
     private Integer reject;
     private String explanation;
     private String comment;
+    // OpFab data field
+    private Object opfabDataValue;
 }

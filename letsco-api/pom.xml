@@ -149,7 +149,7 @@
 		<dependency>
 			<groupId>org.lfenergy.operatorfabric</groupId>
 			<artifactId>cards-client</artifactId>
-			<version>SNAPSHOT</version>
+			<version>1.8.0.RELEASE</version>
 		</dependency>
 
 		<!-- Keycloak -->

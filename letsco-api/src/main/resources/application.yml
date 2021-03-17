@@ -36,7 +36,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:89/auth/realms/dev
+          jwk-set-uri: http://localhost:89/auth/realms/dev/protocol/openid-connect/certs
 
 logging:
   level:
@@ -63,6 +63,8 @@ letsco:
 #        OldMessageTypeName: NewMessageTypeName
 #      ignore-processes:
 #        - processToIgnore
+#      ignore-message-type-names:
+#        - messageTypeNameToIgnore
 #      business-day-from-optional: true
       accept-properties-ignore-case: true
       fail-on-unknown-properties: false

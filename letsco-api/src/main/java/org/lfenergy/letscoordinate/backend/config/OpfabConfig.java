@@ -14,10 +14,7 @@ package org.lfenergy.letscoordinate.backend.config;
 import lombok.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @ConfigurationProperties(prefix = "opfab")
 @Getter
@@ -32,6 +29,10 @@ public class OpfabConfig {
     private Map<String, OpfabTagsConf> tags;
     private Map<String, OpfabFeed> feed = new HashMap<>();
     private Map<String, OpfabEntityRecipients> entityRecipients = new HashMap<>();
+    private Map<String, ChangeTimeserieDataDetailValueType> data = new HashMap<>();
+    private Map<String, String> changeProcess = new HashMap<>();
+    private Map<String, String> changeState = new HashMap<>();
+    private List<String> separateCardsForRecipients = new ArrayList<>();
 
     @Getter
     @Setter
@@ -43,7 +44,25 @@ public class OpfabConfig {
     @Setter
     public static class OpfabEntityRecipients {
         private boolean addRscs;
+        @Getter(AccessLevel.NONE)
         private String notAllowed;
+
+        public Optional<String> getNotAllowed() {
+            return Optional.ofNullable(notAllowed);
+        }
+    }
+
+    @Setter
+    public static class ChangeTimeserieDataDetailValueType {
+        private Map<String, ChangeTimeserieDataDetailValueTypeEnum> changeTimeserieDataDetailValueType;
+
+        public Optional<Map<String, ChangeTimeserieDataDetailValueTypeEnum>> getChangeTimeserieDataDetailValueType() {
+            return Optional.ofNullable(changeTimeserieDataDetailValueType);
+        }
+    }
+
+    public enum ChangeTimeserieDataDetailValueTypeEnum {
+        INSTANT
     }
 
     @Getter

@@ -11,9 +11,7 @@
 
 package org.lfenergy.letscoordinate.backend.config;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.lfenergy.letscoordinate.backend.enums.ChangeJsonDataFromWhichEnum;
 import org.lfenergy.letscoordinate.backend.enums.UnknownEicCodesProcessEnum;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -39,6 +37,8 @@ public class LetscoProperties {
             @Getter(AccessLevel.NONE)
             private List<String> ignoreProcesses = new ArrayList<>();
             @Getter(AccessLevel.NONE)
+            private List<String> ignoreMessageTypeNames = new ArrayList<>();
+            @Getter(AccessLevel.NONE)
             private Map<String, ChangeSource> changeSource;
             @Getter(AccessLevel.NONE)
             private Map<String, String> changeMessageTypeName = new HashMap<>();
@@ -57,6 +57,10 @@ public class LetscoProperties {
                 return Optional.ofNullable(ignoreProcesses);
             }
 
+            public Optional<List<String>> getIgnoreMessageTypeNames() {
+                return Optional.ofNullable(ignoreMessageTypeNames);
+            }
+
             public Optional<Map<String, String>> getChangeMessageTypeName() {
                 return Optional.ofNullable(changeMessageTypeName);
             }
@@ -68,6 +72,8 @@ public class LetscoProperties {
 
         @Getter
         @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class ChangeSource {
             private ChangeJsonDataFromWhichEnum fromWhichLevel;
             private String changingField;
