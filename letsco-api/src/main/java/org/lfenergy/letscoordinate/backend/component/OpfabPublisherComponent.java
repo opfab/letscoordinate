@@ -59,6 +59,10 @@ public class OpfabPublisherComponent {
         this.rscs = coordinationConfig.getRscs();
     }
 
+    void setProcess(String process) {
+        this.process = process;
+    }
+
     public void publishOpfabCard(EventMessageDto eventMessageDto, Long id) {
         process = OpfabUtil.generateProcess(eventMessageDto);
         List<Card> cards = generateOpfabCards(eventMessageDto, id);
@@ -170,7 +174,8 @@ public class OpfabPublisherComponent {
     public void setOpfabCardDates(Card card, EventMessageDto eventMessageDto) {
 
         Instant timestamp = eventMessageDto.getHeader().getTimestamp();
-        BusinessDataIdentifierDto businessDataIdentifierDto = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        BusinessDataIdentifierDto businessDataIdentifierDto =
+                eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
         Instant businessDayFrom = businessDataIdentifierDto.getBusinessDayFrom();
         Instant businessDayTo = businessDataIdentifierDto.getBusinessDayTo()
                 .orElse(businessDayFrom.plus(Duration.ofHours(24)));
@@ -199,7 +204,8 @@ public class OpfabPublisherComponent {
 
     void specificCardTreatment(Card opfabCard, EventMessageDto eventMessageDto, Long cardId) {
 
-        BusinessDataIdentifierDto businessDataIdentifierDto = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        BusinessDataIdentifierDto businessDataIdentifierDto =
+                eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
         Instant businessDayFrom = businessDataIdentifierDto.getBusinessDayFrom();
         Optional<Instant> businessDayToOpt = businessDataIdentifierDto.getBusinessDayTo();
         String source = eventMessageDto.getHeader().getSource();

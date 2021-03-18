@@ -87,6 +87,8 @@ public class CoordinationConfig {
 
     @Setter
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Rsc {
         private String eicCode;
         private String name;

@@ -20,11 +20,12 @@ import java.util.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@Builder
 @AllArgsConstructor
 public class OpfabConfig {
 
     private String publisher;
-    private OpfabUrls url;
+    private OpfabUrls url = new OpfabUrls();
     @Getter(AccessLevel.NONE)
     private Map<String, OpfabTagsConf> tags;
     private Map<String, OpfabFeed> feed = new HashMap<>();
