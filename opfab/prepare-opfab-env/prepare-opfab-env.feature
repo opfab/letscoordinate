@@ -157,7 +157,6 @@ Feature: Prepare OpFab env. for Let's Co open source
     # And match response.dateFormat == userSettings.dateFormat
     # And match response.defaultTags == userSettings.defaultTags
 
-
   Scenario: Create perimeter for Service A
 
     * def serviceAPerimeter =
@@ -178,7 +177,7 @@ Feature: Prepare OpFab env. for Let's Co open source
     And header Authorization = 'Bearer ' + authToken
     And request serviceAPerimeter
     When method post
-    Then status 201
+    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceAPerimeter")
 
 
   Scenario: Create perimeter for Service B
@@ -201,7 +200,7 @@ Feature: Prepare OpFab env. for Let's Co open source
     And header Authorization = 'Bearer ' + authToken
     And request serviceBPerimeter
     When method post
-    Then status 201
+    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceBPerimeter")
 
   Scenario: Add serviceAPerimeter for group 'servicea'
 

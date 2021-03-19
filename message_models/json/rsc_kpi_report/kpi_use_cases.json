@@ -4,7 +4,7 @@
     "header": {
       "verb": "created",
       "noun": "ProcessSuccess",
-      "timestamp": "2020-03-12T08:13:15Z",
+      "timestamp": "2021-03-12T08:13:15Z",
       "source": "SERVICE_A",
       "messageId": "134654a095714812ba74323b021f23b5",
       "properties": {
@@ -12,8 +12,8 @@
         "businessDataIdentifier": {
           "businessApplication": "PanEuropeanServiceATool",
           "messageTypeName": "NotificationTypeA",
-          "businessDayFrom": "2020-03-12T23:00:00Z",
-          "businessDayTo": "2020-03-19T23:00:00Z",
+          "businessDayFrom": "2021-03-12T23:00:00Z",
+          "businessDayTo": "2021-03-19T23:00:00Z",
           "processStep": "Initial Calculation"
         }
       }
@@ -42,7 +42,7 @@
           "joinGraph": "true",
           "data": [
             {
-              "timestamp": "2020-06-30T22:00:00Z",
+              "timestamp": "2021-06-30T22:00:00Z",
               "granularity": "D",
               "label": "Process successful",
               "detail": [
@@ -51,7 +51,7 @@
                 }
               ]
             },{
-              "timestamp": "2020-09-01T22:00:00Z",
+              "timestamp": "2021-09-01T22:00:00Z",
               "granularity": "D",
               "label": "Process successful",
               "detail": [
@@ -60,7 +60,7 @@
                 }
               ]
             },{
-              "timestamp": "2020-10-02T22:00:00Z",
+              "timestamp": "2021-10-02T22:00:00Z",
               "granularity": "D",
               "label": "Process successful",
               "detail": [
@@ -70,7 +70,7 @@
               ]
             },
             {
-              "timestamp": "2020-05-16T22:00:00Z",
+              "timestamp": "2021-05-16T22:00:00Z",
               "granularity": "D",
               "label": "Process failed",
               "detail": [
@@ -79,7 +79,7 @@
                 }
               ]
             },{
-              "timestamp": "2020-05-20T22:00:00Z",
+              "timestamp": "2021-05-20T22:00:00Z",
               "granularity": "D",
               "label": "Process failed",
               "detail": [
@@ -88,7 +88,7 @@
                 }
               ]
             },{
-              "timestamp": "2020-10-20T22:00:00Z",
+              "timestamp": "2021-10-20T22:00:00Z",
               "granularity": "D",
               "label": "Process successful with warnings",
               "detail": [
@@ -98,9 +98,9 @@
               ]
             },
             {
-              "timestamp": "2020-01-01T11:00:00Z",
+              "timestamp": "2021-01-01T11:00:00Z",
               "granularity": "Y",
-              "label": "2020",
+              "label": "2025",
               "detail": [
                 {
                   "value": 34
@@ -183,7 +183,7 @@
           "name": "gp2",
           "data": [
             {
-              "timestamp": "2020-07-31T22:00:00Z",
+              "timestamp": "2021-07-31T22:00:00Z",
               "granularity": "D",
               "label": "Process successful",
               "detail": [
@@ -192,7 +192,7 @@
                 }
               ]
             },{
-              "timestamp": "2020-08-15T22:00:00Z",
+              "timestamp": "2021-08-15T22:00:00Z",
               "granularity": "D",
               "label": "Process successful",
               "detail": [
@@ -201,7 +201,7 @@
                 }
               ]
             },{
-              "timestamp": "2020-09-22T22:00:00Z",
+              "timestamp": "2021-09-22T22:00:00Z",
               "granularity": "D",
               "label": "Process successful",
               "detail": [
@@ -211,9 +211,9 @@
               ]
             },
             {
-              "timestamp": "2020-01-01T11:00:00Z",
+              "timestamp": "2021-01-01T11:00:00Z",
               "granularity": "Y",
-              "label": "2020",
+              "label": "2025",
               "detail": [
                 {
                   "value": 77
@@ -266,7 +266,7 @@
           "name": "bp1",
           "data": [
             {
-              "timestamp": "2020-08-01T22:00:00Z",
+              "timestamp": "2021-08-01T22:00:00Z",
               "granularity": "D",
               "label": "Process successful",
               "detail": [
@@ -329,7 +329,7 @@
               ]
             },
             {
-              "timestamp": "2020-09-30T22:00:00Z",
+              "timestamp": "2021-09-30T22:00:00Z",
               "granularity": "D",
               "label": "Process successful",
               "detail": [
@@ -392,9 +392,9 @@
               ]
             },
             {
-              "timestamp": "2020-01-01T11:00:00Z",
+              "timestamp": "2021-01-01T11:00:00Z",
               "granularity": "Y",
-              "label": "2020",
+              "label": "2025",
               "detail": [
                 {
                   "eicCode": "38X-BALTIC-RSC-H",
@@ -646,7 +646,7 @@
           "joinGraph": "false",
           "data": [
             {
-              "timestamp": "2020-03-31T22:00:00Z",
+              "timestamp": "2021-03-31T22:00:00Z",
               "granularity": "D",
               "label": "Process successful",
               "detail": [
@@ -709,7 +709,7 @@
               ]
             },
             {
-              "timestamp": "2020-05-31T22:00:00Z",
+              "timestamp": "2021-05-31T22:00:00Z",
               "granularity": "D",
               "label": "Process successful",
               "detail": [
@@ -772,7 +772,7 @@
               ]
             },
             {
-              "timestamp": "2020-05-15T22:00:00Z",
+              "timestamp": "2021-05-15T22:00:00Z",
               "granularity": "D",
               "label": "Process failed",
               "detail": [
@@ -835,9 +835,9 @@
               ]
             },
             {
-              "timestamp": "2020-01-01T11:00:00Z",
+              "timestamp": "2021-01-01T11:00:00Z",
               "granularity": "Y",
-              "label": "2020",
+              "label": "2025",
               "detail": [
                 {
                   "eicCode": "38X-BALTIC-RSC-H",

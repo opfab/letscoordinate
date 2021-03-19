@@ -40,7 +40,7 @@ services:
     volumes:
     - ./keycloak:/keycloak
     ports:
-    - "8080:8080"
+    - "89:8080"
     - "90:9990"
   users:
     container_name: users
