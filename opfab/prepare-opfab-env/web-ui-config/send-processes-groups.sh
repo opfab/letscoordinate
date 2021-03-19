@@ -11,7 +11,7 @@
 
 CLIENT_ID='opfab-client'
 CLIENT_SECRET='opfab-keycloak-secret'
-KEYCLOAK_TOKEN_ENDPOINT_URL='http://localhost:8080/auth/realms/dev/protocol/openid-connect/token'
+KEYCLOAK_TOKEN_ENDPOINT_URL='http://localhost:89/auth/realms/dev/protocol/openid-connect/token'
 USERNAME='admin'
 PASSWORD='test'
 TOKEN=$( curl -d "client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&username=${USERNAME}&password=${PASSWORD}&grant_type=password" -k ${KEYCLOAK_TOKEN_ENDPOINT_URL} | sed 's/.*access_token":"\(.*\)","expires_in.*/\1/')

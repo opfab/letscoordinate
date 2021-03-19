@@ -6,7 +6,7 @@
       "entries": [
         {
           "id": "rscKpiReport",
-          "url": "http://localhost/kpi-report-config",
+          "url": "http://${SERVER_IP}/kpi-report-config",
           "label": "title.rscKpiReport",
           "linkType": "IFRAME"
         }

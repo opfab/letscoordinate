@@ -9,6 +9,16 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of the Let’s Coordinate project.
 
+
+######################################################
+#           START CUSTOMIZABLE VARIABLES             #
+######################################################
+export SERVER_IP=localhost
+export DOCKER_IP=172.17.0.1
+######################################################
+#            END CUSTOMIZABLE VARIABLES              #
+######################################################
+
 echo USER_ID="$(id -u)" > .env
 echo USER_GID="$(id -g)" >> .env
 
@@ -25,6 +35,8 @@ export OF_VERSION=$(cat "$LC_HOME/OPFAB_FULL_VERSION")
 
 echo -e "\033[0;32mPREPARING ENVIRONMENT VARIABLES...\033[0m"
 echo
+echo "SERVER_IP  =" $SERVER_IP
+echo "DOCKER_IP  =" $DOCKER_IP
 echo "LC_HOME    =" $LC_HOME
 echo "LC_VERSION =" $LC_VERSION
 echo "OF_VERSION =" $OF_VERSION
@@ -40,3 +52,11 @@ sdk use maven 3.5.3
 
 nvm install v10.16.3
 nvm use v10.16.3
+
+echo -e "\033[0;32mGENERATION CONFIG FILES FROM TEMPLATES...\033[0m"
+
+sed "s/\${SERVER_IP}/$SERVER_IP/g" ${LC_HOME}/bin/config/templates/env.js.template > ${LC_HOME}/letsco-front/src/letsco-env/env.js
+sed "s/\${SERVER_IP}/$SERVER_IP/g" ${LC_HOME}/bin/config/templates/ui-menu.json.template > ${LC_HOME}/opfab/operatorfabric-getting-started/server/ui-menu.json
+sed "s/\${SERVER_IP}/$SERVER_IP/g" ${LC_HOME}/bin/config/templates/web-ui.json.template > ${LC_HOME}/opfab/operatorfabric-getting-started/server/web-ui.json
+sed "s/\${SERVER_IP}/$SERVER_IP/g" ${LC_HOME}/bin/config/templates/karate-config.js.template > ${LC_HOME}/opfab/prepare-opfab-env/karate-config.js
+sed "s/\${DOCKER_IP}/$DOCKER_IP/g" ${LC_HOME}/bin/config/templates/nginx.conf.template > ${LC_HOME}/opfab/operatorfabric-getting-started/server/nginx.conf
