@@ -12,19 +12,22 @@
 package org.lfenergy.letscoordinate.backend.config;
 
 import lombok.*;
+import org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum;
 import org.lfenergy.letscoordinate.backend.enums.ChangeJsonDataFromWhichEnum;
 import org.lfenergy.letscoordinate.backend.enums.UnknownEicCodesProcessEnum;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.*;
 import java.time.ZoneId;
+import java.util.*;
+
+import static java.util.stream.Collectors.toList;
 
 @ConfigurationProperties(prefix = "letsco")
 @Getter
 @Setter
 public class LetscoProperties {
 
-    private ZoneId timezone;
+    private ZoneId timezone = ZoneId.of("Europe/Paris");
     private InputFile inputFile;
     private Security security;
 
@@ -32,6 +35,7 @@ public class LetscoProperties {
     @Setter
     public static class InputFile {
         private String dir;
+        Map<BasicGenericNounEnum, List<String>> genericNouns = new HashMap<>();
         private Validation validation;
 
         @Getter
@@ -80,6 +84,14 @@ public class LetscoProperties {
         public static class ChangeSource {
             private ChangeJsonDataFromWhichEnum fromWhichLevel;
             private String changingField;
+        }
+
+        public List<String> allGenericNouns() {
+            List<String> allGenericNouns =
+                    genericNouns.values().stream().flatMap(Collection::stream).collect(toList());
+            allGenericNouns.addAll(
+                    Arrays.stream(BasicGenericNounEnum.values()).map(BasicGenericNounEnum::getNoun).collect(toList()));
+            return allGenericNouns;
         }
     }
 

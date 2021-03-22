@@ -20,7 +20,9 @@ import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
 import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
+import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.HeaderDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationDto;
+import org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum;
 import org.lfenergy.letscoordinate.backend.enums.ChangeJsonDataFromWhichEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationTypeEnum;
@@ -44,11 +46,12 @@ import java.io.ByteArrayInputStream;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.lfenergy.letscoordinate.backend.util.Constants.*;
+import static java.util.stream.Collectors.toList;
+import static org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum.MESSAGE_VALIDATED;
 
 @Component
 @RequiredArgsConstructor
@@ -104,6 +107,7 @@ public class LetscoKafkaListener {
 
     void verifyData(EventMessageDto eventMessageDto) {
         BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        changeNounIfNeeded(eventMessageDto.getHeader());
         changeSourceIfNeeded(eventMessageDto);
         changeMessageTypeNameIfNeeded(bdi);
         String messageTypeName =
@@ -135,7 +139,7 @@ public class LetscoKafkaListener {
     }
 
     void ignorePositiveTechnicalQualityCheck(EventMessageDto eventMessageDto) {
-        if (MESSAGE_VALIDATED.equals(eventMessageDto.getHeader().getNoun())) {
+        if (MESSAGE_VALIDATED.getNoun().equals(eventMessageDto.getHeader().getNoun())) {
             ValidationDto validationDto = eventMessageDto.getPayload().getValidation().get();
             if (validationDto.getResult() == ValidationSeverityEnum.OK &&
                     validationDto.getValidationType() == ValidationTypeEnum.TECHNICAL) {
@@ -167,6 +171,20 @@ public class LetscoKafkaListener {
         });
     }
 
+    void changeNounIfNeeded(HeaderDto headerDto) {
+        String noun = headerDto.getNoun();
+        if (!letscoProperties.getInputFile().getGenericNouns().keySet().stream()
+                .map(BasicGenericNounEnum::getNoun).collect(toList()).contains(noun)) {
+            for (Map.Entry<BasicGenericNounEnum, List<String>> e :
+                    letscoProperties.getInputFile().getGenericNouns().entrySet()) {
+                if (e.getValue().contains(noun)) {
+                    headerDto.setNoun(e.getKey().getNoun());
+                    break;
+                }
+            }
+        }
+    }
+
     void changeSourceIfNeeded(EventMessageDto eventMessageDto) {
         String source = eventMessageDto.getHeader().getSource();
         letscoProperties.getInputFile().getValidation().getChangeSource().ifPresent(m -> {
@@ -187,8 +205,7 @@ public class LetscoKafkaListener {
         });
     }
 
-    private boolean isGenericNoun(String noun) {
-        return Arrays.asList(PROCESS_SUCCESSFUL, PROCESS_FAILED, PROCESS_ACTION, PROCESS_INFORMATION,
-                MESSAGE_VALIDATED).contains(noun);
+    boolean isGenericNoun(String noun) {
+        return letscoProperties.getInputFile().allGenericNouns().contains(noun);
     }
 }

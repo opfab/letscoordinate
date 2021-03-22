@@ -30,12 +30,6 @@ public final class Constants {
     public static final String STRING_REGION = "Region";
     public static final String STRING_REGIONS = "Regions";
 
-    public static final String PROCESS_SUCCESSFUL = "ProcessSuccessful";
-    public static final String PROCESS_FAILED = "ProcessFailed";
-    public static final String PROCESS_ACTION = "ProcessAction";
-    public static final String PROCESS_INFORMATION = "ProcessInformation";
-    public static final String MESSAGE_VALIDATED = "DfgMessageValidated";
-
     public static final String POSITIVE_ACK = "Positive";
     public static final String POSITIVE_ACK_WITH_WARNINGS = "Positive with warnings";
     public static final String NEGATIVE_ACK = "Negative";

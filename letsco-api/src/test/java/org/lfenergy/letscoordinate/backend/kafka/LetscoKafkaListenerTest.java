@@ -1,5 +1,6 @@
 package org.lfenergy.letscoordinate.backend.kafka;
 
+import io.vavr.control.Validation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +12,7 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.HeaderDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.PropertiesDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.PayloadDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationDto;
+import org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationTypeEnum;
 import org.lfenergy.letscoordinate.backend.exception.IgnoreProcessException;
@@ -29,10 +31,10 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum.MESSAGE_VALIDATED;
+import static org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum.PROCESS_SUCCESSFUL;
 import static org.lfenergy.letscoordinate.backend.enums.ChangeJsonDataFromWhichEnum.BUSINESS_DATA_IDENTIFIER;
 import static org.lfenergy.letscoordinate.backend.enums.ChangeJsonDataFromWhichEnum.HEADER;
-import static org.lfenergy.letscoordinate.backend.util.Constants.MESSAGE_VALIDATED;
-import static org.lfenergy.letscoordinate.backend.util.Constants.PROCESS_SUCCESSFUL;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -64,7 +66,7 @@ public class LetscoKafkaListenerTest {
         timestamp = Instant.parse("2021-03-17T10:15:30.00Z");
         eventMessageDto = EventMessageDto.builder()
                 .header(HeaderDto.builder()
-                        .noun(PROCESS_SUCCESSFUL)
+                        .noun(PROCESS_SUCCESSFUL.getNoun())
                         .source("source")
                         .messageId("messageId")
                         .timestamp(timestamp)
@@ -82,12 +84,43 @@ public class LetscoKafkaListenerTest {
         eventMessage.setId(1L);
         when(eventMessageRepository.save(any())).thenReturn(eventMessage);
         doNothing().when(opfabPublisherComponent).publishOpfabCard(eventMessageDto, eventMessage.getId());
+        when(jsonDataProcessor.inputStreamToPojo(any())).thenReturn(Validation.valid(eventMessageDto));
         letscoKafkaListener.handleLetscoEventMessages("", 0, "", 0L);
     }
 
     @Test
     public void verifyData() {
         letscoKafkaListener.verifyData(eventMessageDto);
+    }
+
+    @Test
+    public void isGenericNoun() {
+        assertTrue(letscoKafkaListener.isGenericNoun(eventMessageDto.getHeader().getNoun()));
+    }
+
+    @Test
+    public void isGenericNoun_CompatibleNoun() {
+        Map<BasicGenericNounEnum, List<String>> genericNouns = Map.of(BasicGenericNounEnum.PROCESS_ACTION,
+                List.of("myNoun"));
+        letscoProperties.getInputFile().setGenericNouns(genericNouns);
+        eventMessageDto.getHeader().setNoun("myNoun");
+        assertTrue(letscoKafkaListener.isGenericNoun(eventMessageDto.getHeader().getNoun()));
+    }
+
+    @Test
+    public void isGenericNoun_NotCompatibleNoun() {
+        eventMessageDto.getHeader().setNoun("myNoun");
+        assertFalse(letscoKafkaListener.isGenericNoun(eventMessageDto.getHeader().getNoun()));
+    }
+
+    @Test
+    public void changeNounIfNeeded() {
+        Map<BasicGenericNounEnum, List<String>> genericNouns = Map.of(BasicGenericNounEnum.PROCESS_ACTION,
+                List.of("myNoun"));
+        letscoProperties.getInputFile().setGenericNouns(genericNouns);
+        eventMessageDto.getHeader().setNoun("myNoun");
+        letscoKafkaListener.changeNounIfNeeded(eventMessageDto.getHeader());
+        assertEquals("ProcessAction", eventMessageDto.getHeader().getNoun());
     }
 
     @Test
@@ -163,7 +196,7 @@ public class LetscoKafkaListenerTest {
 
     @Test
     public void ignorePositiveTechnicalQualityCheck() {
-        eventMessageDto.getHeader().setNoun(MESSAGE_VALIDATED);
+        eventMessageDto.getHeader().setNoun(MESSAGE_VALIDATED.getNoun());
         eventMessageDto.setPayload(PayloadDto.builder()
                 .validation(ValidationDto.builder()
                         .result(ValidationSeverityEnum.OK)
@@ -179,7 +212,7 @@ public class LetscoKafkaListenerTest {
 
     @Test
     public void ignorePositiveTechnicalQualityCheck_QualityCheckNotOk() {
-        eventMessageDto.getHeader().setNoun(MESSAGE_VALIDATED);
+        eventMessageDto.getHeader().setNoun(MESSAGE_VALIDATED.getNoun());
         eventMessageDto.setPayload(PayloadDto.builder()
                 .validation(ValidationDto.builder()
                         .result(ValidationSeverityEnum.ERROR)
@@ -189,7 +222,7 @@ public class LetscoKafkaListenerTest {
 
     @Test
     public void ignorePositiveTechnicalQualityCheck_QualityCheckOkNotTechnical() {
-        eventMessageDto.getHeader().setNoun(MESSAGE_VALIDATED);
+        eventMessageDto.getHeader().setNoun(MESSAGE_VALIDATED.getNoun());
         eventMessageDto.setPayload(PayloadDto.builder()
                 .validation(ValidationDto.builder()
                         .result(ValidationSeverityEnum.OK)

@@ -22,6 +22,7 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataI
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.PayloadDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationMessageDto;
+import org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 import org.lfenergy.letscoordinate.backend.model.opfab.ValidationData;
 import org.lfenergy.letscoordinate.backend.util.*;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.lfenergy.letscoordinate.backend.config.OpfabConfig.ChangeTimeserieDataDetailValueTypeEnum.INSTANT;
+import static org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum.MESSAGE_VALIDATED;
 import static org.lfenergy.letscoordinate.backend.util.Constants.*;
 
 @Component
@@ -120,8 +122,8 @@ public class OpfabPublisherComponent {
         BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
         String messageTypeName = bdi.getMessageTypeName();
         List<String> tags = Stream.of(source, messageTypeName, processKey, source + "_" + noun)
-                .map(StringUtil::toLowercaseIdentifier).distinct().collect(Collectors.toList());
-        if (MESSAGE_VALIDATED.equals(noun)) {
+                .map(String::toLowerCase).distinct().collect(Collectors.toList());
+        if (MESSAGE_VALIDATED.getNoun().equals(noun)) {
             Optional<String> filenameOpt = bdi.getFileName();
             ValidationSeverityEnum result = eventMessageDto.getPayload().getValidation().get().getResult();
             tags.add((processKey + "_" + result).toLowerCase());
@@ -258,34 +260,20 @@ public class OpfabPublisherComponent {
         Optional<Integer> timeframeNumberOpt = businessDataIdentifierDto.getTimeframeNumber();
 
         String titleProcessType = "";
-        switch (noun) {
+        BasicGenericNounEnum basicGenericNoun = BasicGenericNounEnum.getByNoun(noun);
+        switch (basicGenericNoun) {
             case PROCESS_SUCCESSFUL:
-                titleProcessType = "process success";
-                opfabCard.setSeverity(SeverityEnum.INFORMATION);
-                opfabCard.setData(generateCardData(eventMessageDto, cardId));
-                break;
             case PROCESS_FAILED:
-                titleProcessType = "process failed";
-                opfabCard.setSeverity(SeverityEnum.ALARM);
+            case PROCESS_ACTION:
+            case PROCESS_INFORMATION:
+                titleProcessType = basicGenericNoun.getTitleProcessType();
+                opfabCard.setSeverity(basicGenericNoun.getSeverity());
                 opfabCard.setData(generateCardData(eventMessageDto, cardId));
                 break;
             case MESSAGE_VALIDATED:
                 titleProcessType = "message validated";
                 messageValidatedTreatment(opfabCard, eventMessageDto);
                 break;
-            case PROCESS_ACTION:
-                titleProcessType = "process action";
-                opfabCard.setSeverity(SeverityEnum.ACTION);
-                opfabCard.setData(generateCardData(eventMessageDto, cardId));
-                break;
-            case PROCESS_INFORMATION:
-                titleProcessType = "process information";
-                opfabCard.setSeverity(SeverityEnum.INFORMATION);
-                opfabCard.setData(generateCardData(eventMessageDto, cardId));
-                break;
-            default:
-                opfabCard.setData(generateCardData(eventMessageDto, cardId));
-                opfabCard.setSeverity(SeverityEnum.INFORMATION);
         }
 
         String title = generateFeedTitle(titleProcessType, processStepOpt, eventMessageDto);
@@ -435,7 +423,7 @@ public class OpfabPublisherComponent {
             summary = replacePlaceholders(summary, eventMessageDto);
             return summary;
         } else {
-            return String.format("%s%s%s%s", timeframe.orElse(""), timeframeNumber.map(tn -> tn + " ").orElse(""),
+            return String.format("%s%s%s-%s", timeframe.orElse(""), timeframeNumber.map(tn -> tn + " ").orElse(""),
                     DateUtil.formatDate(businessDayFrom.atZone(letscoProperties.getTimezone())),
                     DateUtil.formatDate(businessDayTo.atZone(letscoProperties.getTimezone())));
         }
