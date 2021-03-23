@@ -136,28 +136,35 @@ public class OpfabPublisherComponent {
                     tags.add(t.get(processKey).getTag());
                 }
             });
-            setOpfabCardState(card, messageTypeName);
+            setOpfabCardState(card, noun);
         }
         card.setTags(tags);
-        setOpfabCardProcess(card);
+        setOpfabCardProcess(card, bdi);
         card.setProcessInstanceId(processKey + "_" + id);
         card.setPublisher(opfabConfig.getPublisher());
         card.setProcessVersion("1");
     }
 
-    private void setOpfabCardProcess(Card card) {
+    void setOpfabCardProcess(Card card, BusinessDataIdentifierDto bdi) {
         if (opfabConfig.getChangeProcess().containsKey(processKey)) {
             card.setProcess(opfabConfig.getChangeProcess().get(processKey));
         } else {
-            card.setProcess(processKey);
+            if (!opfabConfig.isProcessWithFilename()) {
+                card.setProcess(processKey);
+            } else {
+                String filename = bdi.getFileName().orElse("");
+                String filenameWithoutExtension = filename.contains(".") ?
+                        filename.substring(0, filename.lastIndexOf(".")) : filename;
+                card.setProcess(processKey + "_" + StringUtil.toLowercaseIdentifier(filenameWithoutExtension));
+            }
         }
     }
 
-    private void setOpfabCardState(Card card, String messageTypeName) {
+    private void setOpfabCardState(Card card, String noun) {
         if (opfabConfig.getChangeState().containsKey(processKey)) {
             card.setState(opfabConfig.getChangeState().get(processKey));
         } else {
-            card.setState(StringUtil.toLowercaseIdentifier(messageTypeName));
+            card.setState(StringUtil.toLowercaseIdentifier(noun));
         }
     }
 
