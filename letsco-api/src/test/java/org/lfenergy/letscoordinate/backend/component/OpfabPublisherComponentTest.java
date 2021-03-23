@@ -45,6 +45,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum.*;
 import static org.lfenergy.letscoordinate.backend.util.DateUtilTest.getParisZoneId;
 import static org.lfenergy.operatorfabric.cards.model.SeverityEnum.*;
@@ -688,5 +689,25 @@ public class OpfabPublisherComponentTest {
                 opfabPublisherComponent.generatePlaceholderValue(entry, bdiMap, null);
         Map.Entry<String, String> expectedResult = new AbstractMap.SimpleEntry<>(placeholder, "anyPlaceholderValue");
         assertEquals(expectedResult, obtainedResult);
+    }
+
+    @Test
+    public void setOpfabCardProcess_ProcessWithFilename() {
+        opfabConfig.setProcessWithFilename(true);
+        eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().setFileName("filename.txt");
+        Card card = new Card();
+        opfabPublisherComponent.setOpfabCardProcess(card,
+                eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier());
+        assertEquals(process + "_filename", card.getProcess());
+    }
+
+    @Test
+    public void setOpfabCardProcess_ProcessWithFilename_FilenameHasNoExtension() {
+        opfabConfig.setProcessWithFilename(true);
+        eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().setFileName("filenameNoExtension");
+        Card card = new Card();
+        opfabPublisherComponent.setOpfabCardProcess(card,
+                eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier());
+        assertEquals(process + "_filenamenoextension", card.getProcess());
     }
 }

@@ -34,6 +34,7 @@ public class OpfabConfig {
     private Map<String, String> changeProcess = new HashMap<>();
     private Map<String, String> changeState = new HashMap<>();
     private List<String> separateCardsForRecipients = new ArrayList<>();
+    private boolean processWithFilename;
 
     @Getter
     @Setter
