@@ -25,67 +25,67 @@
           },
           {
             "label": "Service A Process successful",
-            "value": "servicea_processmonitoring_processsuccessful"
+            "value": "servicea_processsuccessful"
           },
           {
             "label": "Service A Process failed",
-            "value": "servicea_processmonitoring_processfailed"
+            "value": "servicea_processfailed"
           },
           {
             "label": "Service A File A Positive validation",
-            "value": "servicea_filea_validation_positivevalidation"
+            "value": "servicea_validation_filea_ok"
           },
           {
             "label": "Service A File A Positive validation with warnings",
-            "value": "servicea_filea_validation_positivevalidationwithwarnings"
+            "value": "servicea_validation_filea_warning"
           },
           {
             "label": "Service A File A Negative validation",
-            "value": "servicea_filea_validation_negativevalidation"
+            "value": "servicea_validation_filea_error"
           },
           {
             "label": "Service A File B Positive validation",
-            "value": "servicea_fileb_validation_positivevalidation"
+            "value": "servicea_validation_fileb_ok"
           },
           {
             "label": "Service A File B Positive validation with warnings",
-            "value": "servicea_fileb_validation_positivevalidationwithwarnings"
+            "value": "servicea_validation_fileb_warning"
           },
           {
             "label": "Service A File B Negative validation",
-            "value": "servicea_fileb_validation_negativevalidation"
+            "value": "servicea_validation_fileb_error"
           },
           {
             "label": "Service B Process successful",
-            "value": "serviceb_processmonitoring_processsuccessful"
+            "value": "serviceb_processsuccessful"
           },
           {
             "label": "Service B Process failed",
-            "value": "serviceb_processmonitoring_processfailed"
+            "value": "serviceb_processfailed"
           },
           {
             "label": "Service B File A Positive validation",
-            "value": "serviceb_filea_validation_positivevalidation"
+            "value": "serviceb_validation_filea_ok"
           },
           {
             "label": "Service B File A Positive validation with warnings",
-            "value": "serviceb_filea_validation_positivevalidationwithwarnings"
+            "value": "serviceb_validation_filea_warning"
           },
           {
             "label": "Service B File A Negative validation",
-            "value": "serviceb_filea_validation_negativevalidation"
+            "value": "serviceb_validation_filea_error"
           },
           {
             "label": "Service B File B Positive validation",
-            "value": "serviceb_fileb_validation_positivevalidation"
+            "value": "serviceb_validation_fileb_ok"
           },
           {
             "label": "Service B File B Positive validation with warnings",
-            "value": "serviceb_fileb_validation_positivevalidationwithwarnings"
+            "value": "serviceb_validation_fileb_warning"
           },
           {
             "label": "Service B File B Negative validation",
-            "value": "serviceb_fileb_validation_negativevalidation"
+            "value": "serviceb_validation_fileb_error"
           }
         ]
       }

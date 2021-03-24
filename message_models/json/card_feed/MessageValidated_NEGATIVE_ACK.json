@@ -3,19 +3,19 @@
     "xmlns": ",http://iec.ch/TC57/2011/schema/message",
     "header": {
       "verb": "created",
-      "noun": "File A",
+      "noun": "DfgMessageValidated",
       "timestamp": "2021-07-22T14:25:24Z",
-      "source": "Service A",
+      "source": "ServiceA",
       "messageId": "3f5d0a7a6e9242b23893dd51034431855",
       "properties": {
         "format": "JSON",
         "businessDataIdentifier": {
           "businessApplication": "PanEuropeanServiceATool",
-          "messageTypeName": "NegativeValidation",
+          "messageTypeName": "Validation",
           "businessDayFrom": "2021-07-18T22:00:00Z",
           "businessDayTo": "2021-07-23T22:00:00Z",
           "sendingUser": "10X1001A1001A345",
-          "filename": "20210226_1141_ServiceA_1_IT.xlsx",
+          "filename": "FileA.json",
           "tso": "10X1001A1001A345"
         }
       }

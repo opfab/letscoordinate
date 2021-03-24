@@ -4,8 +4,8 @@
       "id": "processgroup_servicea",
       "processes": [
         "servicea_processmonitoring",
-        "servicea_filea_validation",
-        "servicea_fileb_validation",
+        "servicea_validation_filea",
+        "servicea_validation_fileb",
         "servicea_cardcreation"
       ]
     },
@@ -13,8 +13,8 @@
       "id": "processgroup_serviceb",
       "processes": [
         "serviceb_processmonitoring",
-        "serviceb_filea_validation",
-        "serviceb_fileb_validation",
+        "serviceb_validation_filea",
+        "serviceb_validation_fileb",
         "serviceb_cardcreation"
       ]
     }

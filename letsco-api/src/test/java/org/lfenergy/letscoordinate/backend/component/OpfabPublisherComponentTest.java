@@ -33,6 +33,8 @@ import org.lfenergy.operatorfabric.cards.model.Card;
 import org.lfenergy.operatorfabric.cards.model.RecipientEnum;
 import org.lfenergy.operatorfabric.cards.model.SeverityEnum;
 import org.lfenergy.operatorfabric.cards.model.TimeSpan;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
@@ -49,6 +51,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum.*;
 import static org.lfenergy.letscoordinate.backend.util.DateUtilTest.getParisZoneId;
 import static org.lfenergy.operatorfabric.cards.model.SeverityEnum.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
 public class OpfabPublisherComponentTest {
@@ -143,7 +147,7 @@ public class OpfabPublisherComponentTest {
                 () -> assertEquals(process + "_" + id, card.getProcessInstanceId()),
                 () -> assertEquals(opfabConfig.getPublisher(), card.getPublisher()),
                 () -> assertEquals("1", card.getProcessVersion()),
-                () -> assertEquals(StringUtil.toLowercaseIdentifier(messageTypeName), card.getState())
+                () -> assertEquals(StringUtil.toLowercaseIdentifier("processaction"), card.getState())
         );
     }
 
@@ -165,7 +169,7 @@ public class OpfabPublisherComponentTest {
                 () -> assertEquals(process + "_" + id, card.getProcessInstanceId()),
                 () -> assertEquals(opfabConfig.getPublisher(), card.getPublisher()),
                 () -> assertEquals("1", card.getProcessVersion()),
-                () -> assertEquals(StringUtil.toLowercaseIdentifier(messageTypeName), card.getState())
+                () -> assertEquals(StringUtil.toLowercaseIdentifier("processaction"), card.getState())
         );
     }
 
@@ -710,4 +714,116 @@ public class OpfabPublisherComponentTest {
                 eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier());
         assertEquals(process + "_filenamenoextension", card.getProcess());
     }
+
+    @Test
+    public void generateProcessKeyWithFilenameIfNeeded_ShouldReturnSameProcessKeyWhenInputsNull() {
+        String inputProcessKey = null;
+        String outputProcessKey = opfabPublisherComponent.generateProcessKeyWithFilenameIfNeeded(inputProcessKey, null);
+        assertEquals(inputProcessKey, outputProcessKey);
+        inputProcessKey = "inputProcessKey";
+        outputProcessKey = opfabPublisherComponent.generateProcessKeyWithFilenameIfNeeded(inputProcessKey, null);
+        assertEquals(inputProcessKey, outputProcessKey);
+    }
+
+    @Test
+    public void generateProcessKeyWithFilenameIfNeeded_ShouldReturnSameProcessKeyIfParamProcessWithFilenameEqualsFalse() {
+        opfabConfig.setProcessWithFilename(false);
+        String inputProcessKey = null;
+        String outputProcessKey = opfabPublisherComponent.generateProcessKeyWithFilenameIfNeeded(inputProcessKey, null);
+        assertEquals(inputProcessKey, outputProcessKey);
+        inputProcessKey = "inputProcessKey";
+        outputProcessKey = opfabPublisherComponent.generateProcessKeyWithFilenameIfNeeded(inputProcessKey, null);
+        assertEquals(inputProcessKey, outputProcessKey);
+    }
+
+    @Test
+    public void generateProcessKeyWithFilenameIfNeeded_ShouldReturnNewProcessKeyIfParamProcessWithFilenameEqualsTrue_FilenameOK() {
+        opfabConfig.setProcessWithFilename(true);
+        String inputProcessKey = "inputprocesskey";
+        BusinessDataIdentifierDto bdi = new BusinessDataIdentifierDto();
+        bdi.setFileName("FileName.txt");
+        String outputProcessKey = opfabPublisherComponent.generateProcessKeyWithFilenameIfNeeded(inputProcessKey, bdi);
+        assertEquals("inputprocesskey_filename", outputProcessKey);
+        bdi.setFileName("FileName");
+        outputProcessKey = opfabPublisherComponent.generateProcessKeyWithFilenameIfNeeded(inputProcessKey, bdi);
+        assertEquals("inputprocesskey_filename", outputProcessKey);
+    }
+
+    @Test
+    public void generateProcessKeyWithFilenameIfNeeded_ShouldReturnSameProcessKeyIfParamProcessWithFilenameEqualsTrue_FilenameKO() {
+        opfabConfig.setProcessWithFilename(true);
+        String inputProcessKey = "inputprocesskey";
+        BusinessDataIdentifierDto bdi = new BusinessDataIdentifierDto();
+        bdi.setFileName(null);
+        String outputProcessKey = opfabPublisherComponent.generateProcessKeyWithFilenameIfNeeded(inputProcessKey, bdi);
+        assertEquals(inputProcessKey, outputProcessKey);
+    }
+
+    @Test
+    public void generateKeyToGetCustomFeedParams_ShouldReturnNewProcessKey_ProcessSuccessful() {
+        String inputProcessKey = "inputprocesskey";
+        EventMessageDto eventMessageDto = new EventMessageDto();
+        eventMessageDto.getHeader().setNoun("ProcessSuccessful");
+        eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().setMessageTypeName("ProcessMonitoring");
+        String outputProcessKey = opfabPublisherComponent.generateKeyToGetCustomFeedParams(inputProcessKey, eventMessageDto);
+        assertTrue(outputProcessKey.endsWith("_processsuccessful"));
+    }
+
+    @Test
+    public void generateKeyToGetCustomFeedParams_ShouldReturnNewProcessKey_ProcessFailed(@Mock OpfabPublisherComponent opfabPublisherComponent) {
+        String inputProcessKey = "inputprocesskey";
+        EventMessageDto eventMessageDto = new EventMessageDto();
+        eventMessageDto.getHeader().setNoun("ProcessFailed");
+        eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().setMessageTypeName("ProcessMonitoring");
+        String outputProcessKey = this.opfabPublisherComponent.generateKeyToGetCustomFeedParams(inputProcessKey, eventMessageDto);
+        assertTrue(outputProcessKey.endsWith("_processfailed"));
+    }
+
+    @Test
+    public void generateKeyToGetCustomFeedParams_ShouldReturnSameProcessKey_MessageTypeNameKO(@Mock OpfabPublisherComponent opfabPublisherComponent) {
+        String inputProcessKey = "inputprocesskey";
+        Mockito.lenient().when(opfabPublisherComponent.generateProcessKeyWithFilenameIfNeeded(anyString(), any(BusinessDataIdentifierDto.class))).thenReturn("inputprocesskey");
+        EventMessageDto eventMessageDto = new EventMessageDto();
+        eventMessageDto.getHeader().setNoun("ProcessSuccessful");
+        eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().setMessageTypeName("UnknownMessageTypeName");
+        String outputProcessKey = this.opfabPublisherComponent.generateKeyToGetCustomFeedParams(inputProcessKey, eventMessageDto);
+        assertEquals(inputProcessKey, outputProcessKey);
+    }
+
+    @Test
+    public void generateKeyToGetCustomFeedParams_ShouldReturnNewProcessKey_ValidationOk() {
+        String inputProcessKey = "inputprocesskey";
+        eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().setMessageTypeName("Validation");
+        eventMessageDto.getPayload().setValidation(new ValidationDto(null, null, OK, null));
+        String outputProcessKey = this.opfabPublisherComponent.generateKeyToGetCustomFeedParams(inputProcessKey, eventMessageDto);
+        assertTrue(outputProcessKey.endsWith("_ok"));
+    }
+
+    @Test
+    public void generateKeyToGetCustomFeedParams_ShouldReturnNewProcessKey_ValidationError(@Mock OpfabPublisherComponent opfabPublisherComponent) {
+        String inputProcessKey = "inputprocesskey";
+        eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().setMessageTypeName("Validation");
+        eventMessageDto.getPayload().setValidation(new ValidationDto(null, null, ERROR, null));
+        String outputProcessKey = this.opfabPublisherComponent.generateKeyToGetCustomFeedParams(inputProcessKey, eventMessageDto);
+        assertTrue(outputProcessKey.endsWith("_error"));
+    }
+
+    @Test
+    public void generateKeyToGetCustomFeedParams_ShouldReturnNewProcessKey_ValidationWarning(@Mock OpfabPublisherComponent opfabPublisherComponent) {
+        String inputProcessKey = "inputprocesskey";
+        eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().setMessageTypeName("Validation");
+        eventMessageDto.getPayload().setValidation(new ValidationDto(null, null, WARNING, null));
+        String outputProcessKey = this.opfabPublisherComponent.generateKeyToGetCustomFeedParams(inputProcessKey, eventMessageDto);
+        assertTrue(outputProcessKey.endsWith("_warning"));
+    }
+
+    @Test
+    public void generateKeyToGetCustomFeedParams_ShouldReturnSameProcessKey_ValidationNull(@Mock OpfabPublisherComponent opfabPublisherComponent) {
+        String inputProcessKey = "inputprocesskey";
+        eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().setMessageTypeName("Validation");
+        eventMessageDto.getPayload().setValidation(null);
+        String outputProcessKey = this.opfabPublisherComponent.generateKeyToGetCustomFeedParams(inputProcessKey, eventMessageDto);
+        assertEquals(inputProcessKey, outputProcessKey);
+    }
+
 }

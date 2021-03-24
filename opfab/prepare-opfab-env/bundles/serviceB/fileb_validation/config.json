@@ -1,6 +1,6 @@
 {
   "license": "MPL-2.0",
-  "id": "serviceb_fileb_validation",
+  "id": "serviceb_validation_fileb",
   "name": "process.name",
   "version": "1",
   "defaultLocale": "en",
@@ -12,7 +12,7 @@
   ],
   "menuEntries": [],
   "states": {
-    "positivevalidation": {
+    "ok": {
       "name": "positivevalidation.name",
       "detailTitle": {
         "key": "positivevalidation.cardDetails.title"
@@ -23,7 +23,7 @@
       ],
       "acknowledgmentAllowed": "Always"
     },
-    "positivevalidationwithwarnings": {
+    "warning": {
       "name": "positivevalidationwithwarnings.name",
       "detailTitle": {
         "key": "positivevalidationwithwarnings.cardDetails.title"
@@ -34,7 +34,7 @@
       ],
       "acknowledgmentAllowed": "Always"
     },
-    "negativevalidation": {
+    "error": {
       "name": "negativevalidation.name",
       "detailTitle": {
         "key": "negativevalidation.cardDetails.title"

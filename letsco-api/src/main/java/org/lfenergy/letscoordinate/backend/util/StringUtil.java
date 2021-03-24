@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -96,6 +97,10 @@ public final class StringUtil {
         if (StringUtils.isBlank(str))
             return str;
         return toCamelCase(str).toLowerCase();
+    }
+
+    public static String getFilenameWithoutExtension(String filename) {
+        return filename.contains(".") ? filename.substring(0, filename.lastIndexOf(".")) : filename;
     }
 
 }

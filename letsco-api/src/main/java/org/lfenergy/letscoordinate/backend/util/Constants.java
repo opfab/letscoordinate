@@ -33,4 +33,7 @@ public final class Constants {
     public static final String POSITIVE_ACK = "Positive";
     public static final String POSITIVE_ACK_WITH_WARNINGS = "Positive with warnings";
     public static final String NEGATIVE_ACK = "Negative";
+
+    public static final String VALIDATION = "validation";
+    public static final String PROCESS_MONITORING = "processmonitoring";
 }

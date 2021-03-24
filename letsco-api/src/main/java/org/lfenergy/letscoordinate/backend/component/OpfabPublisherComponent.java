@@ -14,6 +14,7 @@ package org.lfenergy.letscoordinate.backend.component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
 import org.lfenergy.letscoordinate.backend.config.OpfabConfig;
@@ -127,7 +128,7 @@ public class OpfabPublisherComponent {
             Optional<String> filenameOpt = bdi.getFileName();
             ValidationSeverityEnum result = eventMessageDto.getPayload().getValidation().get().getResult();
             tags.add((processKey + "_" + result).toLowerCase());
-            filenameOpt.ifPresent(f -> tags.add((processKey + "_" + f + result).toLowerCase()));
+            filenameOpt.ifPresent(f -> tags.add((processKey + "_" + StringUtil.getFilenameWithoutExtension(f) + "_" + result).toLowerCase()));
             fillQualityCheckSpecificTag(processKey, result, tags);
             card.setState(result.toString().toLowerCase());
         } else {
@@ -149,15 +150,20 @@ public class OpfabPublisherComponent {
         if (opfabConfig.getChangeProcess().containsKey(processKey)) {
             card.setProcess(opfabConfig.getChangeProcess().get(processKey));
         } else {
-            if (!opfabConfig.isProcessWithFilename()) {
-                card.setProcess(processKey);
-            } else {
-                String filename = bdi.getFileName().orElse("");
-                String filenameWithoutExtension = filename.contains(".") ?
-                        filename.substring(0, filename.lastIndexOf(".")) : filename;
-                card.setProcess(processKey + "_" + StringUtil.toLowercaseIdentifier(filenameWithoutExtension));
+            card.setProcess(generateProcessKeyWithFilenameIfNeeded(processKey, bdi));
+        }
+    }
+
+    public String generateProcessKeyWithFilenameIfNeeded(String processKey, BusinessDataIdentifierDto bdi) {
+        String processKeyTmp = processKey;
+        if (opfabConfig.isProcessWithFilename()) {
+            if (bdi.getFileName().isPresent() && StringUtils.isNoneBlank(bdi.getFileName().get())) {
+                String filename = bdi.getFileName().get();
+                String filenameWithoutExtension = StringUtil.getFilenameWithoutExtension(filename);
+                processKeyTmp += "_" + StringUtil.toLowercaseIdentifier(filenameWithoutExtension);
             }
         }
+        return processKeyTmp;
     }
 
     private void setOpfabCardState(Card card, String noun) {
@@ -414,6 +420,7 @@ public class OpfabPublisherComponent {
     }
 
     private String generateFeedTitle(String titleProcessType, Optional<String> processStep, EventMessageDto eventMessageDto) {
+        String processKey = generateKeyToGetCustomFeedParams(this.processKey, eventMessageDto);
         if (opfabConfig.getFeed().containsKey(processKey)) {
             String title = opfabConfig.getFeed().get(processKey).getTitle();
             title = replacePlaceholders(title, eventMessageDto);
@@ -425,6 +432,7 @@ public class OpfabPublisherComponent {
 
     private String generateFeedSummary(Optional<String> timeframe, Optional<Integer> timeframeNumber, Instant businessDayFrom,
                                        Instant businessDayTo, EventMessageDto eventMessageDto) {
+        String processKey = generateKeyToGetCustomFeedParams(this.processKey, eventMessageDto);
         if (opfabConfig.getFeed().containsKey(processKey)) {
             String summary = opfabConfig.getFeed().get(processKey).getSummary();
             summary = replacePlaceholders(summary, eventMessageDto);
@@ -434,6 +442,24 @@ public class OpfabPublisherComponent {
                     DateUtil.formatDate(businessDayFrom.atZone(letscoProperties.getTimezone())),
                     DateUtil.formatDate(businessDayTo.atZone(letscoProperties.getTimezone())));
         }
+    }
+
+    public String generateKeyToGetCustomFeedParams(String processKey, EventMessageDto eventMessageDto) {
+        String processKeyTmp = processKey;
+            String messageTypeName =
+                    eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getMessageTypeName();
+            if (VALIDATION.equals(StringUtil.toLowercaseIdentifier(messageTypeName))) {
+                BusinessDataIdentifierDto bdi =
+                        eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+                processKeyTmp = generateProcessKeyWithFilenameIfNeeded(processKey, bdi);
+                Optional<ValidationDto> validationDto = eventMessageDto.getPayload().getValidation();
+                if (validationDto.isPresent()) {
+                    processKeyTmp += "_" + StringUtil.toLowercaseIdentifier(validationDto.get().getResult().name());
+                }
+            } else if (PROCESS_MONITORING.equals(StringUtil.toLowercaseIdentifier(messageTypeName))) {
+                processKeyTmp += "_" + StringUtil.toLowercaseIdentifier(eventMessageDto.getHeader().getNoun());
+            }
+        return processKeyTmp;
     }
 
     String replacePlaceholders(String title, EventMessageDto eventMessageDto) {

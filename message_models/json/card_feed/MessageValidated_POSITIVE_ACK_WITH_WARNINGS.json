@@ -3,20 +3,20 @@
     "xmlns": "http://iec.ch/TC57/2011/schema/message",
     "header": {
       "verb": "created",
-      "noun": "File B",
+      "noun": "DfgMessageValidated",
       "timestamp": "2021-08-25T12:32:19Z",
-      "source": "Service A",
+      "source": "ServiceA",
       "messageId": "b071aa50097f49f1bd69e82a070084b6",
       "properties": {
         "format": "JSON",
         "businessDataIdentifier": {
           "businessApplication": "PanEuropeanServiceATool",
           "messageType": "101",
-          "messageTypeName": "PositiveValidationWithWarnings",
+          "messageTypeName": "Validation",
           "businessDayFrom": "2021-08-28T22:00:00Z",
           "businessDayTo": "2021-12-28T23:00:00Z",
           "sendingUser": "10XPT-REN------9",
-          "filename": "20210317_1230_ServiceA_2_PT.xlsx",
+          "filename": "FileB.xlsx",
           "tso": "10X1001A1001A345"
         }
       }

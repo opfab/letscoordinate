@@ -36,7 +36,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8080/auth/realms/dev
+          jwk-set-uri: http://keycloak:8080/auth/realms/dev/protocol/openid-connect/certs
 
 logging:
   level:
@@ -50,6 +50,8 @@ logging:
 #    file: '%d{yyyy-MM-dd HH:mm:ss} - %level - %logger{36} - %msg%n'
 
 letsco:
+  kafka:
+    topic-pattern: 'letsco_eventmessage_.*'
   timezone: "Europe/Paris"  # e.g: "Europe/London", "Europe/Paris", "Europe/Rome", "UTC", "UTC+1", "UTC-04:00", "GMT-5"
   input-file:
     dir: D:\_RTE_\tmp\input
@@ -76,22 +78,22 @@ opfab:
     servicea_processmonitoring_processfailed:
       title: " Service A process failed - {{processStep}}"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone})"
-    servicea_filea_validation_positivevalidation:
+    servicea_validation_filea_ok:
       title: " Service A File A - positive validation"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
-    servicea_filea_validation_positivevalidationwithwarnings:
+    servicea_validation_filea_warning:
       title: " Service A File A - positive validation with warnings"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
-    servicea_filea_validation_negativevalidation:
+    servicea_validation_filea_error:
       title: " Service A File A - negative validation"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
-    servicea_fileb_validation_positivevalidation:
+    servicea_validation_fileb_ok:
       title: " Service A File B - positive validation"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
-    servicea_fileb_validation_positivevalidationwithwarnings:
+    servicea_validation_fileb_warning:
       title: " Service A File B - positive validation with warnings"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
-    servicea_fileb_validation_negativevalidation:
+    servicea_validation_fileb_error:
       title: " Service A File B - negative validation"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
     # SERVICE B
@@ -101,22 +103,22 @@ opfab:
     serviceb_processmonitoring_processfailed:
       title: " Service B process failed - {{processStep}}"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone})"
-    serviceb_filea_validation_positivevalidation:
+    serviceb_validation_filea_ok:
       title: " Service B File A - positive validation"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
-    serviceb_filea_validation_positivevalidationwithwarnings:
+    serviceb_validation_filea_warning:
       title: " Service B File A - positive validation with warnings"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
-    serviceb_filea_validation_negativevalidation:
+    serviceb_validation_filea_error:
       title: " Service B File A - negative validation"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
-    serviceb_fileb_validation_positivevalidation:
+    serviceb_validation_fileb_ok:
       title: " Service B File B - positive validation"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
-    serviceb_fileb_validation_positivevalidationwithwarnings:
+    serviceb_validation_fileb_warning:
       title: " Service B File B - positive validation with warnings"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
-    serviceb_fileb_validation_negativevalidation:
+    serviceb_validation_fileb_error:
       title: " Service B File B - negative validation"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
   entityRecipients:
@@ -126,6 +128,7 @@ opfab:
     sourceA_messageTypeNameB:
       notAllowed: sendingUser
       addRscs: true
+  processWithFilename: true
 
 third-app:
   url: http://localhost:8081
