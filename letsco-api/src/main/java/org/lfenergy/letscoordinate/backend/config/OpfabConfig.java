@@ -35,6 +35,8 @@ public class OpfabConfig {
     private Map<String, String> changeState = new HashMap<>();
     private List<String> separateCardsForRecipients = new ArrayList<>();
     private boolean processWithFilename;
+    private boolean processKeyToLowerCaseIdentifier = true;
+    private boolean recipientToLowerCaseIdentifier = true;
 
     @Getter
     @Setter

@@ -85,18 +85,7 @@ public class EventMessageService {
         }
 
         // check that all eic_code provided by the dto exists in our database
-        Set<String> dtoEicCodes = extractEicCodesFromEventMessageDto(eventMessageDto);
-        List<String> knownEicCodes = getKnownEicCodes(dtoEicCodes);
-        knownEicCodes.addAll(Arrays.asList(Constants.ALL_RSCS_CODE, Constants.ALL_REGIONS_CODE));
-        Set<String> unknownEicCodes = dtoEicCodes.stream()
-                .filter(eicCode -> !knownEicCodes.contains(eicCode))
-                .collect(Collectors.toSet());
-        if(!unknownEicCodes.isEmpty()) {
-            errorMessages.add(ResponseErrorMessageDto.builder()
-                    .severity(ResponseErrorSeverityEnum.ERROR)
-                    .message("Unknown eic_codes found! >>> " + unknownEicCodes.toString())
-                    .build());
-        }
+        checkEicCodes(eventMessageDto, errorMessages);
 
         // check that all dates have the right format
         Set<String> invalidDates = extractDatesFromEventMessageDto(eventMessageDto).stream()
@@ -132,8 +121,7 @@ public class EventMessageService {
         return missingMandatoryFields;
     }
 
-    @Deprecated
-    public void checkEicCodes(EventMessageDto eventMessageDto) throws InvalidInputFileException {
+    public void checkEicCodes(EventMessageDto eventMessageDto, List<ResponseErrorMessageDto> errorMessages) {
         // check that all eic_code provided by the dto exists in our database
         Set<String> dtoEicCodes = extractEicCodesFromEventMessageDto(eventMessageDto);
         List<String> knownEicCodes = getKnownEicCodes(dtoEicCodes);
@@ -145,11 +133,13 @@ public class EventMessageService {
             UnknownEicCodesProcessEnum unknownEicCodesProcess =
                     letscoProperties.getInputFile().getValidation().getUnknownEicCodesProcess();
             if(unknownEicCodesProcess == UnknownEicCodesProcessEnum.EXCEPTION) {
-                List<String> allowedEicCodesOpt = letscoProperties.getInputFile().getValidation().getAllowedEicCodes()
-                        .orElseThrow(() -> new InvalidInputFileException("Unknown eic_codes found! >>> " +
-                                unknownEicCodes.toString()));
-                if (!allowedEicCodesOpt.containsAll(unknownEicCodes)) {
-                    throw new InvalidInputFileException("Unknown eic_codes found! >>> " + unknownEicCodes.toString());
+                List<String> allowedEicCodes = letscoProperties.getInputFile().getValidation().getAllowedEicCodes()
+                        .orElse(new ArrayList<>());
+                if (!allowedEicCodes.containsAll(unknownEicCodes)) {
+                    errorMessages.add(ResponseErrorMessageDto.builder()
+                            .severity(ResponseErrorSeverityEnum.ERROR)
+                            .message("Unknown eic_codes found! >>> " + unknownEicCodes.toString())
+                            .build());
                 }
             } else if (unknownEicCodesProcess == UnknownEicCodesProcessEnum.WARNING) {
                 log.warn("Unknown eic_codes found! >>> " + unknownEicCodes.toString());

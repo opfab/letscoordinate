@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lfenergy.letscoordinate.backend.component.OpfabPublisherComponent;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
+import org.lfenergy.letscoordinate.backend.config.OpfabConfig;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.HeaderDto;
@@ -43,6 +44,7 @@ import static org.mockito.Mockito.when;
 public class LetscoKafkaListenerTest {
 
     private LetscoKafkaListener letscoKafkaListener;
+    private OpfabConfig opfabConfig;
 
     @Mock
     JsonDataProcessor jsonDataProcessor;
@@ -57,12 +59,13 @@ public class LetscoKafkaListenerTest {
     @BeforeEach
     public void beforeEach() {
         letscoProperties = new LetscoProperties();
+        opfabConfig = new OpfabConfig();
         LetscoProperties.InputFile inputFile = new LetscoProperties.InputFile();
         LetscoProperties.InputFile.Validation validation = new LetscoProperties.InputFile.Validation();
         inputFile.setValidation(validation);
         letscoProperties.setInputFile(inputFile);
         letscoKafkaListener = new LetscoKafkaListener(jsonDataProcessor, eventMessageRepository,
-                opfabPublisherComponent, letscoProperties);
+                opfabPublisherComponent, letscoProperties, opfabConfig);
         timestamp = Instant.parse("2021-03-17T10:15:30.00Z");
         eventMessageDto = EventMessageDto.builder()
                 .header(HeaderDto.builder()
@@ -165,7 +168,7 @@ public class LetscoKafkaListenerTest {
 
     @Test
     public void ignoreProcessIfNeeded() {
-        String process = OpfabUtil.generateProcessKey(eventMessageDto);
+        String process = OpfabUtil.generateProcessKey(eventMessageDto, true);
         List<String> ignoreProcesses = List.of(process);
         letscoProperties.getInputFile().getValidation().setIgnoreProcesses(ignoreProcesses);
         assertThrows(IgnoreProcessException.class, () ->
@@ -174,7 +177,7 @@ public class LetscoKafkaListenerTest {
 
     @Test
     public void ignoreProcessIfNeeded_ProcessNotIgnored() {
-        String process = OpfabUtil.generateProcessKey(eventMessageDto);
+        String process = OpfabUtil.generateProcessKey(eventMessageDto, true);
         letscoKafkaListener.ignoreProcessIfNeeded(process);
     }
 
