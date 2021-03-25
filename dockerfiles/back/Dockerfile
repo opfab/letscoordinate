@@ -7,11 +7,9 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of the Let’s Coordinate project.
 
-#
-# Package stage
-#
-FROM openjdk:11-jre-slim
-COPY ./letsco-api.jar /usr/local/lib/letsco-api.jar
+FROM openjdk:11
+
 EXPOSE 8088
-EXPOSE 5005
-ENTRYPOINT ["java", "-jar", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-Dspring.profiles.active=docker", "/usr/local/lib/letsco-api.jar"]
+
+COPY ./letsco-api.jar /
+CMD ["java", "-jar", "-Dspring.profiles.active=docker", "letsco-api.jar"]

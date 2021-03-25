@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.lfenergy.letscoordinate.backend.component.OpfabPublisherComponent;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
+import org.lfenergy.letscoordinate.backend.config.OpfabConfig;
 import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
@@ -65,6 +66,7 @@ public class LetscoKafkaListener {
     private final EventMessageRepository eventMessageRepository;
     private final OpfabPublisherComponent opfabPublisherComponent;
     private final LetscoProperties letscoProperties;
+    private final OpfabConfig opfabConfig;
 
     @KafkaListener(topicPattern = "#{@kafkaTopicPattern}")
     public void handleLetscoEventMessages(@Payload String data,
@@ -112,7 +114,8 @@ public class LetscoKafkaListener {
         changeMessageTypeNameIfNeeded(bdi);
         String messageTypeName =
                 eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getMessageTypeName();
-        String processKey = OpfabUtil.generateProcessKey(eventMessageDto);
+        String processKey = OpfabUtil.generateProcessKey(eventMessageDto,
+                opfabConfig.isProcessKeyToLowerCaseIdentifier());
         ignoreProcessIfNeeded(processKey);
         ignoreMessageTypeNameIfNeeded(messageTypeName);
         ignorePositiveTechnicalQualityCheck(eventMessageDto);

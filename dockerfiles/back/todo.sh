@@ -13,14 +13,10 @@ jarFile="letsco-api-${jarVersion}-exec.jar"
 mainDir="../../letsco-api/"
 dockerTag="letscoordinate/backend"
 
-dockerfile="
-FROM openjdk:11\n\n\
-COPY ./${jarFile} /\n\
-CMD [\"java\", \"-jar\", \"${jarFile}\"]"
-echo -e $dockerfile > Dockerfile
+cp $jarFile letsco-api.jar
 
 if [ -z $2 ]; then
-  cd $mainDir/.. && mvn clean && mvn package -DskipTests && cd -
+  cd $mainDir/.. && mvn clean && mvn package && cd -
 fi
 cp ${mainDir}/target/${jarFile} .
 docker build --tag=${dockerTag}:${tag} .

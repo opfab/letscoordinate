@@ -65,7 +65,7 @@ public class OpfabPublisherComponent {
     }
 
     public void publishOpfabCard(EventMessageDto eventMessageDto, Long id) {
-        processKey = OpfabUtil.generateProcessKey(eventMessageDto);
+        processKey = OpfabUtil.generateProcessKey(eventMessageDto, opfabConfig.isProcessKeyToLowerCaseIdentifier());
         List<Card> cards = generateOpfabCards(eventMessageDto, id);
         cards.forEach(c -> {
             // TODO This field must be handled in future releases for response cards
@@ -235,7 +235,9 @@ public class OpfabPublisherComponent {
         Optional<String> sendingUser = businessDataIdentifier.getSendingUser();
         Optional<List<String>> recipient = businessDataIdentifier.getRecipients();
 
-        card.setRecipient(new Recipient().type(RecipientEnum.GROUP).identity(StringUtil.toLowercaseIdentifier(source)));
+        card.setRecipient(new Recipient().type(RecipientEnum.GROUP).identity(
+                opfabConfig.isRecipientToLowerCaseIdentifier() ?
+                        StringUtil.toLowercaseIdentifier(source) : source));
 
         Set<String> entityRecipientList = new HashSet<>();
         tso.ifPresent(entityRecipientList::add);

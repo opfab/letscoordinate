@@ -106,7 +106,7 @@ public class OpfabPublisherComponentTest {
                 .payload(PayloadDto.builder().build()).build();
 
         opfabPublisherComponent = new OpfabPublisherComponent(opfabConfig, coordinationConfig, letscoProperties);
-        process = OpfabUtil.generateProcessKey(eventMessageDto);
+        process = OpfabUtil.generateProcessKey(eventMessageDto, true);
         opfabPublisherComponent.setProcessKey(process);
     }
 
@@ -137,7 +137,7 @@ public class OpfabPublisherComponentTest {
         Card card = new Card();
         Long id = 1L;
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
-        String process = OpfabUtil.generateProcessKey(eventMessageDto);
+        String process = OpfabUtil.generateProcessKey(eventMessageDto, true);
         List<String> expectedTags = Stream.of(source, messageTypeName, process,
                 source + "_" + eventMessageDto.getHeader().getNoun())
                 .map(String::toLowerCase).collect(toList());
