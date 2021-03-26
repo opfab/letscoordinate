@@ -76,7 +76,7 @@ public class LetscoKafkaListener {
 
         log.info("Data receiced from topic \"{}\" (kafka_receivedTimestamp = {}, kafka_receivedPartitionId = {})", topic,
                 DateTimeFormatter.ISO_INSTANT.format(Instant.ofEpochMilli(ts)), partition);
-        log.debug("Received data:\n {}", data);
+        log.info("Received data: {}", data);
 
         Validation<ResponseErrorDto, EventMessageDto> validation = jsonDataProcessor.inputStreamToPojo(new ByteArrayInputStream(data.getBytes()));
         if (validation.isInvalid()) {
