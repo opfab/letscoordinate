@@ -33,7 +33,10 @@
         {
           "name": "ServiceA_Report",
           "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf",
-          "eicCode": ["22XCORESO------S", "38X-BALTIC-RSC-H"]
+          "eicCode": [
+            "22XCORESO------S",
+            "38X-BALTIC-RSC-H"
+          ]
         }
       ],
       "rscKpi": [
@@ -42,7 +45,7 @@
           "joinGraph": "true",
           "data": [
             {
-              "timestamp": "2021-06-30T22:00:00Z",
+              "timestamp": "2021-01-16T22:00:00Z",
               "granularity": "D",
               "label": "Process successful",
               "detail": [
@@ -50,7 +53,8 @@
                   "value": 1
                 }
               ]
-            },{
+            },
+            {
               "timestamp": "2021-09-01T22:00:00Z",
               "granularity": "D",
               "label": "Process successful",
@@ -59,7 +63,8 @@
                   "value": 1
                 }
               ]
-            },{
+            },
+            {
               "timestamp": "2021-10-02T22:00:00Z",
               "granularity": "D",
               "label": "Process successful",
@@ -70,7 +75,7 @@
               ]
             },
             {
-              "timestamp": "2021-05-16T22:00:00Z",
+              "timestamp": "2021-01-16T22:00:00Z",
               "granularity": "D",
               "label": "Process failed",
               "detail": [
@@ -78,7 +83,8 @@
                   "value": 1
                 }
               ]
-            },{
+            },
+            {
               "timestamp": "2021-05-20T22:00:00Z",
               "granularity": "D",
               "label": "Process failed",
@@ -87,8 +93,29 @@
                   "value": 1
                 }
               ]
-            },{
-              "timestamp": "2021-10-20T22:00:00Z",
+            },
+            {
+              "timestamp": "2021-01-16T22:00:00Z",
+              "granularity": "D",
+              "label": "Process successful with warnings",
+              "detail": [
+                {
+                  "value": 1
+                }
+              ]
+            },
+            {
+              "timestamp": "2021-05-20T22:00:00Z",
+              "granularity": "D",
+              "label": "Process successful with warnings",
+              "detail": [
+                {
+                  "value": 1
+                }
+              ]
+            },
+            {
+              "timestamp": "2021-11-01T22:00:00Z",
               "granularity": "D",
               "label": "Process successful with warnings",
               "detail": [
@@ -191,7 +218,8 @@
                   "value": 13
                 }
               ]
-            },{
+            },
+            {
               "timestamp": "2021-08-15T22:00:00Z",
               "granularity": "D",
               "label": "Process successful",
@@ -200,7 +228,8 @@
                   "value": 3
                 }
               ]
-            },{
+            },
+            {
               "timestamp": "2021-09-22T22:00:00Z",
               "granularity": "D",
               "label": "Process successful",
@@ -772,7 +801,7 @@
               ]
             },
             {
-              "timestamp": "2021-05-15T22:00:00Z",
+              "timestamp": "2021-05-31T22:00:00Z",
               "granularity": "D",
               "label": "Process failed",
               "detail": [
