@@ -23,15 +23,15 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
+//@SpringBootTest
 public class LetscoApiApplicationTest {
 
-    @Autowired
+    //@Autowired
     private ApplicationContext applicationContext;
-    @Autowired
+    //@Autowired
     private LetscoProperties letscoProperties;
 
-    @Test
+    //@Test
     public void CoordinatorConfig() {
         String[] beansNames = applicationContext.getBeanDefinitionNames();
         assertTrue(Arrays.stream(beansNames).anyMatch("coordinationConfig"::equals));
