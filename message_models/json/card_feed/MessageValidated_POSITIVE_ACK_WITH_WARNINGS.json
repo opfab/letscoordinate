@@ -17,7 +17,8 @@
           "businessDayTo": "2021-12-28T23:00:00Z",
           "sendingUser": "10XPT-REN------9",
           "filename": "FileB.xlsx",
-          "tso": "10X1001A1001A345"
+          "tso": "10X1001A1001A345",
+          "recipients": ["10XFR-RTE------Q", "10X1001A1001A345"]
         }
       }
     },

@@ -990,6 +990,385 @@
               ]
             }
           ]
+        },
+        {
+          "name": "bp7",
+          "data": [
+            {
+              "timestamp": "2021-08-01T22:00:00Z",
+              "granularity": "D",
+              "label": "Process successful",
+              "detail": [
+                {
+                  "eicCode": "38X-BALTIC-RSC-H",
+                  "value": 1
+                },
+                {
+                  "eicCode": "22XCORESO------S",
+                  "value": 1
+                },
+                {
+                  "eicCode": "10X1001C--00008J",
+                  "value": 0
+                },
+                {
+                  "eicCode": "34X-0000000068-Q",
+                  "value": 1
+                },
+                {
+                  "eicCode": "10X1001C--00003T",
+                  "value": 1
+                },
+                {
+                  "eicCode": "EICCODE-SELENECC",
+                  "value": 1
+                },
+                {
+                  "eicCode": "ALL_RSCS",
+                  "value": 5
+                },
+                {
+                  "eicCode": "EICCODE-REGION-0",
+                  "value": 1
+                },
+                {
+                  "eicCode": "EICCODE-REGION-1",
+                  "value": 1
+                },
+                {
+                  "eicCode": "EICCODE-REGION-2",
+                  "value": 1
+                },
+                {
+                  "eicCode": "EICCODE-REGION-3",
+                  "value": 1
+                },
+                {
+                  "eicCode": "EICCODE-REGION-4",
+                  "value": 1
+                },
+                {
+                  "eicCode": "EICCODE-REGION-6",
+                  "value": 1
+                },
+                {
+                  "eicCode": "ALL_REGIONS",
+                  "value": 6
+                }
+              ]
+            },
+            {
+              "timestamp": "2021-09-30T22:00:00Z",
+              "granularity": "D",
+              "label": "Process successful",
+              "detail": [
+                {
+                  "eicCode": "38X-BALTIC-RSC-H",
+                  "value": 1
+                },
+                {
+                  "eicCode": "22XCORESO------S",
+                  "value": 1
+                },
+                {
+                  "eicCode": "10X1001C--00008J",
+                  "value": 1
+                },
+                {
+                  "eicCode": "34X-0000000068-Q",
+                  "value": 1
+                },
+                {
+                  "eicCode": "10X1001C--00003T",
+                  "value": 1
+                },
+                {
+                  "eicCode": "EICCODE-SELENECC",
+                  "value": 1
+                },
+                {
+                  "eicCode": "ALL_RSCS",
+                  "value": 6
+                },
+                {
+                  "eicCode": "EICCODE-REGION-0",
+                  "value": 1
+                },
+                {
+                  "eicCode": "EICCODE-REGION-1",
+                  "value": 1
+                },
+                {
+                  "eicCode": "EICCODE-REGION-2",
+                  "value": 0
+                },
+                {
+                  "eicCode": "EICCODE-REGION-4",
+                  "value": 1
+                },
+                {
+                  "eicCode": "EICCODE-REGION-7",
+                  "value": 1
+                },
+                {
+                  "eicCode": "EICCODE-REGION-8",
+                  "value": 1
+                },
+                {
+                  "eicCode": "ALL_REGIONS",
+                  "value": 5
+                }
+              ]
+            },
+            {
+              "timestamp": "2021-01-01T11:00:00Z",
+              "granularity": "Y",
+              "label": "2025",
+              "detail": [
+                {
+                  "eicCode": "38X-BALTIC-RSC-H",
+                  "value": 11
+                },
+                {
+                  "eicCode": "22XCORESO------S",
+                  "value": 81
+                },
+                {
+                  "eicCode": "10X1001C--00008J",
+                  "value": 70
+                },
+                {
+                  "eicCode": "34X-0000000068-Q",
+                  "value": 66
+                },
+                {
+                  "eicCode": "10X1001C--00003T",
+                  "value": 45
+                },
+                {
+                  "eicCode": "EICCODE-SELENECC",
+                  "value": 33
+                },
+                {
+                  "eicCode": "ALL_RSCS",
+                  "value": 79
+                },
+                {
+                  "eicCode": "EICCODE-REGION-0",
+                  "value": 14
+                },
+                {
+                  "eicCode": "EICCODE-REGION-1",
+                  "value": 1
+                },
+                {
+                  "eicCode": "EICCODE-REGION-2",
+                  "value": 81
+                },
+                {
+                  "eicCode": "EICCODE-REGION-3",
+                  "value": 55
+                },
+                {
+                  "eicCode": "EICCODE-REGION-4",
+                  "value": 44
+                },
+                {
+                  "eicCode": "EICCODE-REGION-6",
+                  "value": 73
+                },
+                {
+                  "eicCode": "ALL_REGIONS",
+                  "value": 80
+                }
+              ]
+            },
+            {
+              "timestamp": "2022-01-01T11:00:00Z",
+              "granularity": "Y",
+              "label": "2021",
+              "detail": [
+                {
+                  "eicCode": "38X-BALTIC-RSC-H",
+                  "value": 54
+                },
+                {
+                  "eicCode": "22XCORESO------S",
+                  "value": 70
+                },
+                {
+                  "eicCode": "10X1001C--00008J",
+                  "value": 49
+                },
+                {
+                  "eicCode": "34X-0000000068-Q",
+                  "value": 66
+                },
+                {
+                  "eicCode": "10X1001C--00003T",
+                  "value": 77
+                },
+                {
+                  "eicCode": "EICCODE-SELENECC",
+                  "value": 19
+                },
+                {
+                  "eicCode": "ALL_RSCS",
+                  "value": 67
+                },
+                {
+                  "eicCode": "EICCODE-REGION-0",
+                  "value": 14
+                },
+                {
+                  "eicCode": "EICCODE-REGION-1",
+                  "value": 13
+                },
+                {
+                  "eicCode": "EICCODE-REGION-2",
+                  "value": 71
+                },
+                {
+                  "eicCode": "EICCODE-REGION-3",
+                  "value": 59
+                },
+                {
+                  "eicCode": "EICCODE-REGION-4",
+                  "value": 89
+                },
+                {
+                  "eicCode": "EICCODE-REGION-6",
+                  "value": 34
+                },
+                {
+                  "eicCode": "ALL_REGIONS",
+                  "value": 85
+                }
+              ]
+            },
+            {
+              "timestamp": "2022-01-01T11:00:00Z",
+              "granularity": "Y",
+              "label": "2022",
+              "detail": [
+                {
+                  "eicCode": "38X-BALTIC-RSC-H",
+                  "value": 66
+                },
+                {
+                  "eicCode": "22XCORESO------S",
+                  "value": 7
+                },
+                {
+                  "eicCode": "10X1001C--00008J",
+                  "value": 90
+                },
+                {
+                  "eicCode": "10X1001C--00003T",
+                  "value": 70
+                },
+                {
+                  "eicCode": "EICCODE-SELENECC",
+                  "value": 61
+                },
+                {
+                  "eicCode": "ALL_RSCS",
+                  "value": 69
+                },
+                {
+                  "eicCode": "EICCODE-REGION-0",
+                  "value": 76
+                },
+                {
+                  "eicCode": "EICCODE-REGION-1",
+                  "value": 49
+                },
+                {
+                  "eicCode": "EICCODE-REGION-2",
+                  "value": 64
+                },
+                {
+                  "eicCode": "EICCODE-REGION-3",
+                  "value": 51
+                },
+                {
+                  "eicCode": "EICCODE-REGION-4",
+                  "value": 74
+                },
+                {
+                  "eicCode": "EICCODE-REGION-6",
+                  "value": 62
+                },
+                {
+                  "eicCode": "ALL_REGIONS",
+                  "value": 87
+                }
+              ]
+            },
+            {
+              "timestamp": "2024-01-01T11:00:00Z",
+              "granularity": "Y",
+              "label": "2024",
+              "detail": [
+                {
+                  "eicCode": "38X-BALTIC-RSC-H",
+                  "value": 53
+                },
+                {
+                  "eicCode": "22XCORESO------S",
+                  "value": 70
+                },
+                {
+                  "eicCode": "10X1001C--00008J",
+                  "value": 40
+                },
+                {
+                  "eicCode": "34X-0000000068-Q",
+                  "value": 36
+                },
+                {
+                  "eicCode": "10X1001C--00003T",
+                  "value": 81
+                },
+                {
+                  "eicCode": "EICCODE-SELENECC",
+                  "value": 49
+                },
+                {
+                  "eicCode": "ALL_RSCS",
+                  "value": 90
+                },
+                {
+                  "eicCode": "EICCODE-REGION-0",
+                  "value": 14
+                },
+                {
+                  "eicCode": "EICCODE-REGION-1",
+                  "value": 13
+                },
+                {
+                  "eicCode": "EICCODE-REGION-2",
+                  "value": 76
+                },
+                {
+                  "eicCode": "EICCODE-REGION-3",
+                  "value": 59
+                },
+                {
+                  "eicCode": "EICCODE-REGION-4",
+                  "value": 49
+                },
+                {
+                  "eicCode": "EICCODE-REGION-6",
+                  "value": 73
+                },
+                {
+                  "eicCode": "ALL_REGIONS",
+                  "value": 95
+                }
+              ]
+            }
+          ]
         }
       ]
     }

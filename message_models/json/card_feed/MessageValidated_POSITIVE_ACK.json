@@ -17,7 +17,8 @@
           "businessDayTo": "2021-12-29T23:00:00Z",
           "sendingUser": "10XCZ-CEPS-GRIDE",
           "filename": "FileA.xlsx",
-          "tso": "10X1001A1001A345"
+          "tso": "10X1001A1001A345",
+          "recipients": ["10XFR-RTE------Q"]
         }
       }
     },
