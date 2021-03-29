@@ -8,11 +8,11 @@
 <!-- This file is part of the Let’s Coordinate project.                            -->
 
 
-  <div style="border: 0.5px solid white; border-radius: 0px 0px 10px 10px; overflow: hidden;">
+  <div>
 
     <div class="m-3" style="overflow: hidden;">
       <h6>
-        Business period: {{dateFormat card.startDate format='DD/MM/YYYY HH:mm'}} - {{dateFormat card.endDate format='DD/MM/YYYY HH:mm'}}
+        <b>Business period:</b> {{dateFormat card.startDate format='DD/MM/YYYY HH:mm'}} - {{dateFormat card.endDate format='DD/MM/YYYY HH:mm'}}
       </h6>
 
     <br/>
@@ -21,9 +21,9 @@
       {{#if (bool card.data.message '!=' '')}}
       <h6>
         <b>Message:</b><br/>
-        {{keepSpacesAndEndOfLine card.data.message}}
+        <h5 style="text-align: center;">{{keepSpacesAndEndOfLine card.data.message}}</h5>
       </h6>
-      <br/>
+      <br/><br/>
       {{/if}}
 
       {{#if (bool card.data.conf_subject '!=' '')}}
