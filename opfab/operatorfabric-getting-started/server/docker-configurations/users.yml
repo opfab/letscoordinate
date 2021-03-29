@@ -59,82 +59,101 @@ operatorfabric.users.default:
     - id: EICCODE-ALL-RSCS
       name: All RSCs
       description: All RSCs
+      entityAllowedToSendCard: false
 
     - id: EICCODE-ALL-TSOS
       name: All TSOs
       description: All TSOs
+      entityAllowedToSendCard: false
 
     - id: EICCODE-ALL-TSOS-AND-RSCS
       name: All TSOs & RSCs
       description: All TSOs & RSCs
+      entityAllowedToSendCard: false
 
 # RSCs and their TSOs
 
     - id: RSC-BALTIC-AND-TSOS
       name: 'RSC Baltic & TSOs'
       description: 'RSC Baltic & TSOs'
+      entityAllowedToSendCard: false
 
     - id: RSC-CORESO-AND-TSOS
       name: 'RSC CORESO & TSOs'
       description: 'RSC CORESO & TSOs'
+      entityAllowedToSendCard: false
 
     - id: RSC-NORDIC-AND-TSOS
       name: 'RSC Nordic & TSOs'
       description: 'RSC Nordic & TSOs'
+      entityAllowedToSendCard: false
 
     - id: RSC-SCC-AND-TSOS
       name: 'RSC SCC & TSOs'
       description: 'RSC SCC & TSOs'
+      entityAllowedToSendCard: false
 
     - id: RSC-SELENE-CC-AND-TSOS
       name: 'RSC SEleNe CC & TSOs'
       description: 'RSC SEleNe CC & TSOs'
+      entityAllowedToSendCard: false
 
     - id: RSC-TSCNET-AND-TSOS
       name: 'RSC TSCNET & TSOs'
       description: 'RSC TSCNET & TSOs'
+      entityAllowedToSendCard: false
 
 # Region/CCR and their TSOs and RSCs
 
     - id: EICCODE-REGION-0
       name: 'CCR Baltic: TSOs & RSCs'
       description: 'CCR Baltic: TSOs & RSCs'
+      entityAllowedToSendCard: false
 
     - id: EICCODE-REGION-1
       name: 'CCR Channel: TSOs & RSCs'
       description: 'CCR Channel: TSOs & RSCs'
+      entityAllowedToSendCard: false
 
     - id: EICCODE-REGION-2
       name: 'CCR CORE: TSOs & RSCs'
       description: 'CCR CORE: TSOs & RSCs'
+      entityAllowedToSendCard: false
 
     - id: EICCODE-REGION-3
       name: 'CCR Greece Italy (GRIT): TSOs & RSCs'
       description: 'CCR Greece Italy (GRIT): TSOs & RSCs'
+      entityAllowedToSendCard: false
 
     - id: EICCODE-REGION-4
       name: 'CCR Hansa: TSOs & RSCs'
       description: 'CCR Hansa: TSOs & RSCs'
+      entityAllowedToSendCard: false
 
     - id: EICCODE-REGION-5
       name: 'CCR Italy North: TSOs & RSCs'
       description: 'CCR Italy North: TSOs & RSCs'
+      entityAllowedToSendCard: false
 
     - id: EICCODE-REGION-6
       name: 'CCR Ireland and United Kingdom (IU): TSOs & RSCs'
       description: 'CCR Ireland and United Kingdom (IU): TSOs & RSCs'
+      entityAllowedToSendCard: false
 
     - id: EICCODE-REGION-8
       name: 'CCR South East Europe (SEE): TSOs & RSCs'
       description: 'CCR South East Europe (SEE): TSOs & RSCs'
+      entityAllowedToSendCard: false
 
     - id: EICCODE-REGION-9
       name: 'CCR South West Europe (SWE): TSOs & RSCs'
       description: 'CCR South West Europe (SWE): TSOs & RSCs'
+      entityAllowedToSendCard: false
 
     - id: EICCODE-REGION-7
       name: 'CCR Nordic: TSOs & RSCs'
       description: 'CCR Nordic: TSOs & RSCs'
+      entityAllowedToSendCard: false
 
 # RSC
 
