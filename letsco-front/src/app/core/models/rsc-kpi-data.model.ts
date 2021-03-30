@@ -39,7 +39,9 @@ export class RscKpiDataAdapter implements Adapter<RscKpiData>{
         let kpiSubtypeCode = extraParams[1]; // GPx or BPx (while x in [1..n])
         let submittedFormData = extraParams[0][0][0]; // values selected in the config page
         if (submittedFormData.dataGranularity === DataGranularityEnum.DAILY) { // CASE: DAILY GRANULARITY
-            let chartOptions = new KpiChartOptions(extraParams[0][0][1][kpiSubtypeCode].graphType);
+            let graphType = extraParams[0][0][1][kpiSubtypeCode].graphType;
+            let joinGraph = extraParams[0][0][1][kpiSubtypeCode].joinGraph === true;
+            let chartOptions = new KpiChartOptions(joinGraph === true ? 'bar' : graphType);
             let key, value;
             let rscKpiTemporalData: RscKpiTemporalData[];
             Array.from(Object.entries(entry)).forEach( (entryTmp, index0) => {
@@ -54,7 +56,7 @@ export class RscKpiDataAdapter implements Adapter<RscKpiData>{
                 // ChartDataLabels should be unregistered to hide values in DAILY VIEW graphs
                 Chart.plugins.unregister(ChartDataLabels);
                 // set the main graph legend
-                chartOptions.chartDataSets[index0] = { data: [], label: key };
+                chartOptions.chartDataSets[index0] = { data: [], label: key, stack: joinGraph === true ? 'bar0' : 'bar'+index0};
                 // use of a temporary data array to be able to delete found elements (to improve searching performance)
                 let tmpRscKpiTemporalData = rscKpiTemporalData;
                 let startDate = new Date(submittedFormData.startDate);

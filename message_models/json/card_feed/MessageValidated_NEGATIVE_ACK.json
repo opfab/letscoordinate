@@ -14,9 +14,10 @@
           "messageTypeName": "Validation",
           "businessDayFrom": "2021-07-18T22:00:00Z",
           "businessDayTo": "2021-07-23T22:00:00Z",
-          "sendingUser": "10X1001A1001A345",
+          "sendingUser": "10XFR-RTE------Q",
           "filename": "FileA.json",
-          "tso": "10X1001A1001A345"
+          "tso": "10XFR-RTE------Q",
+          "recipients": ["10XFR-RTE------Q", "10X1001A1001A345"]
         }
       }
     },

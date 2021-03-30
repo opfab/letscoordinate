@@ -154,18 +154,18 @@
       "expire-claim": "exp",
       "login-claim": "preferred_username"
     },
-    "logout-url": "http://localhost/auth/realms/dev/protocol/openid-connect/logout?redirect_uri=http://localhost/ui/",
+    "logout-url": "http://${SERVER_IP}/auth/realms/dev/protocol/openid-connect/logout?redirect_uri=http://${SERVER_IP}/ui/",
     "oauth2": {
       "client-id": "opfab-client",
       "client-secret": "opfab-keycloak-secret",
       "flow": {
-        "delegate-url": "http://localhost/auth/realms/dev",
+        "delegate-url": "http://${SERVER_IP}/auth/realms/dev",
         "mode": "IMPLICIT",
         "provider": "Opfab Keycloak"
       }
     },
     "provider-realm": "dev",
-    "provider-url": "http://localhost"
+    "provider-url": "http://${SERVER_IP}"
   },
   "settings": {
     "tags": {"hide":true},

@@ -47,7 +47,7 @@ export class RscKpiAdapter implements Adapter<RscKpi>{
                         .forEach((entry2, index) => rscKpiData.push(this.rscKpiDataAdapter.adapt([entry2], extraParams, key, key + '-graph' + index)));
                 }
             }
-        } else { // CASE: MULTI-YEAR VIEW
+        } else { // CASE: YEARLY VIEW
             if (Array.from(Object.entries(value)).length === 0) {
                 rscKpiData.push(this.rscKpiDataAdapter.adapt([kpiSubtype ? kpiSubtype.name : key, []], extraParams, key, key + '-graph0'))
             } else {

@@ -9,12 +9,12 @@
 
 {{#with card.data}}
 
-  <div style="border: 0.5px solid white; border-radius: 0px 0px 10px 10px; overflow: hidden;">
+  <div>
 
     <div class="m-3" style="overflow: hidden;">
       <h6>
         {{#with header.properties.businessDataIdentifier}}
-          Business period: {{dateFormat (math businessDayFrom.epochSecond '*' 1000) format='DD/MM/YYYY HH:mm'}} -
+          <b>Business period:</b> {{dateFormat (math businessDayFrom.epochSecond '*' 1000) format='DD/MM/YYYY HH:mm'}} -
           {{dateFormat (math businessDayTo.epochSecond '*' 1000) format='DD/MM/YYYY HH:mm'}}
         {{/with}}
       </h6>
@@ -46,7 +46,7 @@
       <div id="divErrors">
         {{#if (bool errors.length '>' 0)}}
           <p class="mt-4 mb-3">
-            Detected errors ({{errors.length}})&nbsp;
+            <b>Detected errors ({{errors.length}})</b>&nbsp;
             <a class="detected-errors" href="javascript:void(0)"><i class="fas fa-chevron-circle-up"></i></a>
           </p>
 
@@ -82,7 +82,7 @@
       <div id="divWarnings">
         {{#if (bool warnings.length '>' 0)}}
           <p class="mt-4 mb-3">
-            Detected warnings ({{warnings.length}})&nbsp;
+            <b>Detected warnings ({{warnings.length}})</b>&nbsp;
             <a class="detected-warnings" href="javascript:void(0)"><i class="fas fa-chevron-circle-up"></i></a>
           </p>
 
