@@ -18,10 +18,12 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class PayloadDto {
     @Valid
     private List<TextDataDto> text;

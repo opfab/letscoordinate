@@ -113,7 +113,7 @@ public class FTPDownloadClient {
 
     // PRIVATE METHODES
 
-    private FTPClient initAndConnectFTPClient() throws IOException {
+    protected FTPClient initAndConnectFTPClient() throws IOException {
         FTPClient ftpClient = new FTPClient();
         // init FTP connection params
         LetscoProperties.Ftp.Server ftpServer = letscoProperties.getFtp().getServer();
@@ -167,8 +167,8 @@ public class FTPDownloadClient {
         }
     }
 
-    private void deleteLocalDownloadedFile(String fileName,
-                                           MonitoringContext monitoringContext) throws IOException {
+    protected void deleteLocalDownloadedFile(String fileName,
+                                             MonitoringContext monitoringContext) throws IOException {
         monitoringContext.startNewStepMonitoring(TaskStepEnum.STEP_DELETE_LOCAL_FILE, fileName);
         Path path = Paths.get(letscoProperties.getScanner().getPath().getTargetDownloadDir() + File.separator + fileName);
         if(path.toFile().exists()) {
@@ -186,8 +186,8 @@ public class FTPDownloadClient {
         }
     }
 
-    private List<String> downloadFTPFiles(FTPClient ftpClient,
-                                  List<String> filesToDownload) throws IOException {
+    protected List<String> downloadFTPFiles(FTPClient ftpClient,
+                                            List<String> filesToDownload) throws IOException {
         List<String> downloadedFiles = new ArrayList<>();
         for(String fileToDownload : filesToDownload) {
             String remoteFile = letscoProperties.getFtp().getPath().getSourceDownloadDir() + File.separator + fileToDownload;

@@ -49,7 +49,7 @@ public class CoordinationConfig {
     }
 
     public Set<String> getServiceCodes() {
-        return Collections.unmodifiableSet(tsos.keySet());
+        return Collections.unmodifiableSet(services.keySet());
     }
 
     public Set<String> getAllEicCodes() {
@@ -120,6 +120,9 @@ public class CoordinationConfig {
 
     @Setter
     @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     @EqualsAndHashCode
     public static class Service {
         private String code;
@@ -130,6 +133,7 @@ public class CoordinationConfig {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
+    @Builder
     public static class Tso {
         private String eicCode;
         private String name;
@@ -138,6 +142,9 @@ public class CoordinationConfig {
 
     @Setter
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class KpiDataType {
         private String code;
         private String name;
@@ -146,6 +153,9 @@ public class CoordinationConfig {
 
     @Setter
     @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class KpiDataSubtype {
         private String code;
         private String name;

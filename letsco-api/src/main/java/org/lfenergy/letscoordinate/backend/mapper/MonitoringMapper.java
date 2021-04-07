@@ -11,6 +11,8 @@
 
 package org.lfenergy.letscoordinate.backend.mapper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.lfenergy.letscoordinate.backend.dto.monitoring.MonitoredTaskDto;
 import org.lfenergy.letscoordinate.backend.dto.monitoring.MonitoredTaskStepDto;
 import org.lfenergy.letscoordinate.backend.model.MonitoredTask;
@@ -19,7 +21,8 @@ import org.lfenergy.letscoordinate.backend.model.MonitoredTaskStep;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class MonitoringMapper {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MonitoringMapper {
 
     public static MonitoredTask fromDto(MonitoredTaskDto monitoredTaskDto) {
         if (monitoredTaskDto == null)
@@ -40,7 +43,7 @@ public class MonitoringMapper {
         return monitoredTask;
     }
 
-    private static MonitoredTaskStep fromDto(MonitoredTaskStepDto monitoredTaskStepDto, MonitoredTask monitoredTask) {
+    protected static MonitoredTaskStep fromDto(MonitoredTaskStepDto monitoredTaskStepDto, MonitoredTask monitoredTask) {
         if (monitoredTaskStepDto == null)
             return null;
 

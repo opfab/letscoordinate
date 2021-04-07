@@ -101,8 +101,8 @@ public class ReportingService {
                 .build();
     }
 
-    private Map<String, CoordinationConfig.KpiDataSubtype> fillKpiDataSubtypeWithJoinGraphValues(Map<String, CoordinationConfig.KpiDataSubtype> kpiDataSubtypeMap,
-                                                                                                 List<RscKpi> rscKpiList) {
+    protected Map<String, CoordinationConfig.KpiDataSubtype> fillKpiDataSubtypeWithJoinGraphValues(Map<String, CoordinationConfig.KpiDataSubtype> kpiDataSubtypeMap,
+                                                                                                   List<RscKpi> rscKpiList) {
         if (rscKpiList == null || kpiDataSubtypeMap == null)
             return null;
         List<RscKpi> descSortedRscKpiList = rscKpiList.stream()
@@ -148,17 +148,19 @@ public class ReportingService {
      */
     private List<RscKpi> getRscKpiListForExcelExportReport(RscKpiReportSubmittedFormDataDto submittedFormDataDto) {
         List<String> letscoEntityCodeList = new ArrayList<>();
-        if(submittedFormDataDto != null) {
-            if (CollectionUtils.isNotEmpty(submittedFormDataDto.getRscCodes())) {
-                if(submittedFormDataDto.getRscCodes().contains(Constants.ALL_RSCS_CODE))
-                    letscoEntityCodeList.add(Constants.ALL_RSCS_CODE);
-                letscoEntityCodeList.addAll(coordinationConfig.getRscEicCodes());
-            } else if (CollectionUtils.isNotEmpty(submittedFormDataDto.getRegionCodes())) {
-                if(submittedFormDataDto.getRegionCodes().contains(Constants.ALL_REGIONS_CODE))
-                    letscoEntityCodeList.add(Constants.ALL_REGIONS_CODE);
-                letscoEntityCodeList.addAll(coordinationConfig.getRegionEicCodes());
-            }
+        if(submittedFormDataDto == null)
+            return new ArrayList<>();
+
+        if (CollectionUtils.isNotEmpty(submittedFormDataDto.getRscCodes())) {
+            if(submittedFormDataDto.getRscCodes().contains(Constants.ALL_RSCS_CODE))
+                letscoEntityCodeList.add(Constants.ALL_RSCS_CODE);
+            letscoEntityCodeList.addAll(coordinationConfig.getRscEicCodes());
+        } else if (CollectionUtils.isNotEmpty(submittedFormDataDto.getRegionCodes())) {
+            if(submittedFormDataDto.getRegionCodes().contains(Constants.ALL_REGIONS_CODE))
+                letscoEntityCodeList.add(Constants.ALL_REGIONS_CODE);
+            letscoEntityCodeList.addAll(coordinationConfig.getRegionEicCodes());
         }
+
         return getRscKpiList(
                 submittedFormDataDto.getDataGranularity(),
                 submittedFormDataDto.getStartDate(),
@@ -226,7 +228,7 @@ public class ReportingService {
         return fileNameBuilder.toString();
     }
 
-    private String generateReportFileNameWithoutExtension(RscKpiReportSubmittedFormDataDto submittedFormDataDto) {
+    protected String generateReportFileNameWithoutExtension(RscKpiReportSubmittedFormDataDto submittedFormDataDto) {
         if(submittedFormDataDto == null)
             return null;
         StringBuilder fileNameBuilder = new StringBuilder();
@@ -243,7 +245,7 @@ public class ReportingService {
         return fileNameBuilder.toString();
     }
 
-    private String getSelectedEntitiesForExportFileName(RscKpiReportSubmittedFormDataDto submittedFormDataDto) {
+    protected String getSelectedEntitiesForExportFileName(RscKpiReportSubmittedFormDataDto submittedFormDataDto) {
         if (submittedFormDataDto != null) {
             if (CollectionUtils.isNotEmpty(submittedFormDataDto.getRscCodes())) {
                 if (submittedFormDataDto.getRscCodes().size() == 1)

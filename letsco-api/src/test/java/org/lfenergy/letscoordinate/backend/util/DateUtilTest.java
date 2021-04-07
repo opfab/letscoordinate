@@ -15,7 +15,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
 
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 
@@ -24,16 +24,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DateUtilTest {
 
-    public static String formatDate(TemporalAccessor dateTime) {
-        return formatDate(dateTime, "dd/MM/yyyy");
-    }
-
-    public static String formatDate(TemporalAccessor dateTime, String format) {
-        return DateTimeFormatter.ofPattern(format).format(dateTime);
-    }
-
     public static ZoneId getParisZoneId() {
         return ZoneId.of("Europe/Paris");
+    }
+
+    @Test
+    public void toOffsetDateTime_shouldReturnNull() {
+        assertThat(DateUtil.toOffsetDateTime(null)).isNull();
+    }
+
+    @Test
+    public void toOffsetDateTime_shouldReturnOffsetDateTime() {
+        OffsetDateTime expectedOffsetDateTime = Instant.parse("2012-01-01T00:00:00Z").atOffset(ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.now()));
+        assertThat(DateUtil.toOffsetDateTime("2012-01-01T00:00:00Z")).isEqualTo(expectedOffsetDateTime);
+    }
+
+    @Test
+    public void formatDate_shouldReturnDateAsString() {
+        OffsetDateTime offsetDateTime = DateUtil.toOffsetDateTime("2021-02-08T11:22:33Z");
+        assertThat(DateUtil.formatDate(offsetDateTime)).isEqualTo("08/02/2021");
+    }
+
+    @Test
+    public void formatDate_shouldReturnDateTimeAsString() {
+        OffsetDateTime offsetDateTime = DateUtil.toOffsetDateTime("2021-02-08T11:22:33Z");
+        assertThat(DateUtil.formatDate(offsetDateTime, "dd/MM/yy")).isEqualTo("08/02/21");
     }
 
     @Test

@@ -11,8 +11,7 @@
 
 package org.lfenergy.letscoordinate.scanner.config;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +19,9 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "letsco")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class LetscoProperties {
     private Ftp ftp;
     private Scanner scanner;
@@ -29,6 +31,9 @@ public class LetscoProperties {
 
     @Getter
     @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Ftp {
         private Server server;
         private Path path;
@@ -37,6 +42,9 @@ public class LetscoProperties {
 
         @Getter
         @Setter
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class Server {
             private String url;
             private Integer port;
@@ -46,6 +54,9 @@ public class LetscoProperties {
 
         @Getter
         @Setter
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class Path {
             private String sourceDownloadDir;
             private String treatedDir;
@@ -55,12 +66,18 @@ public class LetscoProperties {
 
     @Getter
     @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Scanner {
         private Path path;
         private boolean createTargetDirIfNotExists;
 
         @Getter
         @Setter
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class Path {
             private String targetDownloadDir;
         }
@@ -68,24 +85,36 @@ public class LetscoProperties {
 
     @Getter
     @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Backend {
         private String baseUrl;
     }
 
     @Getter
     @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Scheduler {
         private Cron cron;
         private FixedRate fixedRate;
 
         @Getter
         @Setter
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class Cron {
             private String downloadFilesCron;
         }
 
         @Getter
         @Setter
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class FixedRate {
             private long fileSizeCheckRateMs;
         }

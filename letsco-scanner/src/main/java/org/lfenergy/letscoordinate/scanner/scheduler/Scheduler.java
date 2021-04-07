@@ -40,7 +40,6 @@ public class Scheduler {
         monitoringContext.stopTaskMonitoring();
         monitoringContext.saveMonitoredTask(monitoringService);
         log.info("<<< END PROCESS: downloadFtpFilesAndSaveIntoLetscoDB [{}]", monitoringContext.getMonitoredTaskUUID());
-
     }
 
 }

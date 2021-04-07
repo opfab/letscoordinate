@@ -133,7 +133,7 @@ third-app:
 
 keycloak:
   server:
-    url: http://keycloak:8080/auth
+    url: http://localhost:89/auth
     realm: dev
     client-id: opfab-client
     client-secret: opfab-keycloak-secret

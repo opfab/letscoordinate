@@ -104,36 +104,6 @@ public class InputFileToPojoService {
         return Validation.valid(eventMessageDtoMap);
     }
 
-    public Validation<ResponseErrorDto, EventMessageDto> excelToPojo(String filePath, String fileName) {
-        String path = filePath + File.separator + fileName;
-        log.info("Generating POJO for Excel file \"{}\"", path);
-        try {
-            return excelDataProcessor.inputStreamToPojo(path, new FileInputStream(new File(path)));
-        } catch (InvalidInputFileException ie) {
-            log.error(ie.getMessage(), ie);
-            return Validation.invalid(ResponseErrorDto.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .code("INVALID_INPUT_FILE") // TODO specific error code to be defined!
-                    .messages(Collections.singletonList(ResponseErrorMessageDto.builder()
-                            .severity(ResponseErrorSeverityEnum.ERROR)
-                            .message("Error while generating POJO from uploaded file: Invalid input file \"" + fileName + "\"")
-                            .detail(ie.getMessage())
-                            .build()))
-                    .build());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return Validation.invalid(ResponseErrorDto.builder()
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                    .code("ERROR") // TODO specific error code to be defined!
-                    .messages(Collections.singletonList(ResponseErrorMessageDto.builder()
-                            .severity(ResponseErrorSeverityEnum.ERROR)
-                            .message("Error while generating POJO from file " + path)
-                            .detail(e.getMessage())
-                            .build()))
-                    .build());
-        }
-    }
-
     public Validation<ResponseErrorDto, EventMessage> uploadExcelFileAndSaveGeneratedData(MultipartFile multipartFile) {
         Validation<ResponseErrorDto, EventMessageDto> validation = uploadedFileToPojo(multipartFile);
         // the .map transformation is applied when the validation is valid, otherwise the invalid validation is returned as is

@@ -145,6 +145,13 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- H2 DB for test -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 		<!-- OpFab Cards Client -->
 		<dependency>
 			<groupId>org.lfenergy.operatorfabric</groupId>
