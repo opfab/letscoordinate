@@ -29,10 +29,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class EventMessageService {
 
     private final LetscoProperties letscoProperties;
+    private final RestTemplate restTemplate;
 
     public Validation<String, ProcessedFileDto> saveFileData(MultipartFile multipartFile) {
         String serverUrl = letscoProperties.getBackend().getBaseUrl() + "/letsco/api/v1/upload/save";
-        RestTemplate restTemplate = new RestTemplate();
 
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -52,7 +52,6 @@ public class EventMessageService {
 
     public Validation<String, Boolean> deleteEventMessageById(ProcessedFileDto processedFileDto) {
         String serverUrl = letscoProperties.getBackend().getBaseUrl() + "/letsco/api/v1/eventmessages/{id}";
-        RestTemplate restTemplate = new RestTemplate();
 
         try {
             HttpHeaders headers = new HttpHeaders();

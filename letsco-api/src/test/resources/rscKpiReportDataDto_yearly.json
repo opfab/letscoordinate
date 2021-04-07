@@ -1,0 +1,547 @@
+{
+  "submittedFormData": {
+    "dataGranularity": "Y",
+    "startDate": "2021-01-01",
+    "endDate": "2025-12-31",
+    "rscCodes": [
+      "ALL_RSCS"
+    ],
+    "regionCodes": [],
+    "rscServiceCode": "SERVICE_A",
+    "kpiDataTypeCode": "ALL"
+  },
+  "rscKpiTypedDataMap": {
+    "BP": {
+      "BP1": {
+        "2025": [
+          {
+            "timestamp": "2021-01-01",
+            "dataGranularity": "Y",
+            "label": "2025",
+            "details": [
+              {
+                "value": 79,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-01-01",
+            "dataGranularity": "Y",
+            "label": "2025",
+            "details": [
+              {
+                "value": 79,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          }
+        ],
+        "2024": [
+          {
+            "timestamp": "2024-01-01",
+            "dataGranularity": "Y",
+            "label": "2024",
+            "details": [
+              {
+                "value": 90,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          },
+          {
+            "timestamp": "2024-01-01",
+            "dataGranularity": "Y",
+            "label": "2024",
+            "details": [
+              {
+                "value": 90,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          }
+        ],
+        "2022": [
+          {
+            "timestamp": "2022-01-01",
+            "dataGranularity": "Y",
+            "label": "2022",
+            "details": [
+              {
+                "value": 69,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          },
+          {
+            "timestamp": "2022-01-01",
+            "dataGranularity": "Y",
+            "label": "2022",
+            "details": [
+              {
+                "value": 69,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          }
+        ],
+        "2021": [
+          {
+            "timestamp": "2022-01-01",
+            "dataGranularity": "Y",
+            "label": "2021",
+            "details": [
+              {
+                "value": 67,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          },
+          {
+            "timestamp": "2022-01-01",
+            "dataGranularity": "Y",
+            "label": "2021",
+            "details": [
+              {
+                "value": 67,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          }
+        ]
+      },
+      "BP2": {
+        "2025": [
+          {
+            "timestamp": "2021-01-01",
+            "dataGranularity": "Y",
+            "label": "2025",
+            "details": [
+              {
+                "value": 77,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-01-01",
+            "dataGranularity": "Y",
+            "label": "2025",
+            "details": [
+              {
+                "value": 77,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          }
+        ],
+        "2022": [
+          {
+            "timestamp": "2022-01-01",
+            "dataGranularity": "Y",
+            "label": "2022",
+            "details": [
+              {
+                "value": 99,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          },
+          {
+            "timestamp": "2022-01-01",
+            "dataGranularity": "Y",
+            "label": "2022",
+            "details": [
+              {
+                "value": 99,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          }
+        ]
+      },
+      "BP3": {},
+      "BP4": {},
+      "BP5": {},
+      "BP6": {},
+      "BP7": {
+        "2025": [
+          {
+            "timestamp": "2021-01-01",
+            "dataGranularity": "Y",
+            "label": "2025",
+            "details": [
+              {
+                "value": 79,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          }
+        ],
+        "2024": [
+          {
+            "timestamp": "2024-01-01",
+            "dataGranularity": "Y",
+            "label": "2024",
+            "details": [
+              {
+                "value": 90,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          }
+        ],
+        "2022": [
+          {
+            "timestamp": "2022-01-01",
+            "dataGranularity": "Y",
+            "label": "2022",
+            "details": [
+              {
+                "value": 69,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          }
+        ],
+        "2021": [
+          {
+            "timestamp": "2022-01-01",
+            "dataGranularity": "Y",
+            "label": "2021",
+            "details": [
+              {
+                "value": 67,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "GP": {
+      "GP1": {
+        "2025": [
+          {
+            "timestamp": "2021-01-01",
+            "dataGranularity": "Y",
+            "label": "2025",
+            "details": [
+              {
+                "value": 34
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-01-01",
+            "dataGranularity": "Y",
+            "label": "2025",
+            "details": [
+              {
+                "value": 34
+              }
+            ]
+          }
+        ],
+        "2024": [
+          {
+            "timestamp": "2024-01-01",
+            "dataGranularity": "Y",
+            "label": "2024",
+            "details": [
+              {
+                "value": 62
+              }
+            ]
+          },
+          {
+            "timestamp": "2024-01-01",
+            "dataGranularity": "Y",
+            "label": "2024",
+            "details": [
+              {
+                "value": 62
+              }
+            ]
+          }
+        ],
+        "2023": [
+          {
+            "timestamp": "2023-01-01",
+            "dataGranularity": "Y",
+            "label": "2023",
+            "details": [
+              {
+                "value": 13
+              }
+            ]
+          },
+          {
+            "timestamp": "2023-01-01",
+            "dataGranularity": "Y",
+            "label": "2023",
+            "details": [
+              {
+                "value": 13
+              }
+            ]
+          }
+        ],
+        "2022": [
+          {
+            "timestamp": "2022-01-01",
+            "dataGranularity": "Y",
+            "label": "2022",
+            "details": [
+              {
+                "value": 79
+              }
+            ]
+          },
+          {
+            "timestamp": "2022-01-01",
+            "dataGranularity": "Y",
+            "label": "2022",
+            "details": [
+              {
+                "value": 79
+              }
+            ]
+          },
+          {
+            "timestamp": "2022-02-01",
+            "dataGranularity": "Y",
+            "label": "2022",
+            "details": []
+          },
+          {
+            "timestamp": "2022-02-01",
+            "dataGranularity": "Y",
+            "label": "2022",
+            "details": []
+          },
+          {
+            "timestamp": "2022-02-01",
+            "dataGranularity": "Y",
+            "label": "2022",
+            "details": []
+          },
+          {
+            "timestamp": "2022-02-01",
+            "dataGranularity": "Y",
+            "label": "2022",
+            "details": []
+          },
+          {
+            "timestamp": "2022-03-01",
+            "dataGranularity": "Y",
+            "label": "2022",
+            "details": []
+          },
+          {
+            "timestamp": "2022-03-01",
+            "dataGranularity": "Y",
+            "label": "2022",
+            "details": []
+          },
+          {
+            "timestamp": "2022-03-01",
+            "dataGranularity": "Y",
+            "label": "2022",
+            "details": []
+          },
+          {
+            "timestamp": "2022-03-01",
+            "dataGranularity": "Y",
+            "label": "2022",
+            "details": []
+          }
+        ],
+        "2021": [
+          {
+            "timestamp": "2021-01-01",
+            "dataGranularity": "Y",
+            "label": "2021",
+            "details": [
+              {
+                "value": 28
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-01-01",
+            "dataGranularity": "Y",
+            "label": "2021",
+            "details": [
+              {
+                "value": 28
+              }
+            ]
+          }
+        ]
+      },
+      "GP2": {
+        "2025": [
+          {
+            "timestamp": "2021-01-01",
+            "dataGranularity": "Y",
+            "label": "2025",
+            "details": [
+              {
+                "value": 77
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-01-01",
+            "dataGranularity": "Y",
+            "label": "2025",
+            "details": [
+              {
+                "value": 77
+              }
+            ]
+          }
+        ],
+        "2024": [
+          {
+            "timestamp": "2021-01-01",
+            "dataGranularity": "Y",
+            "label": "2024",
+            "details": [
+              {
+                "value": 97
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-01-01",
+            "dataGranularity": "Y",
+            "label": "2024",
+            "details": [
+              {
+                "value": 97
+              }
+            ]
+          }
+        ],
+        "2023": [
+          {
+            "timestamp": "2021-01-01",
+            "dataGranularity": "Y",
+            "label": "2023",
+            "details": [
+              {
+                "value": 66
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-01-01",
+            "dataGranularity": "Y",
+            "label": "2023",
+            "details": [
+              {
+                "value": 66
+              }
+            ]
+          }
+        ],
+        "2022": [
+          {
+            "timestamp": "2021-01-01",
+            "dataGranularity": "Y",
+            "label": "2022",
+            "details": [
+              {
+                "value": 39
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-01-01",
+            "dataGranularity": "Y",
+            "label": "2022",
+            "details": [
+              {
+                "value": 39
+              }
+            ]
+          }
+        ],
+        "2021": [
+          {
+            "timestamp": "2021-01-01",
+            "dataGranularity": "Y",
+            "label": "2021",
+            "details": [
+              {
+                "value": 51
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-01-01",
+            "dataGranularity": "Y",
+            "label": "2021",
+            "details": [
+              {
+                "value": 51
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "rscKpiSubtypedDataMap": {
+    "BP3": {
+      "code": "BP3",
+      "name": "Business Process 3",
+      "graphType": "bar"
+    },
+    "BP5": {
+      "code": "BP5",
+      "name": "Business Process 5",
+      "graphType": "bar"
+    },
+    "BP1": {
+      "code": "BP1",
+      "name": "Business Process 1",
+      "graphType": "bar"
+    },
+    "BP2": {
+      "code": "BP2",
+      "name": "Business Process 2",
+      "graphType": "line",
+      "joinGraph": false
+    },
+    "BP6": {
+      "code": "BP6",
+      "name": "Business Process 6",
+      "graphType": "bar"
+    },
+    "BP7": {
+      "code": "BP7",
+      "name": "Business Process 7",
+      "graphType": "bar"
+    },
+    "GP2": {
+      "code": "GP2",
+      "name": "Global Perf 2",
+      "graphType": "line"
+    },
+    "GP1": {
+      "code": "GP1",
+      "name": "Global Perf 1",
+      "graphType": "bar",
+      "joinGraph": true
+    },
+    "BP4": {
+      "code": "BP4",
+      "name": "Business Process 4",
+      "graphType": "bar"
+    }
+  },
+  "reportFileName": "serviceA_allKpis_panEu_2021_2025"
+}

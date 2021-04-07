@@ -11,9 +11,7 @@
 
 package org.lfenergy.letscoordinate.backend.dto.reporting;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.enums.KpiDataSubtypeEnum;
 import org.lfenergy.letscoordinate.backend.enums.KpiDataTypeEnum;
@@ -24,6 +22,8 @@ import java.util.Map;
 @Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RscKpiReportDataDto {
     private RscKpiReportSubmittedFormDataDto submittedFormData;
     private Map<KpiDataTypeEnum, Map<KpiDataSubtypeEnum, Map<String, List<RscKpiDto.DataDto>>>> rscKpiTypedDataMap;

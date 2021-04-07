@@ -11,13 +11,16 @@
 
 package org.lfenergy.letscoordinate.backend.model.opfab;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationMessageDto;
 
 import java.util.List;
 
-@lombok.Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class ValidationData extends EventMessageDto {
 

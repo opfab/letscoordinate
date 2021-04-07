@@ -330,7 +330,7 @@ public class OpfabPublisherComponent {
         return data;
     }
 
-    private void addPayloadData(Map<String, Object> data, PayloadDto payloadDto) {
+    protected void addPayloadData(Map<String, Object> data, PayloadDto payloadDto) {
         if (opfabConfig.getData().containsKey(processKey)) {
             opfabConfig.getData().get(processKey).getChangeTimeserieDataDetailValueType().ifPresent(c ->
                     payloadDto.getTimeserie().forEach(t ->

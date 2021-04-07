@@ -11,12 +11,14 @@
 
 package org.lfenergy.letscoordinate.backend.dto.eventmessage.payload;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class TimeserieTemporalDataDto implements IPayloadTemporalData {
     // Common fields (Input and Output)
     private String id;

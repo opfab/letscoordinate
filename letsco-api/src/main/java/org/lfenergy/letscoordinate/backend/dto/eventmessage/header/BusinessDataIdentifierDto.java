@@ -19,10 +19,12 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
+@EqualsAndHashCode
 public class BusinessDataIdentifierDto {
 
     @Getter(AccessLevel.NONE)

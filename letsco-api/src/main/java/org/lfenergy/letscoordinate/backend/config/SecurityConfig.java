@@ -45,13 +45,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors()
                 .and()
                 .authorizeRequests()
-                .mvcMatchers("/letsco/api/v1/rsc-kpi-report/**").hasAnyRole("TSO", "RSC")
                 .mvcMatchers("/letsco/api/v1/auth/token").permitAll()
-                .mvcMatchers("/letsco/api/v1/auth/**").hasAnyRole("TSO", "RSC")
-                .mvcMatchers("/letsco/api/v1/admin/**").hasRole("ADMIN")
+                .mvcMatchers("/letsco/api/v1/**").hasAnyRole("TSO", "RSC")
                 .and()
                 .oauth2ResourceServer()
-                .jwt().jwtAuthenticationConverter(grantedAuthoritiesExtractor());
+                .jwt()
+                .jwtAuthenticationConverter(grantedAuthoritiesExtractor());
     }
 
     /**

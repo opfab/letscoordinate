@@ -30,10 +30,10 @@ import org.springframework.web.client.RestTemplate;
 public class MonitoringService implements IMonitoringService {
 
     private final LetscoProperties letscoProperties;
+    private final RestTemplate restTemplate;
 
     public Validation<String, Long> saveMonitoredTask(MonitoredTask monitoredTask) {
         String serverUrl = letscoProperties.getBackend().getBaseUrl() + "/letsco/api/v1/monitoring";
-        RestTemplate restTemplate = new RestTemplate();
         try {
             HttpHeaders headers = new HttpHeaders();
             HttpEntity entity = new HttpEntity(monitoredTask, headers);

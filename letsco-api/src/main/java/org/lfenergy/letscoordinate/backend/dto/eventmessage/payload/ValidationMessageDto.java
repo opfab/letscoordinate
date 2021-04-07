@@ -20,10 +20,12 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class ValidationMessageDto {
     @NotNull
     private String code;

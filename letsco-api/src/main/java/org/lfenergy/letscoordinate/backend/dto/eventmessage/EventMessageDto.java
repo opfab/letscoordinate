@@ -11,20 +11,19 @@
 
 package org.lfenergy.letscoordinate.backend.dto.eventmessage;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.HeaderDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.PayloadDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
+@EqualsAndHashCode
 public class EventMessageDto {
     @NotNull
     private String xmlns;
