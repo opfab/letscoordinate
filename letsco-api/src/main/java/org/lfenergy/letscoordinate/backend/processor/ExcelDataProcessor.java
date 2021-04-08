@@ -261,8 +261,8 @@ public class ExcelDataProcessor implements DataProcessor {
 
         if (sheet.getPhysicalNumberOfRows() > 0) {
             for (int i = ExcelBlocEnum.PAYLOAD.getTitlesRowIndex()+1; i <= sheet.getLastRowNum(); i++) {
-                if (sheet.getRow(i) != null) {
-                    Row currentRow = sheet.getRow(i);
+                Row currentRow = sheet.getRow(i);
+                if (currentRow != null && currentRow.getCell(dataTypeColIndex) != null) {
                     String dataTypeCellValue = currentRow.getCell(dataTypeColIndex).getStringCellValue();
                     DataTypeEnum dataType = DataTypeEnum.getByValue(dataTypeCellValue);
                     Map<String,List<IPayloadData>> payloadDataMap = payloadMap.get(dataType);
