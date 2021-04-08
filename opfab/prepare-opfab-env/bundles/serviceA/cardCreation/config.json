@@ -13,7 +13,8 @@
       "name": "freeMessage.title",
       "color": "#FAF0AF",
       "userCard": {
-        "template": "usercard_freemessage"
+        "template": "usercard_freemessage",
+        "lttdVisible": false
       },
       "detailTitle": {
         "key": "cardDetails.title"
