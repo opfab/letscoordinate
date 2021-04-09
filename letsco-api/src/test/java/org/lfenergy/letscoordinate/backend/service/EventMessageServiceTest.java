@@ -11,29 +11,43 @@
 
 package org.lfenergy.letscoordinate.backend.service;
 
+import io.vavr.control.Validation;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
+import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
+import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.*;
-import org.mockito.InjectMocks;
-import org.mockito.Spy;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@RunWith(SpringRunner.class)
+import static org.junit.jupiter.api.Assertions.*;
+
+@ExtendWith(SpringExtension.class)
 public class EventMessageServiceTest {
 
-    @InjectMocks
     EventMessageService eventMessageService;
+    @MockBean
+    CoordinationConfig coordinationConfig;
+    @MockBean
+    LetscoProperties letscoProperties;
 
-    @Spy
-    CoordinationConfig coordinationConfig = null;
+    @BeforeEach
+    public void before() {
+        eventMessageService = new EventMessageService(coordinationConfig, letscoProperties);
+    }
 
     private EventMessageDto initEventMessageDto() {
         EventMessageDto eventMessageDto = new EventMessageDto();
@@ -62,6 +76,61 @@ public class EventMessageServiceTest {
         eventMessageDto.getPayload().setValidation(validationDto);
 
         return eventMessageDto;
+    }
+
+    @Test
+    public void validateEventMessageDto_nullInput() {
+        Validation<ResponseErrorDto, EventMessageDto> validation = eventMessageService.validateEventMessageDto(null);
+        assertAll(
+                () -> assertNotNull(validation),
+                () -> assertTrue(validation.isInvalid()),
+                () -> assertEquals(HttpStatus.BAD_REQUEST.value(), validation.getError().getStatus()),
+                () -> assertEquals("INVALID_INPUT_FILE", validation.getError().getCode()),
+                () -> assertEquals(1, validation.getError().getMessages().size())
+        );
+    }
+
+    @Test
+    public void validateEventMessageDto_emptyInput() {
+        EventMessageDto eventMessageDto = new EventMessageDto();
+        Validation<ResponseErrorDto, EventMessageDto> validation = eventMessageService.validateEventMessageDto(eventMessageDto);
+        assertAll(
+                () -> assertNotNull(validation),
+                () -> assertTrue(validation.isInvalid()),
+                () -> assertEquals(HttpStatus.BAD_REQUEST.value(), validation.getError().getStatus()),
+                () -> assertEquals("INVALID_INPUT_FILE", validation.getError().getCode()),
+                () -> assertEquals(2, validation.getError().getMessages().size())
+        );
+    }
+
+    @Test
+    public void extractDatesFromEventMessageDto_nullInput() {
+        Set<String> dates = eventMessageService.extractDatesFromEventMessageDto(null);
+        assertTrue(dates.isEmpty());
+    }
+
+    @Test
+    public void extractDatesFromEventMessageDto_validationDates() {
+        EventMessageDto eventMessageDto = EventMessageDto.builder()
+                .payload(PayloadDto.builder()
+                        .validation(ValidationDto.builder()
+                                .validationMessages(Arrays.asList(
+                                        ValidationMessageDto.builder()
+                                                .businessTimestamp(LocalDateTime.of(2021, 1, 15, 0, 0).toInstant(ZoneOffset.UTC))
+                                                .build(),
+                                        ValidationMessageDto.builder()
+                                                .businessTimestamp(LocalDateTime.of(2019, 2, 8, 0, 0).toInstant(ZoneOffset.UTC))
+                                                .build(),
+                                        ValidationMessageDto.builder()
+                                                .build()
+
+                                ))
+                                .build())
+                        .build())
+                .build();
+        Set<String> dates = eventMessageService.extractDatesFromEventMessageDto(eventMessageDto);
+        assertFalse(dates.isEmpty());
+        assertEquals(2, dates.size());
     }
 
     @Test

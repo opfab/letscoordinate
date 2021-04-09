@@ -22,11 +22,9 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataI
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.HeaderDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.PropertiesDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.PayloadDto;
-import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.TimeserieDataDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationMessageDto;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
-import org.lfenergy.letscoordinate.backend.model.Timeserie;
 import org.lfenergy.letscoordinate.backend.model.opfab.ValidationData;
 import org.lfenergy.letscoordinate.backend.util.DateUtil;
 import org.lfenergy.letscoordinate.backend.util.OpfabUtil;
@@ -49,7 +47,6 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum.*;
 import static org.lfenergy.letscoordinate.backend.util.Constants.*;
 import static org.lfenergy.letscoordinate.backend.util.DateUtilTest.getParisZoneId;
@@ -873,27 +870,6 @@ public class OpfabPublisherComponentTest {
         opfabPublisherComponent.addPayloadData(data, payloadDto);
         assertTrue(data.containsKey("payload"));
         assertEquals(hashCode, data.get("payload").hashCode());
-    }
-/*
-    @Test
-    public void addPayloadData_processKeyIsPresentInOpfabConfigData() {
-        opfabConfig.getData().put(process, new OpfabConfig.ChangeTimeserieDataDetailValueType());
-        Map<String, Object> data = new HashMap<>();
-        PayloadDto payloadDto = new PayloadDto();
-        payloadDto.setTimeserie(Arrays.asList(
-                new TimeserieDataDto().builder()
-                        .timeserieDatas()
-                        .build()
-        ));
-        int hashCode = payloadDto.hashCode();
-        opfabPublisherComponent.addPayloadData(data, payloadDto);
-        assertTrue(data.containsKey("payload"));
-        assertNotEquals(hashCode, data.get("payload").hashCode());
-    }
-*/
-    @Test
-    public void test() {
-
     }
 
 }
