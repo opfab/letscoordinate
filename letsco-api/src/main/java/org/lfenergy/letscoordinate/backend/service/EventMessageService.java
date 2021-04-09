@@ -25,7 +25,6 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.HeaderDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.*;
 import org.lfenergy.letscoordinate.backend.enums.ResponseErrorSeverityEnum;
 import org.lfenergy.letscoordinate.backend.enums.UnknownEicCodesProcessEnum;
-import org.lfenergy.letscoordinate.backend.exception.InvalidInputFileException;
 import org.lfenergy.letscoordinate.backend.util.Constants;
 import org.lfenergy.letscoordinate.backend.util.DateUtil;
 import org.springframework.http.HttpStatus;
@@ -69,7 +68,7 @@ public class EventMessageService {
                 && eventMessageDto.getPayload().getLinks() == null
                 && eventMessageDto.getPayload().getRscKpi() == null
                 && eventMessageDto.getPayload().getTimeserie() == null
-                && eventMessageDto.getPayload().getValidation() == null
+                && eventMessageDto.getPayload().getValidation().isEmpty()
         ) {
             errorMessages.add(ResponseErrorMessageDto.builder()
                     .severity(ResponseErrorSeverityEnum.ERROR)
@@ -214,7 +213,7 @@ public class EventMessageService {
         return eicCodes;
     }
 
-    private Set<String> extractDatesFromEventMessageDto(EventMessageDto eventMessageDto) {
+    protected Set<String> extractDatesFromEventMessageDto(EventMessageDto eventMessageDto) {
         Set<String> timestamps = new HashSet<>();
         if (eventMessageDto == null)
             return timestamps;
@@ -259,8 +258,8 @@ public class EventMessageService {
                         .map(Instant::toString)
                         .collect(Collectors.toList()));
             }
-            if(payloadDto.getValidation().isPresent() && payloadDto.getValidation().get().getValidationMessages().isPresent()) {
-                timestamps.addAll(payloadDto.getValidation().get().getValidationMessages().get().stream()
+            if(payloadDto.getValidation().isPresent() && payloadDto.getValidation().orElse(new ValidationDto()).getValidationMessages().isPresent()) {
+                timestamps.addAll(payloadDto.getValidation().orElse(new ValidationDto()).getValidationMessages().orElse(new ArrayList<>()).stream()
                         .filter(Objects::nonNull)
                         .map(ValidationMessageDto::getBusinessTimestamp)
                         .filter(Objects::nonNull)

@@ -14,6 +14,7 @@ package org.lfenergy.letscoordinate.backend.service;
 import io.vavr.control.Validation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.lfenergy.letscoordinate.backend.dto.ProcessedFileDto;
 import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
 import org.lfenergy.letscoordinate.backend.dto.ResponseErrorMessageDto;
@@ -55,7 +56,9 @@ public class InputFileToPojoService {
      */
     public Validation<ResponseErrorDto, EventMessageDto> uploadedFileToPojo(MultipartFile multipartFile) {
         try {
-            String fileExtension = getFileExtension(multipartFile.getOriginalFilename().toLowerCase());
+            String fileExtension = getFileExtension(Optional.ofNullable(multipartFile.getOriginalFilename())
+                    .map(String::toLowerCase)
+                    .orElseThrow(() -> new InvalidInputFileException("Original file name could not be null!")));
             if (fileExtension == null || !acceptedFileExtensions.contains(fileExtension))
                 throw new RuntimeException("Invalid uploaded file type! Accepted types are: " + acceptedFileExtensions.toString());
             Validation<ResponseErrorDto, EventMessageDto> validation = null;

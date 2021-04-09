@@ -148,8 +148,6 @@ public class ReportingService {
      */
     private List<RscKpi> getRscKpiListForExcelExportReport(RscKpiReportSubmittedFormDataDto submittedFormDataDto) {
         List<String> letscoEntityCodeList = new ArrayList<>();
-        if(submittedFormDataDto == null)
-            return new ArrayList<>();
 
         if (CollectionUtils.isNotEmpty(submittedFormDataDto.getRscCodes())) {
             if(submittedFormDataDto.getRscCodes().contains(Constants.ALL_RSCS_CODE))

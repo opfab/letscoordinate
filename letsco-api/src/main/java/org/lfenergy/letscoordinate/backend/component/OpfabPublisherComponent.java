@@ -104,7 +104,7 @@ public class OpfabPublisherComponent {
     }
 
     String getValidationName(EventMessageDto eventMessageDto) {
-        ValidationSeverityEnum result = eventMessageDto.getPayload().getValidation().get().getResult();
+        ValidationSeverityEnum result = eventMessageDto.getPayload().getValidation().orElse(new ValidationDto()).getResult();
         switch (result) {
             case OK:
                 return POSITIVE_ACK;
@@ -126,7 +126,7 @@ public class OpfabPublisherComponent {
                 .map(String::toLowerCase).distinct().collect(Collectors.toList());
         if (MESSAGE_VALIDATED.getNoun().equals(noun)) {
             Optional<String> filenameOpt = bdi.getFileName();
-            ValidationSeverityEnum result = eventMessageDto.getPayload().getValidation().get().getResult();
+            ValidationSeverityEnum result = eventMessageDto.getPayload().getValidation().orElse(new ValidationDto()).getResult();
             tags.add((processKey + "_" + result).toLowerCase());
             filenameOpt.ifPresent(f -> tags.add((processKey + "_" + StringUtil.getFilenameWithoutExtension(f) + "_" + result).toLowerCase()));
             fillQualityCheckSpecificTag(processKey, result, tags);
@@ -157,8 +157,8 @@ public class OpfabPublisherComponent {
     public String generateProcessKeyWithFilenameIfNeeded(String processKey, BusinessDataIdentifierDto bdi) {
         String processKeyTmp = processKey;
         if (opfabConfig.isProcessWithFilename()) {
-            if (bdi.getFileName().isPresent() && StringUtils.isNoneBlank(bdi.getFileName().get())) {
-                String filename = bdi.getFileName().get();
+            if (bdi.getFileName().isPresent() && StringUtils.isNoneBlank(bdi.getFileName().orElse(""))) {
+                String filename = bdi.getFileName().orElse("");
                 String filenameWithoutExtension = StringUtil.getFilenameWithoutExtension(filename);
                 processKeyTmp += "_" + StringUtil.toLowercaseIdentifier(filenameWithoutExtension);
             }
@@ -212,8 +212,8 @@ public class OpfabPublisherComponent {
         List<TimeSpan> timeSpans = new ArrayList<>();
         Optional<ValidationDto> validationOpt = eventMessageDto.getPayload().getValidation();
         if (validationOpt.isPresent() && validationOpt.get().getValidationMessages().isPresent() &&
-                !validationOpt.get().getValidationMessages().get().isEmpty()) {
-            timeSpans = validationOpt.get().getValidationMessages().get().stream()
+                !validationOpt.orElse(new ValidationDto()).getValidationMessages().orElse(new ArrayList<>()).isEmpty()) {
+            timeSpans = validationOpt.orElse(new ValidationDto()).getValidationMessages().orElse(new ArrayList<>()).stream()
                     .filter(validationMessage -> validationMessage.getBusinessTimestamp() != null)
                     .map(validationMessage -> new TimeSpan().start(validationMessage.getBusinessTimestamp()))
                     .collect(Collectors.toList());
@@ -353,8 +353,8 @@ public class OpfabPublisherComponent {
 
     private void messageValidatedTreatment(Card card, EventMessageDto eventMessageDto) {
 
-        Optional<List<ValidationMessageDto>> validationMessagesOpt = eventMessageDto.getPayload().getValidation().get().getValidationMessages();
-        ValidationSeverityEnum result = eventMessageDto.getPayload().getValidation().get().getResult();
+        Optional<List<ValidationMessageDto>> validationMessagesOpt = eventMessageDto.getPayload().getValidation().orElse(new ValidationDto()).getValidationMessages();
+        ValidationSeverityEnum result = eventMessageDto.getPayload().getValidation().orElse(new ValidationDto()).getResult();
 
         switch (result) {
             case OK:
@@ -369,7 +369,7 @@ public class OpfabPublisherComponent {
         }
 
         ValidationData data = new ValidationData(eventMessageDto);
-        data.getPayload().getValidation().get().getValidationMessages().orElse(new ArrayList<>())
+        data.getPayload().getValidation().orElse(new ValidationDto()).getValidationMessages().orElse(new ArrayList<>())
                 .forEach(v -> v.setMessage(fillValidationParams(v)));
         eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getSendingUser()
                 .ifPresent(u -> {

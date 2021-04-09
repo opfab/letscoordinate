@@ -143,7 +143,7 @@ public class LetscoKafkaListener {
 
     void ignorePositiveTechnicalQualityCheck(EventMessageDto eventMessageDto) {
         if (MESSAGE_VALIDATED.getNoun().equals(eventMessageDto.getHeader().getNoun())) {
-            ValidationDto validationDto = eventMessageDto.getPayload().getValidation().get();
+            ValidationDto validationDto = eventMessageDto.getPayload().getValidation().orElse(new ValidationDto());
             if (validationDto.getResult() == ValidationSeverityEnum.OK &&
                     validationDto.getValidationType() == ValidationTypeEnum.TECHNICAL) {
                 throw new PositiveTechnicalQualityCheckException("Positive technical quality check => no need to process it");

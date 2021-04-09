@@ -11,13 +11,13 @@
 
 package org.lfenergy.letscoordinate.scanner.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.control.Validation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.net.ftp.FTPClient;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lfenergy.letscoordinate.common.monitoring.MonitoringContext;
 import org.lfenergy.letscoordinate.common.monitoring.TaskEnum;
@@ -41,7 +41,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -49,6 +52,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -206,6 +211,22 @@ public class FTPDownloadClientTest {
     }
 
     @Test
+    public void checkAndSaveFilesData_savingFileDataFails() {
+        List<MultipartFile> multipartFiles = Arrays.asList(validMultipartFile);
+        MonitoringContext monitoringContext = MonitoringContext.startTaskMonitoring(TaskEnum.EVENTMESSAGE_FTP_SCAN);
+
+        when(eventMessageService.saveFileData(any(MultipartFile.class)))
+                .then(i -> Validation.invalid("Error!"));
+        when(eventMessageService.deleteEventMessageById(any(ProcessedFileDto.class)))
+                .thenReturn(Validation.valid(true));
+        ftpDownloadClient.checkAndSaveFilesData(multipartFiles, monitoringContext);
+        assertAll(
+                () -> assertNotNull(monitoringContext),
+                () -> assertFalse(monitoringContext.getMonitoredTask().getMonitoredTaskSteps().isEmpty())
+        );
+    }
+
+    @Test
     public void checkAndSaveFilesData_downloadedMultipartFiles_notEmpty_ftpSourceDirFound() throws IOException {
         List<MultipartFile> multipartFiles = Arrays.asList(validMultipartFile);
         MonitoringContext monitoringContext = MonitoringContext.startTaskMonitoring(TaskEnum.EVENTMESSAGE_FTP_SCAN);
@@ -263,6 +284,20 @@ public class FTPDownloadClientTest {
         assertTrue(file.exists());
 
         FTPClient ftpClient = ftpDownloadClient.initAndConnectFTPClient();
+        List<String> list = ftpDownloadClient.downloadFTPFiles(ftpClient, Arrays.asList(validMultipartFile.getOriginalFilename()));
+        assertNotNull(list);
+        assertTrue(list.isEmpty());
+    }
+
+    @Test
+    public void downloadFTPFiles_retrieveFileThrowsException() throws IOException {
+        String filePath = letscoProperties.getScanner().getPath().getTargetDownloadDir() + File.separator + validMultipartFile.getOriginalFilename();
+        File file = new File(filePath);
+        FileUtils.copyInputStreamToFile(validMultipartFile.getInputStream(), file);
+        assertTrue(file.exists());
+
+        FTPClient ftpClient = Mockito.mock(FTPClient.class);
+        doThrow(new IOException("Connection timeout!")).when(ftpClient).retrieveFile(anyString(), any(OutputStream.class));
         List<String> list = ftpDownloadClient.downloadFTPFiles(ftpClient, Arrays.asList(validMultipartFile.getOriginalFilename()));
         assertNotNull(list);
         assertTrue(list.isEmpty());

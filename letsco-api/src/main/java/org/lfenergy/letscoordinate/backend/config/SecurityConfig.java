@@ -44,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .cors()
                 .and()
-                .authorizeRequests()
+                .authorizeRequests() //NOSONAR
                 .mvcMatchers("/letsco/api/v1/auth/token").permitAll()
                 .mvcMatchers("/letsco/api/v1/**").hasAnyRole("TSO", "RSC")
                 .and()
