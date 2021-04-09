@@ -47,8 +47,8 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum.*;
+import static org.lfenergy.letscoordinate.backend.util.Constants.*;
 import static org.lfenergy.letscoordinate.backend.util.DateUtilTest.getParisZoneId;
 import static org.lfenergy.operatorfabric.cards.model.SeverityEnum.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -824,6 +824,52 @@ public class OpfabPublisherComponentTest {
         eventMessageDto.getPayload().setValidation(null);
         String outputProcessKey = this.opfabPublisherComponent.generateKeyToGetCustomFeedParams(inputProcessKey, eventMessageDto);
         assertEquals(inputProcessKey, outputProcessKey);
+    }
+
+    @Test
+    public void getValidationName_positiveValidation() {
+        String result = opfabPublisherComponent.getValidationName(
+                EventMessageDto.builder()
+                        .payload(PayloadDto.builder()
+                                .validation(ValidationDto.builder().result(OK).build())
+                                .build())
+                        .build()
+        );
+        assertEquals(POSITIVE_ACK, result);
+    }
+
+    @Test
+    public void getValidationName_positiveValidationWithWarnings() {
+        String result = opfabPublisherComponent.getValidationName(
+                EventMessageDto.builder()
+                        .payload(PayloadDto.builder()
+                                .validation(ValidationDto.builder().result(WARNING).build())
+                                .build())
+                        .build()
+        );
+        assertEquals(POSITIVE_ACK_WITH_WARNINGS, result);
+    }
+
+    @Test
+    public void getValidationName_negativeValidation() {
+        String result = opfabPublisherComponent.getValidationName(
+                EventMessageDto.builder()
+                        .payload(PayloadDto.builder()
+                                .validation(ValidationDto.builder().result(ERROR).build())
+                                .build())
+                        .build()
+        );
+        assertEquals(NEGATIVE_ACK, result);
+    }
+
+    @Test
+    public void addPayloadData_processKeyNotPresentInOpfabConfigData() {
+        Map<String, Object> data = new HashMap<>();
+        PayloadDto payloadDto = new PayloadDto();
+        int hashCode = payloadDto.hashCode();
+        opfabPublisherComponent.addPayloadData(data, payloadDto);
+        assertTrue(data.containsKey("payload"));
+        assertEquals(hashCode, data.get("payload").hashCode());
     }
 
 }

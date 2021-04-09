@@ -58,7 +58,7 @@ public class ExcelDataProcessor implements DataProcessor {
 
 
     private final String XMLNS = "http://iec.ch/TC57/2011/schema/message";
-    private final int EFFECTIVE_DATA_SHEET_INDEX = 0;
+    protected final int EFFECTIVE_DATA_SHEET_INDEX = 0;
     private final List<String> EMPTY_CELL_SYMBOLS = Arrays.asList("", "-");
 
     private final List<String> headerExclusiveColNames = Arrays.asList("verb", "noun", "timestamp", "source", "messageId");
@@ -68,7 +68,7 @@ public class ExcelDataProcessor implements DataProcessor {
     private final List<String> headerPropertiesColNames = Stream.of(headerPropertiesExclusiveColNames, headerBusinessDateIdentifierColNames)
             .flatMap(Collection::stream).collect(Collectors.toList());
 
-    private final List<String> headerColNames = Stream.of(headerExclusiveColNames, headerPropertiesColNames)
+    protected final List<String> headerColNames = Stream.of(headerExclusiveColNames, headerPropertiesColNames)
             .flatMap(Collection::stream).collect(Collectors.toList());
 
     private final String dataTypeColName = "dataType";
@@ -83,12 +83,12 @@ public class ExcelDataProcessor implements DataProcessor {
     private final List<String> payloadDataColNames = Arrays.asList("id", labelColName, granularityColName, timestampColName, eicCodeColName, valueColName,
             "accept", "reject", "explanation", "comment");
 
-    private final List<String> payloadColNames = Stream.of(Arrays.asList(dataTypeColName, nameColName), payloadDataColNames)
+    protected final List<String> payloadColNames = Stream.of(Arrays.asList(dataTypeColName, nameColName), payloadDataColNames)
             .flatMap(Collection::stream).collect(Collectors.toList());
 
 
     public Validation<ResponseErrorDto, EventMessageDto> inputStreamToPojo(String filePath, InputStream inputStream)
-            throws IOException, NoSuchFieldException, IllegalAccessException, InstantiationException, InvalidInputFileException {
+            throws InvalidInputFileException, IllegalAccessException, NoSuchFieldException, InstantiationException, IOException {
         Workbook workbook = new XSSFWorkbook(inputStream);
 
         EventMessageDto eventMessageDto = new EventMessageDto();
@@ -115,19 +115,18 @@ public class ExcelDataProcessor implements DataProcessor {
      * @return the colTitleIndexMapByBloc if the {@link Workbook} is valid, throws {@link InvalidInputFileException}
      * exception otherwise
      */
-    private Map<ExcelBlocEnum, Map<String, Integer>> validateExcelFileAndMapColTitlesIndexesByBloc(Workbook workbook)
-            throws InvalidInputFileException{
+    protected Map<ExcelBlocEnum, Map<String, Integer>> validateExcelFileAndMapColTitlesIndexesByBloc(Workbook workbook)
+            throws InvalidInputFileException {
         Map<ExcelBlocEnum, Map<String, Integer>> colTitleIndexMapByBloc = new LinkedHashMap<>();
         if (workbook == null)
             return colTitleIndexMapByBloc;
 
-        Sheet effectiveDataSheet = workbook.getSheetAt(EFFECTIVE_DATA_SHEET_INDEX);
-        if (effectiveDataSheet != null) {
-            colTitleIndexMapByBloc.put(ExcelBlocEnum.HEADER, getColTitlesIndexesForExcelBloc(ExcelBlocEnum.HEADER, headerColNames, effectiveDataSheet));
-            colTitleIndexMapByBloc.put(ExcelBlocEnum.PAYLOAD, getColTitlesIndexesForExcelBloc(ExcelBlocEnum.PAYLOAD, payloadColNames, effectiveDataSheet));
-        } else {
+        if (workbook.getNumberOfSheets() < EFFECTIVE_DATA_SHEET_INDEX + 1 || workbook.getSheetAt(EFFECTIVE_DATA_SHEET_INDEX) == null)
             throw new InvalidInputFileException("effective data sheet not found!");
-        }
+
+        Sheet effectiveDataSheet = workbook.getSheetAt(EFFECTIVE_DATA_SHEET_INDEX);
+        colTitleIndexMapByBloc.put(ExcelBlocEnum.HEADER, getColTitlesIndexesForExcelBloc(ExcelBlocEnum.HEADER, headerColNames, effectiveDataSheet));
+        colTitleIndexMapByBloc.put(ExcelBlocEnum.PAYLOAD, getColTitlesIndexesForExcelBloc(ExcelBlocEnum.PAYLOAD, payloadColNames, effectiveDataSheet));
 
         log.debug("colTitleIndexMapByBloc: {}", colTitleIndexMapByBloc);
         return colTitleIndexMapByBloc;
@@ -143,9 +142,9 @@ public class ExcelDataProcessor implements DataProcessor {
      * @return The colTitleIndexMap if the {@link Workbook} is valid, throws {@link InvalidInputFileException}
      * exception otherwise
      */
-    private Map<String, Integer> getColTitlesIndexesForExcelBloc(ExcelBlocEnum excelBloc,
-                                                                 List<String> colTitleNames,
-                                                                 Sheet sheet) throws InvalidInputFileException{
+    protected Map<String, Integer> getColTitlesIndexesForExcelBloc(ExcelBlocEnum excelBloc,
+                                                                   List<String> colTitleNames,
+                                                                   Sheet sheet) throws InvalidInputFileException{
         Map<String, Integer> colTitleIndexMap = new LinkedHashMap<>();
         boolean acceptPropertiesIgnoreCase = letscoProperties.getInputFile().getValidation().isAcceptPropertiesIgnoreCase();
         boolean failOnUnknownProperties = letscoProperties.getInputFile().getValidation().isFailOnUnknownProperties();
@@ -187,12 +186,9 @@ public class ExcelDataProcessor implements DataProcessor {
      * @see ExcelDataProcessor#setProperties(Object, List, Row, Map)
      */
     public void initEventMessageHeader(EventMessageDto eventMessageDto,
-                                              Sheet sheet,
-                                              Map<String, Integer> columnIndexMap) throws NoSuchFieldException, IllegalAccessException {
+                                       Sheet sheet,
+                                       Map<String, Integer> columnIndexMap) throws NoSuchFieldException, IllegalAccessException {
         if (sheet != null) {
-            if (eventMessageDto == null)
-                eventMessageDto = new EventMessageDto();
-
             Row currentRow = sheet.getRow(ExcelBlocEnum.HEADER.getTitlesRowIndex()+1);
 
             setProperties(eventMessageDto.getHeader(), headerExclusiveColNames, currentRow, columnIndexMap);
@@ -635,7 +631,7 @@ public class ExcelDataProcessor implements DataProcessor {
                             // increment date
                             incrementedDate = incrementedDate.plusDays(1);
                         }
-                    } else { // CASE: MULTI-YEAR VIEW
+                    } else { // CASE: YEARLY VIEW
                         // List of selected Entities (RSC or Region)
                         List<CoordinationConfig.LetscoEntity> selectedLetscoEntityList = getSelectedLetscoEntityList(rscKpiReportDataDto.getSubmittedFormData());
                         // Create second row for columns titles
@@ -701,7 +697,7 @@ public class ExcelDataProcessor implements DataProcessor {
      * @param submittedFormDataDto
      * @return true if Pan-EU item checked for RSCs, else false
      */
-    private boolean isAllRscSelected(RscKpiReportSubmittedFormDataDto submittedFormDataDto) {
+    protected boolean isAllRscSelected(RscKpiReportSubmittedFormDataDto submittedFormDataDto) {
         return submittedFormDataDto != null
                 && CollectionUtils.isNotEmpty(submittedFormDataDto.getRscCodes())
                 && submittedFormDataDto.getRscCodes().contains(Constants.ALL_RSCS_CODE);
@@ -713,7 +709,7 @@ public class ExcelDataProcessor implements DataProcessor {
      * @param submittedFormDataDto
      * @return true if Pan-EU item checked for Regions, else false
      */
-    private boolean isAllRegionSelected(RscKpiReportSubmittedFormDataDto submittedFormDataDto) {
+    protected boolean isAllRegionSelected(RscKpiReportSubmittedFormDataDto submittedFormDataDto) {
         return submittedFormDataDto != null
                 && CollectionUtils.isNotEmpty(submittedFormDataDto.getRegionCodes())
                 && submittedFormDataDto.getRegionCodes().contains(Constants.ALL_REGIONS_CODE);
@@ -749,7 +745,7 @@ public class ExcelDataProcessor implements DataProcessor {
         return letscoEntityList;
     }
 
-    private Optional<RscKpiDto.DataDto.DetailsDto> getDataDetailsByEicCode(String eicCode,
+    protected Optional<RscKpiDto.DataDto.DetailsDto> getDataDetailsByEicCode(String eicCode,
                                                                            KpiDataTypeEnum kpiDataTypeEnum,
                                                                            List<RscKpiDto.DataDto> dataDtoList) {
         if(eicCode == null || kpiDataTypeEnum == null || CollectionUtils.isEmpty(dataDtoList))

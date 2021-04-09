@@ -33,7 +33,7 @@
         {
           "name": "ServiceA_Report",
           "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf",
-          "eicCode": ["EIC-CODE-------1"]
+          "eicCode": ["UNKNOWN_EIC_CODE"]
         }
       ],
       "rscKpi": [
@@ -47,6 +47,45 @@
               "detail": [
                 {
                   "value": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "gp2",
+          "data": [
+            {
+              "timestamp": "2020-05-04T01:00:00Z",
+              "label": "ProcessSuccessCount",
+              "detail": [
+                {
+                  "value": 1
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "timeserie": [
+        {
+          "name": "ResultsA",
+          "data": [
+            {
+              "timestamp": "2020-03-01T00:00:00Z",
+              "detail": [
+                {
+                  "id": "1",
+                  "label": "Contingency-1",
+                  "eicCode": [
+                    "UNKNOWN_EIC_CODE"
+                  ],
+                  "value": "Line A"
+                },
+                {
+                  "id": "1",
+                  "label": "Loading-1",
+                  "value": "103"
                 }
               ]
             }

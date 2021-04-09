@@ -26,7 +26,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Getter
 @Setter
 @Builder
-@ToString
 public class User implements java.io.Serializable {
 
     @Id

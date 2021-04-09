@@ -11,6 +11,8 @@
 
 package org.lfenergy.letscoordinate.backend.mapper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.dto.reporting.*;
 import org.lfenergy.letscoordinate.backend.enums.KpiDataSubtypeEnum;
@@ -23,7 +25,8 @@ import org.lfenergy.letscoordinate.backend.util.Constants;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class RscKpiReportMapper {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class RscKpiReportMapper {
 
     public static RscDto toDto(CoordinationConfig.Rsc entity) {
         return Optional.ofNullable(entity)

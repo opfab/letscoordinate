@@ -14,6 +14,7 @@ package org.lfenergy.letscoordinate.backend.service;
 import io.vavr.control.Validation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.lfenergy.letscoordinate.backend.dto.ProcessedFileDto;
 import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
 import org.lfenergy.letscoordinate.backend.dto.ResponseErrorMessageDto;
@@ -55,7 +56,9 @@ public class InputFileToPojoService {
      */
     public Validation<ResponseErrorDto, EventMessageDto> uploadedFileToPojo(MultipartFile multipartFile) {
         try {
-            String fileExtension = getFileExtension(multipartFile.getOriginalFilename().toLowerCase());
+            String fileExtension = getFileExtension(Optional.ofNullable(multipartFile.getOriginalFilename())
+                    .map(String::toLowerCase)
+                    .orElseThrow(() -> new InvalidInputFileException("Original file name could not be null!")));
             if (fileExtension == null || !acceptedFileExtensions.contains(fileExtension))
                 throw new RuntimeException("Invalid uploaded file type! Accepted types are: " + acceptedFileExtensions.toString());
             Validation<ResponseErrorDto, EventMessageDto> validation = null;
@@ -102,36 +105,6 @@ public class InputFileToPojoService {
             eventMessageDtoMap.put(multipartFile.getOriginalFilename(), validation.get());
         }
         return Validation.valid(eventMessageDtoMap);
-    }
-
-    public Validation<ResponseErrorDto, EventMessageDto> excelToPojo(String filePath, String fileName) {
-        String path = filePath + File.separator + fileName;
-        log.info("Generating POJO for Excel file \"{}\"", path);
-        try {
-            return excelDataProcessor.inputStreamToPojo(path, new FileInputStream(new File(path)));
-        } catch (InvalidInputFileException ie) {
-            log.error(ie.getMessage(), ie);
-            return Validation.invalid(ResponseErrorDto.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .code("INVALID_INPUT_FILE") // TODO specific error code to be defined!
-                    .messages(Collections.singletonList(ResponseErrorMessageDto.builder()
-                            .severity(ResponseErrorSeverityEnum.ERROR)
-                            .message("Error while generating POJO from uploaded file: Invalid input file \"" + fileName + "\"")
-                            .detail(ie.getMessage())
-                            .build()))
-                    .build());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return Validation.invalid(ResponseErrorDto.builder()
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                    .code("ERROR") // TODO specific error code to be defined!
-                    .messages(Collections.singletonList(ResponseErrorMessageDto.builder()
-                            .severity(ResponseErrorSeverityEnum.ERROR)
-                            .message("Error while generating POJO from file " + path)
-                            .detail(e.getMessage())
-                            .build()))
-                    .build());
-        }
     }
 
     public Validation<ResponseErrorDto, EventMessage> uploadExcelFileAndSaveGeneratedData(MultipartFile multipartFile) {
