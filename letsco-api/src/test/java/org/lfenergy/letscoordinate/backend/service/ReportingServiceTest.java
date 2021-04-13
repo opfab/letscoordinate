@@ -316,7 +316,7 @@ public class ReportingServiceTest {
     @Test
     public void getSelectedEntitiesForExportFileName_specificRegion() {
         RscKpiReportSubmittedFormDataDto submittedFormDataDto = RscKpiReportSubmittedFormDataDto.builder()
-                .regionCodes(Arrays.asList("EICCODE-REGION-9"))
+                .regionCodes(Arrays.asList("10Y1001C--00095L"))
                 .build();
         String filename = reportingService.getSelectedEntitiesForExportFileName(submittedFormDataDto);
         assertEquals("sweRegion", filename);
@@ -325,7 +325,7 @@ public class ReportingServiceTest {
     @Test
     public void getSelectedEntitiesForExportFileName_manyRegions() {
         RscKpiReportSubmittedFormDataDto submittedFormDataDto = RscKpiReportSubmittedFormDataDto.builder()
-                .regionCodes(Arrays.asList(Constants.ALL_REGIONS_CODE, "EICCODE-REGION-9"))
+                .regionCodes(Arrays.asList(Constants.ALL_REGIONS_CODE, "10Y1001C--00095L"))
                 .build();
         String filename = reportingService.getSelectedEntitiesForExportFileName(submittedFormDataDto);
         assertEquals("2Regions", filename);

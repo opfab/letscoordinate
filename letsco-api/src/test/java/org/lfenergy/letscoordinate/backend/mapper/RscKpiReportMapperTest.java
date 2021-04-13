@@ -76,7 +76,7 @@ public class RscKpiReportMapperTest {
         CoordinationConfig.Region entity = CoordinationConfig.Region.builder()
                 .name("Baltic")
                 .shortName("Baltic")
-                .eicCode("EICCODE-REGION-0")
+                .eicCode("10Y1001C--00120B")
                 .index(1)
                 .build();
         RegionDto dto = RscKpiReportMapper.toDto(entity);
@@ -84,7 +84,7 @@ public class RscKpiReportMapperTest {
                 () -> assertNotNull(dto),
                 () -> assertEquals("Baltic", dto.getName()),
                 () -> assertEquals("Baltic", dto.getShortName()),
-                () -> assertEquals("EICCODE-REGION-0", dto.getEicCode()),
+                () -> assertEquals("10Y1001C--00120B", dto.getEicCode()),
                 () -> assertEquals(1, dto.getIndex())
         );
     }

@@ -63,8 +63,8 @@ public class ApplicationContextUtil {
         coordinationConfig.setRscs(rscs);
 
         Map<String, CoordinationConfig.Region> regions = new HashMap<>();
-        regions.put("EICCODE-REGION-0", CoordinationConfig.Region.builder().eicCode("EICCODE-REGION-0").name("Baltic").shortName("Baltic").index(1).build());
-        regions.put("EICCODE-REGION-9", CoordinationConfig.Region.builder().eicCode("EICCODE-REGION-9").name("South West Europe (SWE)").shortName("SWE").index(10).build());
+        regions.put("10Y1001C--00120B", CoordinationConfig.Region.builder().eicCode("10Y1001C--00120B").name("Baltic").shortName("Baltic").index(1).build());
+        regions.put("10Y1001C--00095L", CoordinationConfig.Region.builder().eicCode("10Y1001C--00095L").name("South West Europe (SWE)").shortName("SWE").index(10).build());
         coordinationConfig.setRegions(regions);
 
         Map<String, CoordinationConfig.Service> services = new HashMap<>();
