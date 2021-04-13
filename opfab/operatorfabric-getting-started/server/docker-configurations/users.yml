@@ -105,52 +105,52 @@ operatorfabric.users.default:
 
 # Region/CCR and their TSOs and RSCs
 
-    - id: EICCODE-REGION-0
+    - id: 10Y1001C--00120B
       name: 'CCR Baltic: TSOs & RSCs'
       description: 'CCR Baltic: TSOs & RSCs'
       entityAllowedToSendCard: false
 
-    - id: EICCODE-REGION-1
+    - id: 10Y1001C--000239
       name: 'CCR Channel: TSOs & RSCs'
       description: 'CCR Channel: TSOs & RSCs'
       entityAllowedToSendCard: false
 
-    - id: EICCODE-REGION-2
+    - id: 10Y1001C--00059P
       name: 'CCR CORE: TSOs & RSCs'
       description: 'CCR CORE: TSOs & RSCs'
       entityAllowedToSendCard: false
 
-    - id: EICCODE-REGION-3
+    - id: 10Y1001C--00138T
       name: 'CCR Greece Italy (GRIT): TSOs & RSCs'
       description: 'CCR Greece Italy (GRIT): TSOs & RSCs'
       entityAllowedToSendCard: false
 
-    - id: EICCODE-REGION-4
+    - id: 10Y1001C--00136X
       name: 'CCR Hansa: TSOs & RSCs'
       description: 'CCR Hansa: TSOs & RSCs'
       entityAllowedToSendCard: false
 
-    - id: EICCODE-REGION-5
+    - id: 10Y1001C--00137V
       name: 'CCR Italy North: TSOs & RSCs'
       description: 'CCR Italy North: TSOs & RSCs'
       entityAllowedToSendCard: false
 
-    - id: EICCODE-REGION-6
+    - id: 10Y1001C--00022B
       name: 'CCR Ireland and United Kingdom (IU): TSOs & RSCs'
       description: 'CCR Ireland and United Kingdom (IU): TSOs & RSCs'
       entityAllowedToSendCard: false
 
-    - id: EICCODE-REGION-8
+    - id: 10Y1001C--00139R
       name: 'CCR South East Europe (SEE): TSOs & RSCs'
       description: 'CCR South East Europe (SEE): TSOs & RSCs'
       entityAllowedToSendCard: false
 
-    - id: EICCODE-REGION-9
+    - id: 10Y1001C--00095L
       name: 'CCR South West Europe (SWE): TSOs & RSCs'
       description: 'CCR South West Europe (SWE): TSOs & RSCs'
       entityAllowedToSendCard: false
 
-    - id: EICCODE-REGION-7
+    - id: 10Y1001A1001A91G
       name: 'CCR Nordic: TSOs & RSCs'
       description: 'CCR Nordic: TSOs & RSCs'
       entityAllowedToSendCard: false
@@ -161,7 +161,7 @@ operatorfabric.users.default:
       name: 'RSC Baltic'
       description: 'RSC Baltic'
       parents:
-        - EICCODE-REGION-0
+        - 10Y1001C--00120B
         - EICCODE-ALL-RSCS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-BALTIC-AND-TSOS
@@ -170,12 +170,12 @@ operatorfabric.users.default:
       name: 'RSC CORESO'
       description: 'RSC CORESO'
       parents:
-        - EICCODE-REGION-1
-        - EICCODE-REGION-2
-        - EICCODE-REGION-3
-        - EICCODE-REGION-5
-        - EICCODE-REGION-6
-        - EICCODE-REGION-9
+        - 10Y1001C--000239
+        - 10Y1001C--00059P
+        - 10Y1001C--00138T
+        - 10Y1001C--00137V
+        - 10Y1001C--00022B
+        - 10Y1001C--00095L
         - EICCODE-ALL-RSCS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-CORESO-AND-TSOS
@@ -184,9 +184,9 @@ operatorfabric.users.default:
       name: 'RSC Nordic'
       description: 'RSC Nordic'
       parents:
-        - EICCODE-REGION-0
-        - EICCODE-REGION-4
-        - EICCODE-REGION-7
+        - 10Y1001C--00120B
+        - 10Y1001C--00136X
+        - 10Y1001A1001A91G
         - EICCODE-ALL-RSCS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-NORDIC-AND-TSOS
@@ -195,8 +195,8 @@ operatorfabric.users.default:
       name: 'RSC SCC'
       description: 'RSC SCC'
       parents:
-        - EICCODE-REGION-3
-        - EICCODE-REGION-8
+        - 10Y1001C--00138T
+        - 10Y1001C--00139R
         - EICCODE-ALL-RSCS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-SCC-AND-TSOS
@@ -205,9 +205,9 @@ operatorfabric.users.default:
       name: 'RSC SEleNe CC'
       description: 'RSC SEleNe CC'
       parents:
-        - EICCODE-REGION-2
-        - EICCODE-REGION-3
-        - EICCODE-REGION-8
+        - 10Y1001C--00059P
+        - 10Y1001C--00138T
+        - 10Y1001C--00139R
         - EICCODE-ALL-RSCS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-SELENE-CC-AND-TSOS
@@ -216,11 +216,11 @@ operatorfabric.users.default:
       name: 'RSC TSCNET'
       description: 'RSC TSCNET'
       parents:
-        - EICCODE-REGION-0
-        - EICCODE-REGION-1
-        - EICCODE-REGION-2
-        - EICCODE-REGION-4
-        - EICCODE-REGION-5
+        - 10Y1001C--00120B
+        - 10Y1001C--000239
+        - 10Y1001C--00059P
+        - 10Y1001C--00136X
+        - 10Y1001C--00137V
         - EICCODE-ALL-RSCS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-TSCNET-AND-TSOS
@@ -231,7 +231,7 @@ operatorfabric.users.default:
       name: 'TSO Elering'
       description: 'TSO Elering'
       parents:
-        - EICCODE-REGION-0
+        - 10Y1001C--00120B
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-BALTIC-AND-TSOS
@@ -240,7 +240,7 @@ operatorfabric.users.default:
       name: 'TSO Litgrid'
       description: 'TSO Litgrid'
       parents:
-        - EICCODE-REGION-0
+        - 10Y1001C--00120B
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-BALTIC-AND-TSOS
@@ -249,7 +249,7 @@ operatorfabric.users.default:
       name: 'TSO AST'
       description: 'TSO AST'
       parents:
-        - EICCODE-REGION-0
+        - 10Y1001C--00120B
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-BALTIC-AND-TSOS
@@ -258,7 +258,7 @@ operatorfabric.users.default:
       name: 'TSO Elia'
       description: 'TSO Elia'
       parents:
-        - EICCODE-REGION-2
+        - 10Y1001C--00059P
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-CORESO-AND-TSOS
@@ -267,7 +267,7 @@ operatorfabric.users.default:
       name: 'TSO REE'
       description: 'TSO REE'
       parents:
-        - EICCODE-REGION-9
+        - 10Y1001C--00095L
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-CORESO-AND-TSOS
@@ -276,10 +276,10 @@ operatorfabric.users.default:
       name: 'TSO RTE'
       description: 'TSO RTE'
       parents:
-        - EICCODE-REGION-1
-        - EICCODE-REGION-2
-        - EICCODE-REGION-5
-        - EICCODE-REGION-9
+        - 10Y1001C--000239
+        - 10Y1001C--00059P
+        - 10Y1001C--00137V
+        - 10Y1001C--00095L
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-CORESO-AND-TSOS
@@ -288,8 +288,8 @@ operatorfabric.users.default:
       name: 'TSO National Grid'
       description: 'TSO National Grid'
       parents:
-        - EICCODE-REGION-1
-        - EICCODE-REGION-6
+        - 10Y1001C--000239
+        - 10Y1001C--00022B
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-CORESO-AND-TSOS
@@ -298,7 +298,7 @@ operatorfabric.users.default:
       name: 'TSO EirGrid'
       description: 'TSO EirGrid'
       parents:
-        - EICCODE-REGION-6
+        - 10Y1001C--00022B
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-CORESO-AND-TSOS
@@ -307,8 +307,8 @@ operatorfabric.users.default:
       name: 'TSO Terna'
       description: 'TSO Terna'
       parents:
-        - EICCODE-REGION-3
-        - EICCODE-REGION-5
+        - 10Y1001C--00138T
+        - 10Y1001C--00137V
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-CORESO-AND-TSOS
@@ -317,7 +317,7 @@ operatorfabric.users.default:
       name: 'TSO SONI'
       description: 'TSO SONI'
       parents:
-        - EICCODE-REGION-6
+        - 10Y1001C--00022B
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-CORESO-AND-TSOS
@@ -326,7 +326,7 @@ operatorfabric.users.default:
       name: 'TSO REN'
       description: 'TSO REN'
       parents:
-        - EICCODE-REGION-9
+        - 10Y1001C--00095L
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-CORESO-AND-TSOS
@@ -335,8 +335,8 @@ operatorfabric.users.default:
       name: 'TSO Energinet'
       description: 'TSO Energinet'
       parents:
-        - EICCODE-REGION-4
-        - EICCODE-REGION-7
+        - 10Y1001C--00136X
+        - 10Y1001A1001A91G
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-NORDIC-AND-TSOS
@@ -345,8 +345,8 @@ operatorfabric.users.default:
       name: 'TSO Fingrid'
       description: 'TSO Fingrid'
       parents:
-        - EICCODE-REGION-0
-        - EICCODE-REGION-7
+        - 10Y1001C--00120B
+        - 10Y1001A1001A91G
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-NORDIC-AND-TSOS
@@ -355,7 +355,7 @@ operatorfabric.users.default:
       name: 'TSO Statnett'
       description: 'TSO Statnett'
       parents:
-        - EICCODE-REGION-7
+        - 10Y1001A1001A91G
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-NORDIC-AND-TSOS
@@ -364,9 +364,9 @@ operatorfabric.users.default:
       name: 'TSO Svenska kraftnät'
       description: 'TSO Svenska kraftnät'
       parents:
-        - EICCODE-REGION-0
-        - EICCODE-REGION-4
-        - EICCODE-REGION-7
+        - 10Y1001C--00120B
+        - 10Y1001C--00136X
+        - 10Y1001A1001A91G
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-NORDIC-AND-TSOS
@@ -391,7 +391,7 @@ operatorfabric.users.default:
       name: 'TSO ESO'
       description: 'TSO ESO'
       parents:
-        - EICCODE-REGION-8
+        - 10Y1001C--00139R
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-SCC-AND-TSOS
@@ -401,8 +401,8 @@ operatorfabric.users.default:
       name: 'TSO IPTO'
       description: 'TSO IPTO'
       parents:
-        - EICCODE-REGION-3
-        - EICCODE-REGION-8
+        - 10Y1001C--00138T
+        - 10Y1001C--00139R
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-SCC-AND-TSOS
@@ -444,8 +444,8 @@ operatorfabric.users.default:
       name: 'TSO Transelectrica'
       description: 'TSO Transelectrica'
       parents:
-        - EICCODE-REGION-2
-        - EICCODE-REGION-8
+        - 10Y1001C--00059P
+        - 10Y1001C--00139R
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-SELENE-CC-AND-TSOS
@@ -455,8 +455,8 @@ operatorfabric.users.default:
       name: 'TSO APG'
       description: 'TSO APG'
       parents:
-        - EICCODE-REGION-2
-        - EICCODE-REGION-5
+        - 10Y1001C--00059P
+        - 10Y1001C--00137V
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-TSCNET-AND-TSOS
@@ -465,8 +465,8 @@ operatorfabric.users.default:
       name: 'TSO Swissgrid'
       description: 'TSO Swissgrid'
       parents:
-        - EICCODE-REGION-2
-        - EICCODE-REGION-5
+        - 10Y1001C--00059P
+        - 10Y1001C--00137V
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-TSCNET-AND-TSOS
@@ -475,7 +475,7 @@ operatorfabric.users.default:
       name: 'TSO CEPS'
       description: 'TSO CEPS'
       parents:
-        - EICCODE-REGION-2
+        - 10Y1001C--00059P
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-TSCNET-AND-TSOS
@@ -484,8 +484,8 @@ operatorfabric.users.default:
       name: 'TSO 50Hertz'
       description: 'TSO 50Hertz'
       parents:
-        - EICCODE-REGION-2
-        - EICCODE-REGION-4
+        - 10Y1001C--00059P
+        - 10Y1001C--00136X
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-TSCNET-AND-TSOS
@@ -494,7 +494,7 @@ operatorfabric.users.default:
       name: 'TSO Amprion'
       description: 'TSO Amprion'
       parents:
-        - EICCODE-REGION-2
+        - 10Y1001C--00059P
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-TSCNET-AND-TSOS
@@ -503,8 +503,8 @@ operatorfabric.users.default:
       name: 'TSO TenneT DE'
       description: 'TSO TenneT DE'
       parents:
-        - EICCODE-REGION-2
-        - EICCODE-REGION-4
+        - 10Y1001C--00059P
+        - 10Y1001C--00136X
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-TSCNET-AND-TSOS
@@ -513,7 +513,7 @@ operatorfabric.users.default:
       name: 'TSO TransnetBW'
       description: 'TSO TransnetBW'
       parents:
-        - EICCODE-REGION-2
+        - 10Y1001C--00059P
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-TSCNET-AND-TSOS
@@ -522,7 +522,7 @@ operatorfabric.users.default:
       name: 'TSO HOPS'
       description: 'TSO HOPS'
       parents:
-        - EICCODE-REGION-2
+        - 10Y1001C--00059P
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-TSCNET-AND-TSOS
@@ -531,7 +531,7 @@ operatorfabric.users.default:
       name: 'TSO MAVIR'
       description: 'TSO MAVIR'
       parents:
-        - EICCODE-REGION-2
+        - 10Y1001C--00059P
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-TSCNET-AND-TSOS
@@ -540,7 +540,7 @@ operatorfabric.users.default:
       name: 'TSO Creos'
       description: 'TSO Creos'
       parents:
-        - EICCODE-REGION-2
+        - 10Y1001C--00059P
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-TSCNET-AND-TSOS
@@ -549,8 +549,8 @@ operatorfabric.users.default:
       name: 'TSO TenneT NL'
       description: 'TSO TenneT NL'
       parents:
-        - EICCODE-REGION-1
-        - EICCODE-REGION-2
+        - 10Y1001C--000239
+        - 10Y1001C--00059P
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-TSCNET-AND-TSOS
@@ -559,9 +559,9 @@ operatorfabric.users.default:
       name: 'TSO PSE'
       description: 'TSO PSE'
       parents:
-        - EICCODE-REGION-0
-        - EICCODE-REGION-2
-        - EICCODE-REGION-4
+        - 10Y1001C--00120B
+        - 10Y1001C--00059P
+        - 10Y1001C--00136X
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-TSCNET-AND-TSOS
@@ -570,8 +570,8 @@ operatorfabric.users.default:
       name: 'TSO ELES'
       description: 'TSO ELES'
       parents:
-        - EICCODE-REGION-2
-        - EICCODE-REGION-5
+        - 10Y1001C--00059P
+        - 10Y1001C--00137V
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-TSCNET-AND-TSOS
@@ -580,7 +580,7 @@ operatorfabric.users.default:
       name: 'TSO SEPS'
       description: 'TSO SEPS'
       parents:
-        - EICCODE-REGION-2
+        - 10Y1001C--00059P
         - EICCODE-ALL-TSOS
         - EICCODE-ALL-TSOS-AND-RSCS
         - RSC-TSCNET-AND-TSOS
