@@ -232,26 +232,4 @@ public class LetscoKafkaListenerTest {
                         .validationType(ValidationTypeEnum.BUSINESS).build()).build());
         letscoKafkaListener.ignorePositiveTechnicalQualityCheck(eventMessageDto);
     }
-
-    @Test
-    public void processIfBusinessDayFromOptional() {
-        letscoProperties.getInputFile().getValidation().setBusinessDayFromOptional(true);
-        eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().setBusinessDayFrom(null);
-        letscoKafkaListener.processIfBusinessDayFromOptional(eventMessageDto);
-        assertEquals(timestamp,
-                eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getBusinessDayFrom());
-    }
-
-    @Test
-    public void processIfBusinessDayFromOptional_BdfNotOptional_BdfNull() {
-        eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().setBusinessDayFrom(null);
-        Exception exception = assertThrows(JsonDataMandatoryFieldNullException.class,
-                () -> letscoKafkaListener.processIfBusinessDayFromOptional(eventMessageDto));
-        assertTrue(exception.getMessage().contains("The mandatory field businessDayFrom is null"));
-    }
-
-    @Test
-    public void processIfBusinessDayFromOptional_BdfNotOptional_BdfNotNull() {
-        letscoKafkaListener.processIfBusinessDayFromOptional(eventMessageDto);
-    }
 }

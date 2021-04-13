@@ -104,36 +104,6 @@ public class EventMessageServiceTest {
     }
 
     @Test
-    public void extractDatesFromEventMessageDto_nullInput() {
-        Set<String> dates = eventMessageService.extractDatesFromEventMessageDto(null);
-        assertTrue(dates.isEmpty());
-    }
-
-    @Test
-    public void extractDatesFromEventMessageDto_validationDates() {
-        EventMessageDto eventMessageDto = EventMessageDto.builder()
-                .payload(PayloadDto.builder()
-                        .validation(ValidationDto.builder()
-                                .validationMessages(Arrays.asList(
-                                        ValidationMessageDto.builder()
-                                                .businessTimestamp(LocalDateTime.of(2021, 1, 15, 0, 0).toInstant(ZoneOffset.UTC))
-                                                .build(),
-                                        ValidationMessageDto.builder()
-                                                .businessTimestamp(LocalDateTime.of(2019, 2, 8, 0, 0).toInstant(ZoneOffset.UTC))
-                                                .build(),
-                                        ValidationMessageDto.builder()
-                                                .build()
-
-                                ))
-                                .build())
-                        .build())
-                .build();
-        Set<String> dates = eventMessageService.extractDatesFromEventMessageDto(eventMessageDto);
-        assertFalse(dates.isEmpty());
-        assertEquals(2, dates.size());
-    }
-
-    @Test
     public void getMissingMandatoryFields_shouldReturnAllMissingFields() {
 
         EventMessageDto eventMessageDto = initEventMessageDto();
@@ -165,7 +135,6 @@ public class EventMessageServiceTest {
                 "payload.validation.validationType",
                 "payload.validation.validationMessages[0].code",
                 "payload.validation.validationMessages[0].title",
-                "payload.validation.validationMessages[0].businessTimestamp",
                 "payload.validation.validationMessages[0].severity",
                 "payload.validation.validationMessages[0].message"
         ).collect(Collectors.toSet());

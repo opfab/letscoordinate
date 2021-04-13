@@ -510,7 +510,9 @@ public class OpfabPublisherComponent {
         if (placeholder.contains("::")) {
             if (bdiField.isPresent()) {
                 String formatMethod = placeholder
-                        .replaceFirst("(.*?)::", "")
+                        // {{businessDayFrom::dateFormat(dd/MM/yyyy HH:mm)}} -> dateFormat(dd/MM/yyyy HH:mm)}}
+                        .replaceFirst("\\{\\{[a-zA-Z]*::", "")
+                        // dateFormat(dd/MM/yyyy HH:mm)}} -> dateFormat
                         .replaceFirst("\\(.*\\)\\}\\}", "");
                 if ("dateFormat".equals(formatMethod)) {
                     String dateFormatAndZoneId =

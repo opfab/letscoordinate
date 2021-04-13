@@ -37,7 +37,6 @@ public class ValidationMessageDto {
     private String message;
     @Getter(AccessLevel.NONE)
     private Map<String, Object> params;
-    @NotNull
     private Instant businessTimestamp;
     private Map<String, Object> sourceDataRef;
 
