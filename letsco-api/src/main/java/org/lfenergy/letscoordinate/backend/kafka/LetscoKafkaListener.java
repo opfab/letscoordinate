@@ -28,7 +28,6 @@ import org.lfenergy.letscoordinate.backend.enums.ChangeJsonDataFromWhichEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationTypeEnum;
 import org.lfenergy.letscoordinate.backend.exception.IgnoreProcessException;
-import org.lfenergy.letscoordinate.backend.exception.JsonDataMandatoryFieldNullException;
 import org.lfenergy.letscoordinate.backend.exception.PositiveTechnicalQualityCheckException;
 import org.lfenergy.letscoordinate.backend.mapper.EventMessageMapper;
 import org.lfenergy.letscoordinate.backend.model.EventMessage;
@@ -49,7 +48,6 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 import static org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum.MESSAGE_VALIDATED;
@@ -102,7 +100,7 @@ public class LetscoKafkaListener {
 
             opfabPublisherComponent.publishOpfabCard(eventMessageDto, eventMessage.getId());
 
-        } catch (IgnoreProcessException | PositiveTechnicalQualityCheckException | JsonDataMandatoryFieldNullException e) {
+        } catch (IgnoreProcessException | PositiveTechnicalQualityCheckException e) {
             log.info(e.getMessage());
         }
     }
@@ -119,7 +117,6 @@ public class LetscoKafkaListener {
         ignoreProcessIfNeeded(processKey);
         ignoreMessageTypeNameIfNeeded(messageTypeName);
         ignorePositiveTechnicalQualityCheck(eventMessageDto);
-        processIfBusinessDayFromOptional(eventMessageDto);
         bdi.setBusinessDayTo(bdi.getBusinessDayTo() == null ?
                 bdi.getBusinessDayFrom().plus(Duration.ofHours(24)).minus(Duration.ofSeconds(1)) :
                 bdi.getBusinessDayTo().minus(Duration.ofSeconds(1)));
@@ -147,20 +144,6 @@ public class LetscoKafkaListener {
             if (validationDto.getResult() == ValidationSeverityEnum.OK &&
                     validationDto.getValidationType() == ValidationTypeEnum.TECHNICAL) {
                 throw new PositiveTechnicalQualityCheckException("Positive technical quality check => no need to process it");
-            }
-        }
-    }
-
-    void processIfBusinessDayFromOptional(EventMessageDto eventMessageDto) {
-        BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
-        Instant timestamp = eventMessageDto.getHeader().getTimestamp();
-        if (letscoProperties.getInputFile().getValidation().isBusinessDayFromOptional()) {
-            if (Objects.isNull(bdi.getBusinessDayFrom())) {
-                bdi.setBusinessDayFrom(timestamp);
-            }
-        } else {
-            if (bdi.getBusinessDayFrom() == null) {
-                throw new JsonDataMandatoryFieldNullException("businessDayFrom");
             }
         }
     }
