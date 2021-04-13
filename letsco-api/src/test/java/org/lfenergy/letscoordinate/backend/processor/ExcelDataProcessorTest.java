@@ -296,7 +296,7 @@ public class ExcelDataProcessorTest {
         assertNotNull(bytesWhenDailyAndPanEuRegion);
         assertTrue(bytesWhenDailyAndPanEuRegion.length > bytesWhenEmptyInput.length);
         // Not Pan-EU RSC
-        dailyRscKpiReportDataDto.getSubmittedFormData().setRegionCodes(Arrays.asList("EICCODE-REGION-0"));
+        dailyRscKpiReportDataDto.getSubmittedFormData().setRegionCodes(Arrays.asList("10Y1001C--00120B"));
         byte[] bytesWhenDailyAndNotPanEuRsc = excelDataProcessor.generateRscKpiExcelReport(dailyRscKpiReportDataDto);
         assertNotNull(bytesWhenDailyAndNotPanEuRsc);
         assertTrue(bytesWhenDailyAndNotPanEuRsc.length > bytesWhenEmptyInput.length);
@@ -346,7 +346,7 @@ public class ExcelDataProcessorTest {
         assertNotNull(bytesWhenDailyAndPanEuRegion);
         assertTrue(bytesWhenDailyAndPanEuRegion.length > bytesWhenEmptyInput.length);
         // Not Pan-EU RSC
-        yearlyRscKpiReportDataDto.getSubmittedFormData().setRegionCodes(Arrays.asList("EICCODE-REGION-0"));
+        yearlyRscKpiReportDataDto.getSubmittedFormData().setRegionCodes(Arrays.asList("10Y1001C--00120B"));
         byte[] bytesWhenDailyAndNotPanEuRsc = excelDataProcessor.generateRscKpiExcelReport(yearlyRscKpiReportDataDto);
         assertNotNull(bytesWhenDailyAndNotPanEuRsc);
         assertTrue(bytesWhenDailyAndNotPanEuRsc.length > bytesWhenEmptyInput.length);
@@ -399,7 +399,7 @@ public class ExcelDataProcessorTest {
         assertFalse(excelDataProcessor.isAllRegionSelected(submittedFormDataDto));
 
         submittedFormDataDto = RscKpiReportSubmittedFormDataDto.builder()
-                .regionCodes(Arrays.asList("EICCODE-REGION-0"))
+                .regionCodes(Arrays.asList("10Y1001C--00120B"))
                 .build();
         assertFalse(excelDataProcessor.isAllRegionSelected(submittedFormDataDto));
     }
