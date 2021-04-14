@@ -64,6 +64,7 @@ services:
       - 5005:5005
     environment:
       - TZ=Europe/Paris
+      - OPFAB_PROCESS_WITH_FILENAME=true
     restart: always
   letsco-data-provider:
     container_name: letsco-data-provider
