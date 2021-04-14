@@ -97,7 +97,8 @@
       "time": {
         "display": "PUBLICATION"
       },
-      "hideAckFilter": false
+      "hideAckFilter": false,
+      "hideAckAllCardsFeature": false
     },
     "notify": false,
     "subscription": {
