@@ -1,0 +1,80 @@
+{
+  "eventMessage": {
+    "xmlns": ",http://iec.ch/TC57/2011/schema/message",
+    "header": {
+      "verb": "created",
+      "noun": "DfgMessageValidated",
+      "timestamp": "2021-07-22T14:25:24Z",
+      "source": "ServiceA",
+      "messageId": "3f5d0a7a6e9242b23893dd51034431855",
+      "properties": {
+        "format": "JSON",
+        "businessDataIdentifier": {
+          "businessApplication": "PanEuropeanServiceATool",
+          "messageTypeName": "Validation",
+          "businessDayFrom": "2021-07-18T22:00:00Z",
+          "businessDayTo": "2021-07-23T22:00:00Z",
+          "sendingUser": "10XFR-RTE------Q",
+          "fileName": "FileA.json",
+          "tso": "10XFR-RTE------Q",
+          "recipients": ["10XFR-RTE------Q", "10X1001A1001A345"]
+        }
+      }
+    },
+    "payload": {
+      "validation": {
+        "validationType": "BUSINESS",
+        "status": "ACCEPTED",
+        "result": "ERROR",
+        "validationMessages": [
+          {
+            "code": "ServiceA_Error_01",
+            "severity": "ERROR",
+            "title": "Rule_A_Violated",
+            "message": "Application check: Error 01 detected in input file",
+            "businessTimestamp": "2021-01-22T14:24:38Z",
+            "sourceDataRef": {
+              "relatedElement": "timeseries",
+              "relatedTimeseriesId": "Timeseries_12345",
+              "relatedPeriodStartId": 3247,
+              "relatedPeriodEndId": 3856
+            }
+          },
+          {
+            "code": "ServiceA_Error_02",
+            "severity": "ERROR",
+            "title": "Rule_B_Violated",
+            "message": "Application check: Error 02 detected in input file",
+            "businessTimestamp": "2021-03-11T14:24:46Z",
+            "sourceDataRef": {
+              "relatedElement": "header"
+            }
+          },
+          {
+            "code": "ServiceA_Warning_01",
+            "severity": "WARNING",
+            "title": "Rule_C_Violated",
+            "message": "Application check: Warning 01 detected in input file",
+            "businessTimestamp": "2021-03-02T14:24:47Z",
+            "sourceDataRef": {
+              "relatedElement": "header"
+            }
+          },
+          {
+            "code": "ServiceA_Warning_02",
+            "severity": "WARNING",
+            "title": "Rule_D_Violated",
+            "message": "Application check: Warning 02 detected in input file",
+            "businessTimestamp": "2021-05-17T14:25:23Z",
+            "sourceDataRef": {
+              "relatedPeriodStartId": 897,
+              "relatedElement": "timeseries",
+              "relatedPeriodEndId": 928,
+              "relatedTimeseriesId": "Timeseries_45678"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

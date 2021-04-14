@@ -1,0 +1,41 @@
+{
+  "eventMessage": {
+    "xmlns": "http://iec.ch/TC57/2011/schema/message",
+    "header": {
+      "verb": "created",
+      "noun": "ProcessSuccessful",
+      "timestamp": "2021-05-16T08:13:15Z",
+      "source": "ServiceA",
+      "messageId": "134654a095714812ba74323b021f23b5",
+      "properties": {
+        "format": "JSON",
+        "businessDataIdentifier": {
+          "businessApplication": "PanEuropeanServiceATool",
+          "messageTypeName": "ProcessMonitoring",
+          "businessDayFrom": "2021-06-05T22:00:00Z",
+          "businessDayTo": "2021-06-30T22:00:00Z",
+          "processStep": "Initial calculation"
+        }
+      }
+    },
+    "payload": {
+      "text": [
+        {
+          "name": "Comment",
+          "value": "The process calculation was performed on time"
+        },
+        {
+          "name": "Conclusion",
+          "value": "Results are ok"
+        }
+      ],
+      "links": [
+        {
+          "name": "ServiceA_Report",
+          "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf",
+          "eicCode": ["22XCORESO------S", "38X-BALTIC-RSC-H"]
+        }
+      ]
+    }
+  }
+}

@@ -20,11 +20,14 @@ import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
 import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
+import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageWrapperDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.*;
+import org.lfenergy.letscoordinate.backend.util.JsonUtils;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
@@ -41,11 +44,15 @@ public class EventMessageServiceTest {
     EventMessageService eventMessageService;
     @MockBean
     CoordinationConfig coordinationConfig;
-    @MockBean
     LetscoProperties letscoProperties;
 
     @BeforeEach
     public void before() {
+        letscoProperties = new LetscoProperties();
+        LetscoProperties.InputFile.Validation validation = new LetscoProperties.InputFile.Validation();
+        LetscoProperties.InputFile inputFile = new LetscoProperties.InputFile();
+        inputFile.setValidation(validation);
+        letscoProperties.setInputFile(inputFile);
         eventMessageService = new EventMessageService(coordinationConfig, letscoProperties);
     }
 
@@ -101,36 +108,6 @@ public class EventMessageServiceTest {
                 () -> assertEquals("INVALID_INPUT_FILE", validation.getError().getCode()),
                 () -> assertEquals(2, validation.getError().getMessages().size())
         );
-    }
-
-    @Test
-    public void extractDatesFromEventMessageDto_nullInput() {
-        Set<String> dates = eventMessageService.extractDatesFromEventMessageDto(null);
-        assertTrue(dates.isEmpty());
-    }
-
-    @Test
-    public void extractDatesFromEventMessageDto_validationDates() {
-        EventMessageDto eventMessageDto = EventMessageDto.builder()
-                .payload(PayloadDto.builder()
-                        .validation(ValidationDto.builder()
-                                .validationMessages(Arrays.asList(
-                                        ValidationMessageDto.builder()
-                                                .businessTimestamp(LocalDateTime.of(2021, 1, 15, 0, 0).toInstant(ZoneOffset.UTC))
-                                                .build(),
-                                        ValidationMessageDto.builder()
-                                                .businessTimestamp(LocalDateTime.of(2019, 2, 8, 0, 0).toInstant(ZoneOffset.UTC))
-                                                .build(),
-                                        ValidationMessageDto.builder()
-                                                .build()
-
-                                ))
-                                .build())
-                        .build())
-                .build();
-        Set<String> dates = eventMessageService.extractDatesFromEventMessageDto(eventMessageDto);
-        assertFalse(dates.isEmpty());
-        assertEquals(2, dates.size());
     }
 
     @Test
@@ -244,4 +221,49 @@ public class EventMessageServiceTest {
         Assertions.assertThat(validationResultSet).containsAll(expectedSet);
     }
 
+    @Test
+    public void getMissingMandatoryFields_businessDayFromNull() throws IOException {
+        EventMessageDto eventMessageDto =
+                JsonUtils.jsonToObject("ProcessSuccessful.json", EventMessageWrapperDto.class).getEventMessage();
+        eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().setBusinessDayFrom(null);
+        Set<String> missingMandatoryFields = eventMessageService.getMissingMandatoryFields(eventMessageDto);
+        assertEquals(1, missingMandatoryFields.size());
+        assertTrue(missingMandatoryFields.stream().anyMatch(
+                f -> f.equals("header.properties.businessDataIdentifier.businessDayFrom")));
+    }
+
+    @Test
+    public void getMissingMandatoryFields_businessDayFromNull_businessDayFromIsOptional() throws IOException {
+        EventMessageDto eventMessageDto =
+                JsonUtils.jsonToObject("ProcessSuccessful.json", EventMessageWrapperDto.class).getEventMessage();
+        eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().setBusinessDayFrom(null);
+        letscoProperties.getInputFile().getValidation().setBusinessDayFromOptional(true);
+        Set<String> missingMandatoryFields = eventMessageService.getMissingMandatoryFields(eventMessageDto);
+        assertEquals(0, missingMandatoryFields.size());
+        assertEquals(eventMessageDto.getHeader().getTimestamp(),
+                eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getBusinessDayFrom());
+    }
+
+    @Test
+    public void getMissingMandatoryFields_validationBusinessTimestampsNull() throws IOException {
+        EventMessageDto eventMessageDto = JsonUtils.jsonToObject("MessageValidated_NEGATIVE_ACK.json",
+                EventMessageWrapperDto.class).getEventMessage();
+        eventMessageDto.getPayload().getValidation().get().getValidationMessages().get().forEach(
+                vm -> vm.setBusinessTimestamp(null));
+        Set<String> missingMandatoryFields = eventMessageService.getMissingMandatoryFields(eventMessageDto);
+        assertEquals(4, missingMandatoryFields.stream().filter(
+                f -> f.matches("payload\\.validation\\.validationMessages\\[[0-9]+\\]\\.businessTimestamp")).count());
+    }
+
+    @Test
+    public void getMissingMandatoryFields_validationBusinessTimestampsNull_validationBusinessTimestampIsOptional()
+            throws IOException {
+        EventMessageDto eventMessageDto = JsonUtils.jsonToObject("MessageValidated_NEGATIVE_ACK.json",
+                EventMessageWrapperDto.class).getEventMessage();
+        letscoProperties.getInputFile().getValidation().setValidationBusinessTimestampOptional(true);
+        eventMessageDto.getPayload().getValidation().get().getValidationMessages().get().forEach(
+                vm -> vm.setBusinessTimestamp(null));
+        Set<String> missingMandatoryFields = eventMessageService.getMissingMandatoryFields(eventMessageDto);
+        assertEquals(0, missingMandatoryFields.size());
+    }
 }

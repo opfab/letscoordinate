@@ -26,7 +26,6 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.*;
 import org.lfenergy.letscoordinate.backend.enums.ResponseErrorSeverityEnum;
 import org.lfenergy.letscoordinate.backend.enums.UnknownEicCodesProcessEnum;
 import org.lfenergy.letscoordinate.backend.util.Constants;
-import org.lfenergy.letscoordinate.backend.util.DateUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +33,6 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Path;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -86,23 +83,13 @@ public class EventMessageService {
         // check that all eic_code provided by the dto exists in our database
         checkEicCodes(eventMessageDto, errorMessages);
 
-        // check that all dates have the right format
-        Set<String> invalidDates = extractDatesFromEventMessageDto(eventMessageDto).stream()
-                .filter(date -> !DateUtil.isValidJsonDate(date))
-                .collect(Collectors.toSet());
-        if (!invalidDates.isEmpty()) {
-            errorMessages.add(ResponseErrorMessageDto.builder()
-                    .severity(ResponseErrorSeverityEnum.ERROR)
-                    .message("Invalid dates found! >>> " + invalidDates.toString())
-                    .build());
-        }
-
-        if(!errorMessages.isEmpty())
+        if(!errorMessages.isEmpty()) {
             return Validation.invalid(ResponseErrorDto.builder()
                     .status(HttpStatus.BAD_REQUEST.value())
                     .code("INVALID_INPUT_FILE")
                     .messages(errorMessages)
                     .build());
+        }
         return Validation.valid(eventMessageDto);
     }
 
@@ -112,9 +99,23 @@ public class EventMessageService {
             ValidatorFactory factory = javax.validation.Validation.buildDefaultValidatorFactory();
             Validator validator = factory.getValidator();
             Set<ConstraintViolation<EventMessageDto>> violations = validator.validate(eventMessageDto);
-            return violations.stream()
+            missingMandatoryFields = violations.stream()
                     .map(ConstraintViolation::getPropertyPath)
                     .map(Path::toString)
+                    .collect(Collectors.toSet());
+        }
+        if (letscoProperties.getInputFile().getValidation().isBusinessDayFromOptional()) {
+            if (missingMandatoryFields.contains("header.properties.businessDataIdentifier.businessDayFrom")) {
+                if (eventMessageDto != null) {
+                    eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier()
+                            .setBusinessDayFrom(eventMessageDto.getHeader().getTimestamp());
+                    missingMandatoryFields.remove("header.properties.businessDataIdentifier.businessDayFrom");
+                }
+            }
+        }
+        if (letscoProperties.getInputFile().getValidation().isValidationBusinessTimestampOptional()) {
+            missingMandatoryFields = missingMandatoryFields.stream().filter(
+                    f -> !f.matches("payload\\.validation\\.validationMessages\\[[0-9]+\\]\\.businessTimestamp"))
                     .collect(Collectors.toSet());
         }
         return missingMandatoryFields;
@@ -212,63 +213,4 @@ public class EventMessageService {
 
         return eicCodes;
     }
-
-    protected Set<String> extractDatesFromEventMessageDto(EventMessageDto eventMessageDto) {
-        Set<String> timestamps = new HashSet<>();
-        if (eventMessageDto == null)
-            return timestamps;
-
-        HeaderDto headerDto = eventMessageDto.getHeader();
-        if (headerDto != null) {
-            if (headerDto.getTimestamp() != null)
-                timestamps.add(headerDto.getTimestamp().toString());
-            if (headerDto.getProperties() != null && headerDto.getProperties().getBusinessDataIdentifier() != null) {
-                if (headerDto.getProperties().getBusinessDataIdentifier().getBusinessDayFrom() != null)
-                    timestamps.add(headerDto.getProperties().getBusinessDataIdentifier().getBusinessDayFrom().toString());
-                if (headerDto.getProperties().getBusinessDataIdentifier().getBusinessDayTo() != null)
-                    timestamps.add(headerDto.getProperties().getBusinessDataIdentifier().getBusinessDayTo().toString());
-            }
-        }
-
-        PayloadDto payloadDto = eventMessageDto.getPayload();
-        if(payloadDto != null) {
-            if(payloadDto.getRscKpi() != null) {
-                timestamps.addAll(payloadDto.getRscKpi().stream()
-                        .filter(Objects::nonNull)
-                        .map(RscKpiDataDto::getData)
-                        .filter(Objects::nonNull)
-                        .flatMap(Collection::stream)
-                        .filter(Objects::nonNull)
-                        .map(RscKpiDataDetailsDto::getTimestamp)
-                        .filter(Objects::nonNull)
-                        .map(OffsetDateTime::toInstant)
-                        .map(Instant::toString)
-                        .collect(Collectors.toList()));
-            }
-            if(payloadDto.getTimeserie() != null) {
-                timestamps.addAll(payloadDto.getTimeserie().stream()
-                        .filter(Objects::nonNull)
-                        .map(TimeserieDataDto::getData)
-                        .filter(Objects::nonNull)
-                        .flatMap(Collection::stream)
-                        .filter(Objects::nonNull)
-                        .map(TimeserieDataDetailsDto::getTimestamp)
-                        .filter(Objects::nonNull)
-                        .map(OffsetDateTime::toInstant)
-                        .map(Instant::toString)
-                        .collect(Collectors.toList()));
-            }
-            if(payloadDto.getValidation().isPresent() && payloadDto.getValidation().orElse(new ValidationDto()).getValidationMessages().isPresent()) {
-                timestamps.addAll(payloadDto.getValidation().orElse(new ValidationDto()).getValidationMessages().orElse(new ArrayList<>()).stream()
-                        .filter(Objects::nonNull)
-                        .map(ValidationMessageDto::getBusinessTimestamp)
-                        .filter(Objects::nonNull)
-                        .map(Instant::toString)
-                        .collect(Collectors.toList()));
-            }
-        }
-
-        return timestamps;
-    }
-
 }
