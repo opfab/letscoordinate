@@ -128,7 +128,7 @@ opfab:
     sourceA_messageTypeNameB:
       notAllowed: sendingUser
       addRscs: true
-  processWithFilename: true
+  processWithFilename: false
 
 third-app:
   url: http://localhost:8081
