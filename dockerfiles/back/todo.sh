@@ -13,12 +13,10 @@ jarFile="letsco-api-${jarVersion}-exec.jar"
 mainDir="../../letsco-api/"
 dockerTag="letscoordinate/backend"
 
-cp $jarFile letsco-api.jar
-
 if [ -z $2 ]; then
   cd $mainDir/.. && mvn clean && mvn package && cd -
 fi
-cp ${mainDir}/target/${jarFile} .
+cp ${mainDir}/target/${jarFile} ./letsco-api.jar
 docker build --tag=${dockerTag}:${tag} .
 docker build --tag=${dockerTag}:latest .
 docker push ${dockerTag}:${tag}

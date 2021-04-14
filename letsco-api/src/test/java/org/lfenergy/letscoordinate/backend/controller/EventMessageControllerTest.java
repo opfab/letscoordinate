@@ -91,7 +91,7 @@ public class EventMessageControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT_FILE"))
-                .andExpect(jsonPath("$.messages", hasSize(3)));
+                .andExpect(jsonPath("$.messages", hasSize(2)));
     }
 
     @Test
@@ -115,7 +115,7 @@ public class EventMessageControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT_FILE"))
-                .andExpect(jsonPath("$.messages", hasSize(3)));
+                .andExpect(jsonPath("$.messages", hasSize(2)));
     }
 
     @Test

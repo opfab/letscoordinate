@@ -14,11 +14,13 @@ package org.lfenergy.letscoordinate.backend.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.lfenergy.letscoordinate.backend.enums.ResponseErrorSeverityEnum;
 
 @Builder
 @Getter
 @Setter
+@ToString
 public class ResponseErrorMessageDto {
     private ResponseErrorSeverityEnum severity;
     private String message;

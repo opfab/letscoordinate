@@ -50,6 +50,7 @@ public class LetscoProperties {
             @Getter(AccessLevel.NONE)
             private Map<String, String> changeMessageTypeName = new HashMap<>();
             private boolean businessDayFromOptional;
+            private boolean validationBusinessTimestampOptional;
             private boolean acceptPropertiesIgnoreCase;
             private boolean failOnUnknownProperties;
             private UnknownEicCodesProcessEnum unknownEicCodesProcess = UnknownEicCodesProcessEnum.EXCEPTION;
