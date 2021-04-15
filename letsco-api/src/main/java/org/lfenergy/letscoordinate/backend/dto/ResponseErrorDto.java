@@ -14,12 +14,14 @@ package org.lfenergy.letscoordinate.backend.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
 @Builder
 @Getter
 @Setter
+@ToString
 public class ResponseErrorDto {
     private int status;     // http status (e.g 500, 201, 403, ...)
     private String code;    // Error code (internal id of the error)

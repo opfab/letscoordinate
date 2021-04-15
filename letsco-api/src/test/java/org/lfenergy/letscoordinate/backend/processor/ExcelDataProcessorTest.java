@@ -110,7 +110,7 @@ public class ExcelDataProcessorTest {
                 () -> assertNotNull(outputValidation.getError().getMessages()),
                 () -> assertEquals(HttpStatus.BAD_REQUEST.value(), outputValidation.getError().getStatus()),
                 () -> assertEquals("INVALID_INPUT_FILE", outputValidation.getError().getCode()),
-                () -> assertEquals(3, outputValidation.getError().getMessages().size())
+                () -> assertEquals(2, outputValidation.getError().getMessages().size())
         );
     }
 
