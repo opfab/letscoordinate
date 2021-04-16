@@ -61,7 +61,6 @@ services:
     user: ${USER_ID}:${USER_GID}
     ports:
       - 8088:8088
-      - 5005:5005
     environment:
       - TZ=Europe/Paris
       - OPFAB_PROCESS_WITH_FILENAME=true
@@ -75,16 +74,15 @@ services:
     ports:
       - 8082:8082
     restart: always
-
-#  letsco-front:
-#    container_name: letsco-front
-#    image: letscoordinate/letsco-front:latest
-#    depends_on:
-#      - letsco-api
+  letsco-front:
+    container_name: letsco-front
+    image: letscoordinate/letsco-front:latest
+    depends_on:
+      - letsco-api
 #    user: ${USER_ID}:${USER_GID}
-#    ports:
-#      - 4200:8080
-    #restart: always
+    ports:
+      - 4200:8080
+    restart: always
 
 volumes:
   zookeeper_data:
