@@ -14,13 +14,15 @@
 #           START CUSTOMIZABLE VARIABLES             #
 ######################################################
 export SERVER_IP=localhost
-export DOCKER_IP=172.17.0.1
 ######################################################
 #            END CUSTOMIZABLE VARIABLES              #
 ######################################################
 
 echo USER_ID="$(id -u)" > .env
 echo USER_GID="$(id -g)" >> .env
+
+docker network create --driver bridge opfab-network
+export DOCKER_IP=$(docker inspect opfab-network --format '{{range .IPAM.Config}}{{.Gateway}}{{end}}' "$@")
 
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
