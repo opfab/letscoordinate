@@ -66,8 +66,8 @@
               {{#each errors}}
                 <tr>
                   <th scope="row">{{math @index '+' 1}}</th>
-                  <td>{{dateFormat (math this.timestamp.epochSecond '*' 1000) format='DD/MM/YYYY'}}</td>
-                  <td>{{dateFormat (math this.timestamp.epochSecond '*' 1000) format='HH:mm'}}</td>
+                  <td>{{dateFormat (math this.businessTimestamp.epochSecond '*' 1000) format='DD/MM/YYYY'}}</td>
+                  <td>{{dateFormat (math this.businessTimestamp.epochSecond '*' 1000) format='HH:mm'}}</td>
                   <td>{{this.code}}</td>
                   <td>{{this.title}}</td>
                   <td>{{this.message}}</td>
@@ -102,8 +102,8 @@
               {{#each warnings}}
                 <tr>
                   <th scope="row">{{math @index '+' 1}}</th>
-                  <td>{{dateFormat (math this.timestamp.epochSecond '*' 1000) format='DD/MM/YYYY'}}</td>
-                  <td>{{dateFormat (math this.timestamp.epochSecond '*' 1000) format='HH:mm'}}</td>
+                  <td>{{dateFormat (math this.businessTimestamp.epochSecond '*' 1000) format='DD/MM/YYYY'}}</td>
+                  <td>{{dateFormat (math this.businessTimestamp.epochSecond '*' 1000) format='HH:mm'}}</td>
                   <td>{{this.code}}</td>
                   <td>{{this.title}}</td>
                   <td>{{this.message}}</td>
