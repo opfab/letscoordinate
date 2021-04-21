@@ -66,7 +66,7 @@ public class FTPDownloadClient {
             ftpClient = initAndConnectFTPClient();
 
             // Check integrity of files to download (ready for download)
-            List<FTPFile> ftpFilesReadyForDownload = getFTPFilesReadyForDownload(ftpClient);
+            List<FTPFile> ftpFilesReadyForDownload = getFTPFilesReadyForDownload(ftpClient); //NOSONAR
             if(!ftpFilesReadyForDownload.isEmpty()){
                 log.info("FTP files ready for download:", ftpFilesReadyForDownload.stream().map(FTPFile::getName).collect(Collectors.toList()));
                 ftpFilesReadyForDownload.stream()
