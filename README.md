@@ -1,5 +1,5 @@
-<!-- Copyright (c) 2020 RTE (https://www.rte-france.com)                                                  -->
-<!-- Copyright (c) 2020 RTE international (https://www.rte-international.com)                             -->
+<!-- Copyright (c) 2020-2021 RTE (https://www.rte-france.com)                                                  -->
+<!-- Copyright (c) 2020-2021 RTE international (https://www.rte-international.com)                             -->
 <!-- See AUTHORS.txt                                                                                      -->
 <!-- This document is subject to the terms of the Creative Commons Attribution 4.0 International license. -->
 <!-- If a copy of the license was not distributed with this                                               -->
@@ -21,7 +21,9 @@ To use Let's Coordinate, you need a linux OS with the following:
 * Node JS (v10.16.3)
 * Angular CLI (v11.1.4)
 
-**Please note**: It is highly recommended to use [sdkman](https://sdkman.io/) (v5.11.0 or grater) and [nvm](https://github.com/nvm-sh/nvm) (v14.11.0 or grater) to manage *Maven*, *Java*, *NPM* and *Node JS* tools versions (with sdkman and nvm, the previously mentioned tools will be automatically installed later).
+**Please note**: 
+* It is highly recommended to use [sdkman](https://sdkman.io/) (v5.11.0 or grater) and [nvm](https://github.com/nvm-sh/nvm) (v14.11.0 or grater) to manage *Maven*, *Java*, *NPM* and *Node JS* tools versions (with sdkman and nvm, the previously mentioned tools will be automatically installed later).
+* The required OperatorFabric version is **2.3.0.RELEASE** (configured by default to be used with the current version of Let's Coordinate 1.2.0.RELEASE)
 
 ## 2. Setup and run Let's Coordinate
 
@@ -56,15 +58,21 @@ Before starting the *Let's Coordinate* getting started project, it is important 
 
 Download the latest karate jar file from [Karate github release page](https://github.com/intuit/karate/releases/) , put it in the "*opfab/prepare-opfab-env*" directory, rename it to "*karate.jar*" to use it easily.
 
-Then, you should load the environment variables. To do that, position your self in the root directory of the *Let's Coordinate* project (by default letscoordinate) and execute the following command:
+Then, position your self in the "*bin*" directory and check that you have the right "*SERVER_IP*" value in the "*load_environment.sh*" file (this action is mandatory only if you are running *Let's Coordinate* in a remote server! If it is the case, please edit the file and replace "*localhost*" by your server IP address, else if you are testing locally, please skip this step):
 
 ```
-source bin/load_environment.sh
+sed -n '13,+6p' load_environment.sh
+```
+
+Finally, in the same "*bin*" directory, you should load the environment variables by executing the following command:
+
+```
+source ./load_environment.sh
 ```
 
 ##### b. Start the server
 
-To start Let's Coordinate, position your self in the *bin* directory and execute the following commands:
+To start Let's Coordinate, position your self in the "*bin*" directory and execute the following commands:
 
 ```
 ./server.sh --first-init start 
