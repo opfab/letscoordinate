@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -104,7 +105,7 @@ public class FTPDownloadClient {
                     log.error("Error occurred during saving local file's data \"{}\" into backend database! >>> {}", downloadedMultipartFile.getOriginalFilename(), validation.getError());
                     monitoringContext.stopCurrentStepMonitoring(TaskStatusEnum.WARN, validation.getError(), null);
                 }
-                moveFTPFileAndRemoveLocalRelatedOne(validation, downloadedMultipartFile.getOriginalFilename(), monitoringContext);
+                moveFTPFileAndRemoveLocalRelatedOne(validation, FilenameUtils.getName(downloadedMultipartFile.getOriginalFilename()), monitoringContext);
             }
         } else {
             log.info("No file's data to save into backend database!");
@@ -113,7 +114,7 @@ public class FTPDownloadClient {
 
     // PRIVATE METHODES
 
-    private FTPClient initAndConnectFTPClient() throws IOException {
+    protected FTPClient initAndConnectFTPClient() throws IOException {
         FTPClient ftpClient = new FTPClient();
         // init FTP connection params
         LetscoProperties.Ftp.Server ftpServer = letscoProperties.getFtp().getServer();
@@ -167,16 +168,15 @@ public class FTPDownloadClient {
         }
     }
 
-    private void deleteLocalDownloadedFile(String fileName,
-                                           MonitoringContext monitoringContext) throws IOException {
+    protected void deleteLocalDownloadedFile(String fileName,
+                                             MonitoringContext monitoringContext) throws IOException {
         monitoringContext.startNewStepMonitoring(TaskStepEnum.STEP_DELETE_LOCAL_FILE, fileName);
         Path path = Paths.get(letscoProperties.getScanner().getPath().getTargetDownloadDir() + File.separator + fileName);
         if(path.toFile().exists()) {
             log.info("Deleting local file \"{}\" ...", fileName);
-            try {
-                Files.delete(path);
+            if (FileUtils.deleteQuietly(path.toFile()))
                 log.info("Local file \"{}\" is removed from local download directory with success!", fileName);
-            } catch (IOException e) {
+            else {
                 log.info("Unable to delete local file \"{}\"! Trying forced delete...", fileName);
                 FileUtils.forceDelete(path.toFile());
                 log.info("Local file \"{}\" is removed from local download directory with success! (forced)", fileName);
@@ -186,8 +186,8 @@ public class FTPDownloadClient {
         }
     }
 
-    private List<String> downloadFTPFiles(FTPClient ftpClient,
-                                  List<String> filesToDownload) throws IOException {
+    protected List<String> downloadFTPFiles(FTPClient ftpClient,
+                                            List<String> filesToDownload) throws IOException {
         List<String> downloadedFiles = new ArrayList<>();
         for(String fileToDownload : filesToDownload) {
             String remoteFile = letscoProperties.getFtp().getPath().getSourceDownloadDir() + File.separator + fileToDownload;
@@ -203,16 +203,20 @@ public class FTPDownloadClient {
                     downloadedFiles.add(fileToDownload);
                 } else {
                     log.error("FTP File \"{}\" not found! Deleting local file...", fileToDownload);
-                    downloadFile.delete();
-                    log.info("Local file \"{}\" deleted with success!", fileToDownload);
+                    if (downloadFile.delete())
+                        log.info("Local file \"{}\" deleted with success!", fileToDownload);
+                    else
+                        log.warn("Local file \"{}\" not deleted!", fileToDownload);
                 }
             } catch (IOException e) {
                 log.error("Error occurred while downloading FTP File \"{}\"!", fileToDownload, e);
                 outputStream.close();
                 fileOutputStream.close();
                 log.info("Deleting local file \"{}\" ...", fileToDownload);
-                downloadFile.delete();
-                log.info("Local file \"{}\" deleted with success!", fileToDownload);
+                if(downloadFile.delete())
+                    log.info("Local file \"{}\" deleted with success!", fileToDownload);
+                else
+                    log.warn("Local file \"{}\" not deleted!", fileToDownload);
             }
         }
         return downloadedFiles;
@@ -220,14 +224,15 @@ public class FTPDownloadClient {
 
     private List<MultipartFile> getAllLocalFilesToTreat() throws IOException {
         List<MultipartFile> multipartFiles = new ArrayList<>();
-        List<File> files = Files.walk(Paths.get(letscoProperties.getScanner().getPath().getTargetDownloadDir()))
-                .filter(Files::isRegularFile)
-                .map(Path::toFile)
-                .collect(Collectors.toList());
-        for(File file : files) {
-            multipartFiles.add(toMultipartFile(file));
+        try(Stream<Path> sp = Files.walk(Paths.get(letscoProperties.getScanner().getPath().getTargetDownloadDir()))) {
+            List<File> files = sp.filter(Files::isRegularFile)
+                    .map(Path::toFile)
+                    .collect(Collectors.toList());
+            for (File file : files) {
+                multipartFiles.add(toMultipartFile(file));
+            }
+            return multipartFiles;
         }
-        return multipartFiles;
     }
 
     private void checkIfLocalTargetDownloadDirectoryExists() {
@@ -376,12 +381,11 @@ public class FTPDownloadClient {
     private MultipartFile toMultipartFile(File file) throws IOException {
         FileItem fileItem = new DiskFileItem("mainFile", Files.probeContentType(file.toPath()), false,
                 file.getName(), (int) file.length(), file.getParentFile());
-        FileInputStream fileInputStream = new FileInputStream(file);
-        OutputStream fileItemOutputStream = fileItem.getOutputStream();
-        IOUtils.copy(fileInputStream, fileItemOutputStream);
-        fileInputStream.close();
-        fileItemOutputStream.close();
-        return new CommonsMultipartFile(fileItem);
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            OutputStream fileItemOutputStream = fileItem.getOutputStream();
+            IOUtils.copy(fileInputStream, fileItemOutputStream);
+            return new CommonsMultipartFile(fileItem);
+        }
     }
 
 }

@@ -1,0 +1,594 @@
+# Copyright (c) 2020-2021, RTE (https://www.rte-france.com)
+# Copyright (c) 2020-2021 RTE international (https://www.rte-international.com)
+# See AUTHORS.txt
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+# SPDX-License-Identifier: MPL-2.0
+# This file is part of the Let’s Coordinate project.
+
+
+#  POPULATE THE USER DATABASE ON INIT
+# !!!! WARNNING: VALUES SHOULD BE CHANGED FOR PRODUCTION MODE !!!!
+#
+
+spring:
+  application:
+    name: users
+
+
+operatorfabric.users.default:
+  users:
+    - login: admin
+      groups: ["ADMIN"]
+      entities: ["ENTITY1","ENTITY2"]
+    - login: rte-operator
+      groups: ["RTE","ADMIN","TRANS"]
+    - login: tso1-operator
+      groups: ["TSO1","TRANS"]
+      entities: ["ENTITY1"]
+    - login: tso2-operator
+      groups: ["TSO2", "TRANS"]
+      entities: ["ENTITY2"]
+  groups:
+    - id: ADMIN
+      name: ADMINISTRATORS
+      description: The admin group
+    - id: RTE
+      name: RTE France
+      description: RTE TSO Group
+    - id: TSO1
+      name: TSO number 1
+      description: TSO 1 Group
+    - id: TSO2
+      name: TSO number 2
+      description: TSO 2 Group
+    - id: TSO3
+      name: TSO number 3
+      description: TSO 3 Group
+    - id: TSO4
+      name: TSO number 4
+      description: TSO 4 Group
+    - id: TRANS
+      name: TRANS name
+      description: Transnational Group
+  entities:
+
+# Generic entities
+
+    - id: EICCODE-ALL-RSCS
+      name: All RSCs
+      description: All RSCs
+      entityAllowedToSendCard: false
+
+    - id: EICCODE-ALL-TSOS
+      name: All TSOs
+      description: All TSOs
+      entityAllowedToSendCard: false
+
+    - id: EICCODE-ALL-TSOS-AND-RSCS
+      name: All TSOs & RSCs
+      description: All TSOs & RSCs
+      entityAllowedToSendCard: false
+
+# RSCs and their TSOs
+
+    - id: RSC-BALTIC-AND-TSOS
+      name: 'RSC Baltic & TSOs'
+      description: 'RSC Baltic & TSOs'
+      entityAllowedToSendCard: false
+
+    - id: RSC-CORESO-AND-TSOS
+      name: 'RSC CORESO & TSOs'
+      description: 'RSC CORESO & TSOs'
+      entityAllowedToSendCard: false
+
+    - id: RSC-NORDIC-AND-TSOS
+      name: 'RSC Nordic & TSOs'
+      description: 'RSC Nordic & TSOs'
+      entityAllowedToSendCard: false
+
+    - id: RSC-SCC-AND-TSOS
+      name: 'RSC SCC & TSOs'
+      description: 'RSC SCC & TSOs'
+      entityAllowedToSendCard: false
+
+    - id: RSC-SELENE-CC-AND-TSOS
+      name: 'RSC SEleNe CC & TSOs'
+      description: 'RSC SEleNe CC & TSOs'
+      entityAllowedToSendCard: false
+
+    - id: RSC-TSCNET-AND-TSOS
+      name: 'RSC TSCNET & TSOs'
+      description: 'RSC TSCNET & TSOs'
+      entityAllowedToSendCard: false
+
+# Region/CCR and their TSOs and RSCs
+
+    - id: 10Y1001C--00120B
+      name: 'CCR Baltic: TSOs & RSCs'
+      description: 'CCR Baltic: TSOs & RSCs'
+      entityAllowedToSendCard: false
+
+    - id: 10Y1001C--000239
+      name: 'CCR Channel: TSOs & RSCs'
+      description: 'CCR Channel: TSOs & RSCs'
+      entityAllowedToSendCard: false
+
+    - id: 10Y1001C--00059P
+      name: 'CCR CORE: TSOs & RSCs'
+      description: 'CCR CORE: TSOs & RSCs'
+      entityAllowedToSendCard: false
+
+    - id: 10Y1001C--00138T
+      name: 'CCR Greece Italy (GRIT): TSOs & RSCs'
+      description: 'CCR Greece Italy (GRIT): TSOs & RSCs'
+      entityAllowedToSendCard: false
+
+    - id: 10Y1001C--00136X
+      name: 'CCR Hansa: TSOs & RSCs'
+      description: 'CCR Hansa: TSOs & RSCs'
+      entityAllowedToSendCard: false
+
+    - id: 10Y1001C--00137V
+      name: 'CCR Italy North: TSOs & RSCs'
+      description: 'CCR Italy North: TSOs & RSCs'
+      entityAllowedToSendCard: false
+
+    - id: 10Y1001C--00022B
+      name: 'CCR Ireland and United Kingdom (IU): TSOs & RSCs'
+      description: 'CCR Ireland and United Kingdom (IU): TSOs & RSCs'
+      entityAllowedToSendCard: false
+
+    - id: 10Y1001C--00139R
+      name: 'CCR South East Europe (SEE): TSOs & RSCs'
+      description: 'CCR South East Europe (SEE): TSOs & RSCs'
+      entityAllowedToSendCard: false
+
+    - id: 10Y1001C--00095L
+      name: 'CCR South West Europe (SWE): TSOs & RSCs'
+      description: 'CCR South West Europe (SWE): TSOs & RSCs'
+      entityAllowedToSendCard: false
+
+    - id: 10Y1001A1001A91G
+      name: 'CCR Nordic: TSOs & RSCs'
+      description: 'CCR Nordic: TSOs & RSCs'
+      entityAllowedToSendCard: false
+
+# RSC
+
+    - id: 38X-BALTIC-RSC-H
+      name: 'RSC Baltic'
+      description: 'RSC Baltic'
+      parents:
+        - 10Y1001C--00120B
+        - EICCODE-ALL-RSCS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-BALTIC-AND-TSOS
+
+    - id: 22XCORESO------S
+      name: 'RSC CORESO'
+      description: 'RSC CORESO'
+      parents:
+        - 10Y1001C--000239
+        - 10Y1001C--00059P
+        - 10Y1001C--00138T
+        - 10Y1001C--00137V
+        - 10Y1001C--00022B
+        - 10Y1001C--00095L
+        - EICCODE-ALL-RSCS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-CORESO-AND-TSOS
+
+    - id: 10X1001C--00008J
+      name: 'RSC Nordic'
+      description: 'RSC Nordic'
+      parents:
+        - 10Y1001C--00120B
+        - 10Y1001C--00136X
+        - 10Y1001A1001A91G
+        - EICCODE-ALL-RSCS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-NORDIC-AND-TSOS
+
+    - id: 34X-0000000068-Q
+      name: 'RSC SCC'
+      description: 'RSC SCC'
+      parents:
+        - 10Y1001C--00138T
+        - 10Y1001C--00139R
+        - EICCODE-ALL-RSCS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-SCC-AND-TSOS
+
+    - id: EICCODE-SELENECC
+      name: 'RSC SEleNe CC'
+      description: 'RSC SEleNe CC'
+      parents:
+        - 10Y1001C--00059P
+        - 10Y1001C--00138T
+        - 10Y1001C--00139R
+        - EICCODE-ALL-RSCS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-SELENE-CC-AND-TSOS
+
+    - id: 10X1001C--00003T
+      name: 'RSC TSCNET'
+      description: 'RSC TSCNET'
+      parents:
+        - 10Y1001C--00120B
+        - 10Y1001C--000239
+        - 10Y1001C--00059P
+        - 10Y1001C--00136X
+        - 10Y1001C--00137V
+        - EICCODE-ALL-RSCS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-TSCNET-AND-TSOS
+
+# TSO
+
+    - id: 10X1001A1001A39W
+      name: 'TSO Elering'
+      description: 'TSO Elering'
+      parents:
+        - 10Y1001C--00120B
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-BALTIC-AND-TSOS
+
+    - id: 10X1001A1001A55Y
+      name: 'TSO Litgrid'
+      description: 'TSO Litgrid'
+      parents:
+        - 10Y1001C--00120B
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-BALTIC-AND-TSOS
+
+    - id: 10X1001A1001B54W
+      name: 'TSO AST'
+      description: 'TSO AST'
+      parents:
+        - 10Y1001C--00120B
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-BALTIC-AND-TSOS
+
+    - id: 10X1001A1001A094
+      name: 'TSO Elia'
+      description: 'TSO Elia'
+      parents:
+        - 10Y1001C--00059P
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-CORESO-AND-TSOS
+
+    - id: 10XES-REE------E
+      name: 'TSO REE'
+      description: 'TSO REE'
+      parents:
+        - 10Y1001C--00095L
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-CORESO-AND-TSOS
+
+    - id: 10XFR-RTE------Q
+      name: 'TSO RTE'
+      description: 'TSO RTE'
+      parents:
+        - 10Y1001C--000239
+        - 10Y1001C--00059P
+        - 10Y1001C--00137V
+        - 10Y1001C--00095L
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-CORESO-AND-TSOS
+
+    - id: 21X-GB-A-A0A0A-7
+      name: 'TSO National Grid'
+      description: 'TSO National Grid'
+      parents:
+        - 10Y1001C--000239
+        - 10Y1001C--00022B
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-CORESO-AND-TSOS
+
+    - id: 10X1001A1001A531
+      name: 'TSO EirGrid'
+      description: 'TSO EirGrid'
+      parents:
+        - 10Y1001C--00022B
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-CORESO-AND-TSOS
+
+    - id: 10X1001A1001A345
+      name: 'TSO Terna'
+      description: 'TSO Terna'
+      parents:
+        - 10Y1001C--00138T
+        - 10Y1001C--00137V
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-CORESO-AND-TSOS
+
+    - id: 10XNITSO-12345-O
+      name: 'TSO SONI'
+      description: 'TSO SONI'
+      parents:
+        - 10Y1001C--00022B
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-CORESO-AND-TSOS
+
+    - id: 10XPT-REN------9
+      name: 'TSO REN'
+      description: 'TSO REN'
+      parents:
+        - 10Y1001C--00095L
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-CORESO-AND-TSOS
+
+    - id: 10X1001A1001A248
+      name: 'TSO Energinet'
+      description: 'TSO Energinet'
+      parents:
+        - 10Y1001C--00136X
+        - 10Y1001A1001A91G
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-NORDIC-AND-TSOS
+
+    - id: 10X1001A1001A264
+      name: 'TSO Fingrid'
+      description: 'TSO Fingrid'
+      parents:
+        - 10Y1001C--00120B
+        - 10Y1001A1001A91G
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-NORDIC-AND-TSOS
+
+    - id: 10X1001A1001A38Y
+      name: 'TSO Statnett'
+      description: 'TSO Statnett'
+      parents:
+        - 10Y1001A1001A91G
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-NORDIC-AND-TSOS
+
+    - id: 10X1001A1001A418
+      name: 'TSO Svenska kraftnät'
+      description: 'TSO Svenska kraftnät'
+      parents:
+        - 10Y1001C--00120B
+        - 10Y1001C--00136X
+        - 10Y1001A1001A91G
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-NORDIC-AND-TSOS
+
+    - id: 10XAL-KESH-----J
+      name: 'TSO OST'
+      description: 'TSO OST'
+      parents:
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-SCC-AND-TSOS
+
+    - id: 10XBA-JPCCZEKC-K
+      name: 'TSO NOS BiH'
+      description: 'TSO NOS BiH'
+      parents:
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-SCC-AND-TSOS
+
+    - id: 10XBG-ESO------A
+      name: 'TSO ESO'
+      description: 'TSO ESO'
+      parents:
+        - 10Y1001C--00139R
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-SCC-AND-TSOS
+        - RSC-SELENE-CC-AND-TSOS
+
+    - id: 10XGR-HTSO-----B
+      name: 'TSO IPTO'
+      description: 'TSO IPTO'
+      parents:
+        - 10Y1001C--00138T
+        - 10Y1001C--00139R
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-SCC-AND-TSOS
+        - RSC-SELENE-CC-AND-TSOS
+
+    - id: 10XCS-CG-TSO---5
+      name: 'TSO CGES'
+      description: 'TSO CGES'
+      parents:
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-SCC-AND-TSOS
+
+    - id: 10XMK-MEPSO----M
+      name: 'TSO MEPSO'
+      description: 'TSO MEPSO'
+      parents:
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-SCC-AND-TSOS
+
+    - id: 10XCS-SERBIATSO8
+      name: 'TSO EMS'
+      description: 'TSO EMS'
+      parents:
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-SCC-AND-TSOS
+
+    - id: 10XTR-TEIAS----9
+      name: 'TSO TEIAS'
+      description: 'TSO TEIAS'
+      parents:
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-SCC-AND-TSOS
+
+    - id: 10XRO-TEL------2
+      name: 'TSO Transelectrica'
+      description: 'TSO Transelectrica'
+      parents:
+        - 10Y1001C--00059P
+        - 10Y1001C--00139R
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-SELENE-CC-AND-TSOS
+        - RSC-TSCNET-AND-TSOS
+
+    - id: 10XAT-APG------Z
+      name: 'TSO APG'
+      description: 'TSO APG'
+      parents:
+        - 10Y1001C--00059P
+        - 10Y1001C--00137V
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-TSCNET-AND-TSOS
+
+    - id: 10XCH-SWISSGRIDC
+      name: 'TSO Swissgrid'
+      description: 'TSO Swissgrid'
+      parents:
+        - 10Y1001C--00059P
+        - 10Y1001C--00137V
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-TSCNET-AND-TSOS
+
+    - id: 10XCZ-CEPS-GRIDE
+      name: 'TSO CEPS'
+      description: 'TSO CEPS'
+      parents:
+        - 10Y1001C--00059P
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-TSCNET-AND-TSOS
+
+    - id: 10XDE-VE-TRANSMK
+      name: 'TSO 50Hertz'
+      description: 'TSO 50Hertz'
+      parents:
+        - 10Y1001C--00059P
+        - 10Y1001C--00136X
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-TSCNET-AND-TSOS
+
+    - id: 10XDE-RWENET---W
+      name: 'TSO Amprion'
+      description: 'TSO Amprion'
+      parents:
+        - 10Y1001C--00059P
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-TSCNET-AND-TSOS
+
+    - id: 10XDE-EON-NETZ-C
+      name: 'TSO TenneT DE'
+      description: 'TSO TenneT DE'
+      parents:
+        - 10Y1001C--00059P
+        - 10Y1001C--00136X
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-TSCNET-AND-TSOS
+
+    - id: 10XDE-ENBW--TNGX
+      name: 'TSO TransnetBW'
+      description: 'TSO TransnetBW'
+      parents:
+        - 10Y1001C--00059P
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-TSCNET-AND-TSOS
+
+    - id: 10XHR-HEP-OPS--A
+      name: 'TSO HOPS'
+      description: 'TSO HOPS'
+      parents:
+        - 10Y1001C--00059P
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-TSCNET-AND-TSOS
+
+    - id: 10X1001A1001A329
+      name: 'TSO MAVIR'
+      description: 'TSO MAVIR'
+      parents:
+        - 10Y1001C--00059P
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-TSCNET-AND-TSOS
+
+    - id: 21X000000001333E
+      name: 'TSO Creos'
+      description: 'TSO Creos'
+      parents:
+        - 10Y1001C--00059P
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-TSCNET-AND-TSOS
+
+    - id: 10X1001A1001A361
+      name: 'TSO TenneT NL'
+      description: 'TSO TenneT NL'
+      parents:
+        - 10Y1001C--000239
+        - 10Y1001C--00059P
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-TSCNET-AND-TSOS
+
+    - id: 10XPL-TSO------P
+      name: 'TSO PSE'
+      description: 'TSO PSE'
+      parents:
+        - 10Y1001C--00120B
+        - 10Y1001C--00059P
+        - 10Y1001C--00136X
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-TSCNET-AND-TSOS
+
+    - id: 10XSI-ELES-----1
+      name: 'TSO ELES'
+      description: 'TSO ELES'
+      parents:
+        - 10Y1001C--00059P
+        - 10Y1001C--00137V
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-TSCNET-AND-TSOS
+
+    - id: 10XSK-SEPS-GRIDB
+      name: 'TSO SEPS'
+      description: 'TSO SEPS'
+      parents:
+        - 10Y1001C--00059P
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-TSCNET-AND-TSOS
+
+    - id: 10XAT-VKW-UNG—-Y
+      name: 'TSO Vuen'
+      description: 'TSO Vuen'
+      parents:
+        - EICCODE-ALL-TSOS
+        - EICCODE-ALL-TSOS-AND-RSCS
+        - RSC-TSCNET-AND-TSOS

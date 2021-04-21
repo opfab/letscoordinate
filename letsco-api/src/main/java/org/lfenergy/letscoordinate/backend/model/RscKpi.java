@@ -41,6 +41,9 @@ public class RscKpi implements java.io.Serializable {
     @Column(name = "name", nullable = false, length = 10)
     private String name;
 
+    @Column(name = "join_graph")
+    private Boolean joinGraph;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "rscKpi", cascade = CascadeType.ALL)
     private List<RscKpiData> rscKpiDatas = new ArrayList<>();
 

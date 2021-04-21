@@ -16,19 +16,28 @@ import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationStatusEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationTypeEnum;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class ValidationDto {
 
+    @NotNull
     private ValidationTypeEnum validationType;
+    @NotNull
     private ValidationStatusEnum status;
+    @NotNull
     private ValidationSeverityEnum result;
     @Getter(AccessLevel.NONE)
+    @NotNull
+    @Valid
     private List<ValidationMessageDto> validationMessages;
 
     public Optional<List<ValidationMessageDto>> getValidationMessages() {

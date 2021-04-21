@@ -11,10 +11,18 @@
 
 package org.lfenergy.letscoordinate.backend.dto.eventmessage.payload;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+import javax.validation.constraints.NotNull;
+
+@Getter
+@Setter
+@EqualsAndHashCode
 public class TextDataDto implements IPayloadData {
+    @NotNull
     private String name;
+    @NotNull
     private String value;
 }

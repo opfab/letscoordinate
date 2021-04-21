@@ -4,19 +4,21 @@
     "header": {
       "verb": "created",
       "noun": "DfgMessageValidated",
-      "timestamp": "2020-09-18T10:00:16Z",
-      "source": "ServiceA",
+      "timestamp": "2021-09-17T10:00:16Z",
+      "source": "ServiceB",
       "messageId": "d51b25b7ac1e41e1aeff404c1827ef84",
       "properties": {
         "format": "JSON",
         "businessDataIdentifier": {
+          "businessApplication": "PanEuropeanServiceBTool",
           "messageType": "101",
-          "messageTypeName": "MessageValidated",
-          "businessDayFrom": "2020-09-19T00:00:00Z",
-          "businessDayTo": "2020-12-29T23:59:00Z",
+          "messageTypeName": "Validation",
+          "businessDayFrom": "2021-09-18T22:00:00Z",
+          "businessDayTo": "2021-12-29T23:00:00Z",
           "sendingUser": "10XCZ-CEPS-GRIDE",
-          "filename": "20200318_0950_ServiceA_0_CZ.xlsx",
-          "tso": "10X1001A1001A345"
+          "filename": "FileA.xlsx",
+          "tso": "10X1001A1001A345",
+          "recipients": ["10XFR-RTE------Q"]
         }
       }
     },
@@ -30,7 +32,8 @@
       "links": [
         {
           "name": "file1_link",
-          "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf"
+          "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf",
+          "eicCode": ["22XCORESO------S", "38X-BALTIC-RSC-H"]
         },
         {
           "name": "file2_link",

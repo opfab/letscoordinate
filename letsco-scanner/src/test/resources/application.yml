@@ -1,0 +1,41 @@
+# Copyright (c) 2018-2020, RTE (https://www.rte-france.com)
+# Copyright (c) 2019-2020 RTE international (https://www.rte-international.com)
+# See AUTHORS.txt
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+# SPDX-License-Identifier: MPL-2.0
+# This file is part of the Let’s Coordinate project.
+
+server:
+  port: 1919
+
+letsco:
+  ftp:
+    server:
+      url: localhost
+      port: 21
+      username: ftp_user_test
+      password: admin
+    path:
+      source-download-dir: /letsco
+      treated-dir: /letsco_treated
+      rejected-dir: /letsco_rejected
+    create-target-dir-if-not-exists: true
+    group-moved-files-in-dated-dir: true
+  scanner:
+    path:
+      target-download-dir: D:/_RTE_/tmp/download/letsco-treatment
+    create-target-dir-if-not-exists: true
+  backend:
+    base-url: http://localhost:8080
+  scheduler:
+    cron:
+      download-files-cron: "*/10 * * * * *"
+    fixed-rate:
+      file-size-check-rate-ms: 5000
+
+logging:
+  level:
+    ROOT: INFO
+    org.lfenergy.letscoordinate.scanner: TRACE

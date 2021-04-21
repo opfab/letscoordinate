@@ -1,0 +1,49 @@
+{
+  "license": "MPL-2.0",
+  "id": "servicea_validation_fileb",
+  "name": "process.name",
+  "version": "1",
+  "defaultLocale": "en",
+  "templates": [
+    "messageValidated"
+  ],
+  "csses": [
+    "main"
+  ],
+  "menuEntries": [],
+  "states": {
+    "ok": {
+      "name": "positivevalidation.name",
+      "detailTitle": {
+        "key": "positivevalidation.cardDetails.title"
+      },
+      "templateName": "validation",
+      "styles": [
+        "main"
+      ],
+      "acknowledgmentAllowed": "Always"
+    },
+    "warning": {
+      "name": "positivevalidationwithwarnings.name",
+      "detailTitle": {
+        "key": "positivevalidationwithwarnings.cardDetails.title"
+      },
+      "templateName": "validation",
+      "styles": [
+        "main"
+      ],
+      "acknowledgmentAllowed": "Always"
+    },
+    "error": {
+      "name": "negativevalidation.name",
+      "detailTitle": {
+        "key": "negativevalidation.cardDetails.title"
+      },
+      "templateName": "validation",
+      "styles": [
+        "main"
+      ],
+      "acknowledgmentAllowed": "Always"
+    }
+  }
+}

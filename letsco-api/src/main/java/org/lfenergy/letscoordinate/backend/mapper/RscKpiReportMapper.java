@@ -11,40 +11,48 @@
 
 package org.lfenergy.letscoordinate.backend.mapper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
-import org.lfenergy.letscoordinate.backend.dto.reporting.KpiDataTypeDto;
-import org.lfenergy.letscoordinate.backend.dto.reporting.RscDto;
-import org.lfenergy.letscoordinate.backend.dto.reporting.RscKpiDto;
-import org.lfenergy.letscoordinate.backend.dto.reporting.RscServiceDto;
+import org.lfenergy.letscoordinate.backend.dto.reporting.*;
 import org.lfenergy.letscoordinate.backend.enums.KpiDataSubtypeEnum;
 import org.lfenergy.letscoordinate.backend.enums.KpiDataTypeEnum;
 import org.lfenergy.letscoordinate.backend.model.RscKpi;
 import org.lfenergy.letscoordinate.backend.model.RscKpiData;
 import org.lfenergy.letscoordinate.backend.model.RscKpiDataDetails;
+import org.lfenergy.letscoordinate.backend.util.Constants;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class RscKpiReportMapper {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class RscKpiReportMapper {
 
     public static RscDto toDto(CoordinationConfig.Rsc entity) {
         return Optional.ofNullable(entity)
                 .map(rsc -> RscDto.builder()
                         .eicCode(rsc.getEicCode())
                         .name(rsc.getName())
-                        .rscServiceDtos(Optional.ofNullable(rsc.getServices())
-                                .map(serviceMap -> serviceMap.values().stream()
-                                        .map(RscKpiReportMapper::toDto)
-                                        .sorted(Comparator.comparing(RscServiceDto::getName))
-                                        .collect(Collectors.toList()))
-                                .orElse(null))
+                        .shortName(rsc.getShortName())
+                        .index(rsc.getIndex())
                         .build())
                 .orElse(null);
     }
 
-    public static RscServiceDto toDto(CoordinationConfig.Rsc.Service entity) {
+    public static RegionDto toDto(CoordinationConfig.Region entity) {
         return Optional.ofNullable(entity)
-                .map(rscService -> RscServiceDto.builder()
+                .map(region -> RegionDto.builder()
+                        .eicCode(region.getEicCode())
+                        .name(region.getName())
+                        .shortName(region.getShortName())
+                        .index(region.getIndex())
+                        .build())
+                .orElse(null);
+    }
+
+    public static UserServiceDto toDto(CoordinationConfig.Service entity) {
+        return Optional.ofNullable(entity)
+                .map(rscService -> UserServiceDto.builder()
                         .code(rscService.getCode())
                         .name(rscService.getName())
                         .build())
@@ -56,14 +64,24 @@ public class RscKpiReportMapper {
                 .map(kpiDataType -> KpiDataTypeDto.builder()
                         .code(kpiDataType.getCode())
                         .name(kpiDataType.getName())
+                        .index(kpiDataType.getIndex())
                         .build())
                 .orElse(null);
     }
 
     public static Map<KpiDataTypeEnum, Map<KpiDataSubtypeEnum, Map<String, List<RscKpiDto.DataDto>>>> toMap(List<RscKpi> rscKpis,
-                                                                                                            Map<KpiDataTypeEnum, List<KpiDataSubtypeEnum>> kpiDataSubtypeEnumMap) {
+                                                                                                            Map<KpiDataTypeEnum, List<KpiDataSubtypeEnum>> kpiDataSubtypeEnumMap,
+                                                                                                            String selectedKpiDataTypeCode) {
         if(rscKpis == null || kpiDataSubtypeEnumMap == null)
             return null;
+        // If selectedKpiDataTypeCode != ALL , then keep only the selected one from the kpiDataSubtypeEnumMap
+        if (!Constants.ALL_DATA_TYPE_CODE.equals(selectedKpiDataTypeCode)) {
+            KpiDataTypeEnum selectedKpiDataTypeEnum = KpiDataTypeEnum.getByName(selectedKpiDataTypeCode);
+            List<KpiDataSubtypeEnum> KpiDataSubtypeEnumList = kpiDataSubtypeEnumMap.get(selectedKpiDataTypeEnum);
+            kpiDataSubtypeEnumMap = new HashMap<>();
+            kpiDataSubtypeEnumMap.put(selectedKpiDataTypeEnum, KpiDataSubtypeEnumList);
+        }
+        // Group rscKpis in map having KpiDataTypeEnum (GP or BP) as key
         Map<KpiDataTypeEnum, Map<KpiDataSubtypeEnum, List<RscKpiDto>>> mapTmp = rscKpis.stream()
                 .map(RscKpiReportMapper::toDto)
                 .collect(Collectors.groupingBy(RscKpiDto::getKpiDataType, Collectors.groupingBy(RscKpiDto::getKpiDataSubtype)));
@@ -102,6 +120,7 @@ public class RscKpiReportMapper {
             return null;
         return RscKpiDto.builder()
                 .name(rscKpi.getName())
+                .joinGraph(rscKpi.getJoinGraph())
                 .dataMap(rscKpi.getRscKpiDatas().stream()
                         .sorted(Comparator.comparing(RscKpiData::getTimestamp))
                         .map(RscKpiReportMapper::toDto)
@@ -113,6 +132,7 @@ public class RscKpiReportMapper {
         return Optional.ofNullable(rscKpiData)
                 .map(data -> RscKpiDto.DataDto.builder()
                         .timestamp(rscKpiData.getTimestamp().toLocalDate())
+                        .dataGranularity(rscKpiData.getGranularity())
                         .label(rscKpiData.getLabel())
                         .details(rscKpiData.getRscKpiDataDetails().stream()
                                 .map(RscKpiReportMapper::toDto)

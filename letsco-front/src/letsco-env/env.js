@@ -12,15 +12,15 @@
 (function (window) {
     window.__env = window.__env || {};
 
-    window.__env.serverUrl = 'http://localhost:8088/letsco/api';
-    window.__env.openidUrl = 'https://localhost:89';
+    window.__env.serverUrl = 'http://localhost/letsco/api';
+    window.__env.openidUrl = 'http://localhost';
     window.__env.openidRealmsUrlPrefix = '/auth/realms/';
     window.__env.openidRealms = 'dev';
     window.__env.openidRealmsUrlSuffix = '/protocol/openid-connect/';
     window.__env.openidAuthEndpoint = 'auth';
     window.__env.openidTokenEndpoint = 'token';
     window.__env.openidClientId = 'opfab-client';
-    window.__env.openidBasicAuth = 'toto';
+    window.__env.openidBasicAuth = 'b3BmYWItY2xpZW50Om9wZmFiLWtleWNsb2FrLXNlY3JldA==';
 
     // Whether or not to enable debug mode
     // Setting this to false will disable console output

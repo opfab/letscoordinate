@@ -1,0 +1,98 @@
+{
+  "eventMessage": {
+    "xmlns": "http://iec.ch/TC57/2011/schema/message",
+    "header": {
+      "verb": "created",
+      "noun": "ProcessSuccess",
+      "timestamp": "2020-03-12T08:13:15Z",
+      "source": "ServiceA",
+      "messageId": "134654a095714812ba74323b021f23b5",
+      "properties": {
+        "format": "JSON",
+        "businessDataIdentifier": {
+          "businessApplication": "business_application_name",
+          "messageTypeName": "NotificationTypeA",
+          "businessDayFrom": "2020-03-12T23:00:00Z",
+          "businessDayTo": "2020-03-19T23:00:00Z",
+          "processStep": "Initial Calculation"
+        }
+      }
+    },
+    "payload": {
+      "text": [
+        {
+          "name": "comment",
+          "value": "The process calculation was performed on time"
+        },
+        {
+          "name": "conclusion",
+          "value": "Results are ok"
+        }
+      ],
+      "links": [
+        {
+          "name": "ServiceA_Report",
+          "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf",
+          "eicCode": ["10XFR-RTE------Q"]
+        }
+      ],
+      "rscKpi": [
+        {
+          "name": "gp1",
+          "data": [
+            {
+              "timestamp": "2020-05-04T01:00:00Z",
+              "granularity": "D",
+              "label": "ProcessSuccessCount",
+              "detail": [
+                {
+                  "value": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "gp2",
+          "data": [
+            {
+              "timestamp": "2020-05-04T01:00:00Z",
+              "granularity": "Y",
+              "label": "ProcessSuccessCount",
+              "detail": [
+                {
+                  "value": 1
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "timeserie": [
+        {
+          "name": "ResultsA",
+          "data": [
+            {
+              "timestamp": "2020-03-01T00:00:00Z",
+              "detail": [
+                {
+                  "id": "1",
+                  "label": "Contingency-1",
+                  "eicCode": [
+                    "10XDE-VE-TRANSMK"
+                  ],
+                  "value": "Line A"
+                },
+                {
+                  "id": "1",
+                  "label": "Loading-1",
+                  "value": "103"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

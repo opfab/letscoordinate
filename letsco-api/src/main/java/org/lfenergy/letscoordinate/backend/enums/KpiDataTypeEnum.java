@@ -12,5 +12,13 @@
 package org.lfenergy.letscoordinate.backend.enums;
 
 public enum KpiDataTypeEnum {
-    GP, BP, UNKNOWN
+    GP, BP, UNKNOWN;
+
+    public static KpiDataTypeEnum getByName(String name) {
+        for (KpiDataTypeEnum kpiDataTypeEnum : KpiDataTypeEnum.values()) {
+            if (kpiDataTypeEnum.name().equals(name))
+                return kpiDataTypeEnum;
+        }
+        return UNKNOWN;
+    }
 }

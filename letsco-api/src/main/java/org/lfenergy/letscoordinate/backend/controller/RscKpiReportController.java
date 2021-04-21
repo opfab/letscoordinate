@@ -11,15 +11,14 @@
 
 package org.lfenergy.letscoordinate.backend.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.lfenergy.letscoordinate.backend.dto.reporting.RscKpiReportDataDto;
-import org.lfenergy.letscoordinate.backend.dto.reporting.RscKpiReportInitialFormDataDto;
 import org.lfenergy.letscoordinate.backend.dto.reporting.RscKpiReportSubmittedFormDataDto;
 import org.lfenergy.letscoordinate.backend.enums.ReportTypeEnum;
 import org.lfenergy.letscoordinate.backend.service.ReportingService;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,18 +35,23 @@ public class RscKpiReportController {
 
     @GetMapping(value = "/rsc-kpi-report/config-data")
     @ApiOperation(value = "Get initial data for RSC KPIs form")
-    public ResponseEntity<RscKpiReportInitialFormDataDto> getRscKpiReportInitialFormData() {
-        return ResponseEntity.ok(reportingService.initRscKpiReportFormDto());
+    @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
+    public ResponseEntity getRscKpiReportInitialFormData() {
+        return reportingService.initRscKpiReportFormDto().fold(
+                invalid -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(invalid),
+                valid -> ResponseEntity.ok(valid));
     }
 
     @PostMapping(value = "/rsc-kpi-report/kpis")
     @ApiOperation(value = "Get RSCs with their services")
+    @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
     public ResponseEntity<RscKpiReportDataDto> getKpis(@RequestBody RscKpiReportSubmittedFormDataDto submittedFormDataDto) {
-        return ResponseEntity.ok(reportingService.getRscKpiReportData(submittedFormDataDto));
+        return ResponseEntity.ok(reportingService.getRscKpiReportDataForWebReport(submittedFormDataDto));
     }
 
     @PostMapping(value = "/rsc-kpi-report/download/excel")
     @ApiOperation(value = "Download RSC KPI Excel report")
+    @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
     public ResponseEntity downloadRscKpiExcelReport(@RequestBody RscKpiReportSubmittedFormDataDto submittedFormDataDto) throws IOException {
         byte[] bytes = reportingService.generateRscKpiExcelReport(submittedFormDataDto);
         return ResponseEntity.ok()

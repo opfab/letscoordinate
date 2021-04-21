@@ -12,6 +12,7 @@
 package org.lfenergy.letscoordinate.backend.model;
 
 import lombok.*;
+import org.lfenergy.letscoordinate.backend.enums.DataGranularityEnum;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
@@ -40,10 +41,14 @@ public class RscKpiData implements java.io.Serializable {
     @JoinColumn(name = "id_rsc_kpi", nullable = false)
     private RscKpi rscKpi;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "granularity", length = 25, nullable = false)
+    private DataGranularityEnum granularity;
+
     @Column(name = "timestamp", nullable = false)
     private OffsetDateTime timestamp;
 
-    @Column(name = "label", length = 50)
+    @Column(name = "label", length = 250)
     private String label;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "rscKpiData", cascade = CascadeType.ALL)

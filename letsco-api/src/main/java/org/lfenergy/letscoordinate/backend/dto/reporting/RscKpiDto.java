@@ -11,9 +11,8 @@
 
 package org.lfenergy.letscoordinate.backend.dto.reporting;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.lfenergy.letscoordinate.backend.enums.DataGranularityEnum;
 import org.lfenergy.letscoordinate.backend.enums.KpiDataSubtypeEnum;
 import org.lfenergy.letscoordinate.backend.enums.KpiDataTypeEnum;
 
@@ -27,19 +26,25 @@ import java.util.Optional;
 @Setter
 public class RscKpiDto {
     private String name;
+    private Boolean joinGraph;
     private Map<String, List<DataDto>> dataMap;
 
     @Builder
     @Getter
     @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class DataDto {
         private LocalDate timestamp;
+        private DataGranularityEnum dataGranularity;
         private String label;
         private List<DetailsDto> details;
 
         @Builder
         @Getter
         @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class DetailsDto {
             private Long value;
             private String eicCode;

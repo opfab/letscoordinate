@@ -12,12 +12,15 @@
 package org.lfenergy.letscoordinate.backend.processor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.vavr.control.Validation;
 import lombok.RequiredArgsConstructor;
+import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageWrapperDto;
 import org.lfenergy.letscoordinate.backend.exception.InvalidInputFileException;
 import org.lfenergy.letscoordinate.backend.service.EventMessageService;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,11 +33,10 @@ public class JsonDataProcessor implements DataProcessor {
     private final ObjectMapper objectMapper;
     private final EventMessageService eventMessageService;
 
-    public EventMessageDto inputStreamToPojo(InputStream inputStream) throws IOException, InvalidInputFileException {
+    public Validation<ResponseErrorDto, EventMessageDto> inputStreamToPojo(InputStream inputStream) throws IOException {
         EventMessageDto eventMessageDto = Optional.ofNullable(objectMapper.readValue(inputStream, EventMessageWrapperDto.class))
                 .map(EventMessageWrapperDto::getEventMessage)
                 .orElse(null);
-        eventMessageService.checkEicCodes(eventMessageDto);
-        return eventMessageDto;
+        return eventMessageService.validateEventMessageDto(eventMessageDto);
     }
 }

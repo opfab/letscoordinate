@@ -11,15 +11,27 @@
 
 package org.lfenergy.letscoordinate.backend.dto.eventmessage.payload;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import org.lfenergy.letscoordinate.backend.enums.DataGranularityEnum;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class RscKpiDataDetailsDto implements IPayloadDataDetails {
+    @NotNull
     private OffsetDateTime timestamp;
+    @NotNull
+    private DataGranularityEnum granularity;
     private String label;
+    @NotNull
+    @NotEmpty
+    @Valid
     private List<RscKpiTemporalDataDto> detail = new ArrayList<>();
 }

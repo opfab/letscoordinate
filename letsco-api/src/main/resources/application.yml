@@ -32,37 +32,93 @@ spring:
     enabled: true
     drop-first: false
     contexts: local
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:89/auth/realms/dev/protocol/openid-connect/certs
 
 logging:
   level:
     ROOT: INFO
-    org.lfenergy.letscoordinate.backend: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type: TRACE
+#    org.lfenergy.letscoordinate.backend: DEBUG
+#    org.hibernate.SQL: DEBUG
+#    org.hibernate.type: TRACE
 #  file: letsco_opensource.log
 #  pattern:
 #    console: '%d{yyyy-MM-dd HH:mm:ss} - %level - %logger{36} - %msg%n'
 #    file: '%d{yyyy-MM-dd HH:mm:ss} - %level - %logger{36} - %msg%n'
 
 letsco:
+  kafka:
+    topic-pattern: 'letsco_eventmessage_.*'
+  timezone: "Europe/Paris"  # e.g: "Europe/London", "Europe/Paris", "Europe/Rome", "UTC", "UTC+1", "UTC-04:00", "GMT-5"
   input-file:
     dir: D:\_RTE_\tmp\input
     validation:
       accept-properties-ignore-case: true
       fail-on-unknown-properties: false
+  security:
+    allowed-origins:
+      - http://localhost:4200
+      - http://letsco-front:4200
+    clientId: opfab-client
 
 opfab:
   publisher: letsco_opensource
   url:
     cardsPub: http://localhost:2102/cards
   feed:
-    sourceA_messageTypeNameA:
-      title: " STA - Generation Tripping Validation - {{result::notificationTitle()}}"
-      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy HH:mm)}}  - {{businessDayTo::dateFormat(dd/MM/yyyy HH:mm)}}  (CET/CEST) - {{sendingUser::eicToName()}}"
-    sourceA_messageTypeNameB:
-      title: " STA - HVDC Tripping information Validation - {{result::notificationTitle()}}"
-      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy HH:mm)}}  - {{businessDayTo::dateFormat(dd/MM/yyyy HH:mm)}}  (CET/CEST) - {{sendingUser::eicToName()}}"
-
+    # SERVICE A
+    servicea_processmonitoring_processsuccessful:
+      title: " Service A process successful - {{processStep}}"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone})"
+    servicea_processmonitoring_processfailed:
+      title: " Service A process failed - {{processStep}}"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone})"
+    servicea_validation_filea_ok:
+      title: " Service A File A - positive validation"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
+    servicea_validation_filea_warning:
+      title: " Service A File A - positive validation with warnings"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
+    servicea_validation_filea_error:
+      title: " Service A File A - negative validation"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
+    servicea_validation_fileb_ok:
+      title: " Service A File B - positive validation"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
+    servicea_validation_fileb_warning:
+      title: " Service A File B - positive validation with warnings"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
+    servicea_validation_fileb_error:
+      title: " Service A File B - negative validation"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
+    # SERVICE B
+    serviceb_processmonitoring_processsuccessful:
+      title: " Service B process successful - {{processStep}}"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone})"
+    serviceb_processmonitoring_processfailed:
+      title: " Service B process failed - {{processStep}}"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone})"
+    serviceb_validation_filea_ok:
+      title: " Service B File A - positive validation"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
+    serviceb_validation_filea_warning:
+      title: " Service B File A - positive validation with warnings"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
+    serviceb_validation_filea_error:
+      title: " Service B File A - negative validation"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
+    serviceb_validation_fileb_ok:
+      title: " Service B File B - positive validation"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
+    serviceb_validation_fileb_warning:
+      title: " Service B File B - positive validation with warnings"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
+    serviceb_validation_fileb_error:
+      title: " Service B File B - negative validation"
+      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
   entityRecipients:
     sourceA_messageTypeNameA:
       notAllowed: sendingUser
@@ -70,6 +126,14 @@ opfab:
     sourceA_messageTypeNameB:
       notAllowed: sendingUser
       addRscs: true
+  processWithFilename: false
 
 third-app:
   url: http://localhost:8081
+
+keycloak:
+  server:
+    url: http://localhost:89/auth
+    realm: dev
+    client-id: opfab-client
+    client-secret: opfab-keycloak-secret

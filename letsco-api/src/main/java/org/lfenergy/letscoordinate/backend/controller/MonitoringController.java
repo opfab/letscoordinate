@@ -12,6 +12,7 @@
 package org.lfenergy.letscoordinate.backend.controller;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.lfenergy.letscoordinate.backend.dto.monitoring.MonitoredTaskDto;
@@ -32,6 +33,7 @@ public class MonitoringController {
 
     @PostMapping(value = "/monitoring")
     @ApiOperation(value = "Save monitored task data into database")
+    @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
     public ResponseEntity saveMonitoredTask(@RequestBody MonitoredTaskDto monitoredTaskDto) {
         return monitoringService.saveMonitoredTask(monitoredTaskDto).fold(
                 invalid -> ResponseEntity.status(invalid.getStatus()).body(invalid),

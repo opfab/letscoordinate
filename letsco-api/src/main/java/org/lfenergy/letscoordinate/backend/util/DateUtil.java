@@ -14,7 +14,10 @@ package org.lfenergy.letscoordinate.backend.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 
@@ -35,7 +38,13 @@ public final class DateUtil {
         return DateTimeFormatter.ofPattern(format).format(dateTime);
     }
 
-    public static ZoneId getParisZoneId() {
-        return ZoneId.of("Europe/Paris");
+    public static boolean isValidJsonDate(String dateStr) {
+        try {
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(dateStr);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
+
 }

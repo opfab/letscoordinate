@@ -13,12 +13,14 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import {KpiReportConfigComponent} from "./kpi-report/kpi-report-config/kpi-report-config.component";
 import {KpiReportComponent} from "./kpi-report/kpi-report/kpi-report.component";
+import {AuthGuard} from "./core/services/auth.guard";
+import {LoginComponent} from "./login/login.component";
 
 
 const routes: Routes = [
-  {path: '', component: KpiReportConfigComponent},
-  {path: 'kpi-report-config', component: KpiReportConfigComponent},
-  {path: 'kpi-report', component: KpiReportComponent}
+  {path: 'kpi-report-config', component: KpiReportConfigComponent, canActivate: [AuthGuard]},
+  {path: 'kpi-report', component: KpiReportComponent, canActivate: [AuthGuard]},
+  {path: 'login', component: LoginComponent}
 ];
 
 @NgModule({

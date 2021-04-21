@@ -13,8 +13,8 @@ package org.lfenergy.letscoordinate.common.monitoring;
 
 import io.vavr.control.Validation;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
@@ -26,11 +26,11 @@ import java.util.stream.Stream;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@ToString
 public final class MonitoringContext {
 
+    @Getter
     private MonitoredTask monitoredTask;
-    private MonitoredTaskStep currentMonitoredTaskStep;
+    protected MonitoredTaskStep currentMonitoredTaskStep;
 
     public static MonitoringContext startTaskMonitoring(TaskEnum task) {
         MonitoringContext monitoringContext = new MonitoringContext();

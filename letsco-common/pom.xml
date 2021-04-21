@@ -16,7 +16,7 @@
     <parent>
         <artifactId>letsco-core</artifactId>
         <groupId>org.lfenergy.letscoordinate</groupId>
-        <version>1.0.0-RELEASE</version>
+        <version>1.2.0.RELEASE</version>
     </parent>
 
     <artifactId>letsco-common</artifactId>
@@ -48,6 +48,13 @@
             <groupId>io.vavr</groupId>
             <artifactId>vavr</artifactId>
             <version>0.10.0</version>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

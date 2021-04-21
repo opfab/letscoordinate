@@ -12,7 +12,6 @@
 import {Label} from "ng2-charts";
 import {ChartDataSets, ChartOptions, ChartType} from "chart.js";
 import {Color} from "ng2-charts/lib/color";
-import {PluginServiceGlobalRegistrationAndOptions} from "ng2-charts/lib/base-chart.directive";
 
 const lineChartColors: Color[] = [
     {
@@ -54,10 +53,10 @@ export class KpiChartOptions {
     chartType: ChartType;
     chartOptions: ChartOptions;
     chartLabels: Label[] = [];
-    chartDataSets: ChartDataSets[] = [{ data: [], label: null }];
+    chartDataSets: ChartDataSets[] = [];
     chartLegend: boolean = true;
     chartHeight: number = 75;
-    chartPlugins: PluginServiceGlobalRegistrationAndOptions[] = [];
+    chartPlugins: any[] = [];
     chartColors: Color[];
 
     constructor(chartType: ChartType) {

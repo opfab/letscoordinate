@@ -1,2 +1,47 @@
-/letsco-common/letsco-common.iml
-/letsco-core.iml
+# Copyright (c) 2020, RTE (https://www.rte-france.com)
+# Copyright (c) 2020 RTE international (https://www.rte-international.com)
+# See AUTHORS.txt
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+# SPDX-License-Identifier: MPL-2.0
+# This file is part of the Let’s Coordinate project.
+
+HELP.md
+**/target/
+.mvn/**
+!**/src/main/**
+!**/src/test/**
+**/bundle.tar.gz
+**/karate.jar
+**/*.env
+opfab/operatorfabric-getting-started/server/businessconfig-storage
+dockerfiles/**/*.jar
+dockerfiles/back/Dockerfile
+dockerfiles/front/letsco-front
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+### VS Code ###
+.vscode/

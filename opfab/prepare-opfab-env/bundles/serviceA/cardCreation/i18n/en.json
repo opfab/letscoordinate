@@ -1,0 +1,16 @@
+{
+  "license": "MPL-2.0",
+  "process": {
+    "label": "Other notifications"
+  },
+  "freeMessage": {
+    "title": "Free message 1"
+  },
+  "cardDetails": {
+    "title": "Service A - Free message 1"
+  },
+  "cardFeed": {
+    "title": "Service A - Free message 1",
+    "summary": "{{startDate}}-{{endDate}} (Europe/Paris)"
+  }
+}

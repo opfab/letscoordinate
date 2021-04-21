@@ -23,6 +23,7 @@ import java.util.List;
 @Setter
 public class RscDto implements Serializable {
     private String name;
+    private String shortName;
     private String eicCode;
-    private List<RscServiceDto> rscServiceDtos;
+    private Integer index;
 }

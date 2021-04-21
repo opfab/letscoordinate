@@ -21,6 +21,9 @@ import {RscKpiTypedData, RscKpiTypedDataAdapter} from "../models/rsc-kpi-typed-d
 import {EnvService} from "./env.service";
 import {KpiSubmittedForm} from "../models/kpi-submitted-form.model";
 import {ReportTypeEnum} from "../enums/report-type-enum";
+import {AuthService} from "./auth.service";
+import {Region, RegionAdapter} from "../models/region.model";
+import {DataGranularityEnum} from "../enums/data-granularity-enum";
 
 
 @Injectable({
@@ -28,9 +31,11 @@ import {ReportTypeEnum} from "../enums/report-type-enum";
 })
 export class KpiReportService {
 
-    constructor(private envService: EnvService,
+    constructor(private authService: AuthService,
+                private envService: EnvService,
                 private httpClient: HttpClient,
                 private rscAdapter: RscAdapter,
+                private regionAdapter: RegionAdapter,
                 private rscServiceAdapter: RscServiceAdapter,
                 private kpiDataTypeAdapter: KpiDataTypeAdapter,
                 private rscKpiTypedDataAdapter: RscKpiTypedDataAdapter) {
@@ -44,6 +49,9 @@ export class KpiReportService {
     private rscs: Rsc[] = [];
     rscSubject = new Subject<Rsc[]>();
 
+    private regions: Region[] = [];
+    regionSubject = new Subject<Region[]>();
+
     private rscServices: RscService[] = [];
     rscServiceSubject = new Subject<RscService[]>();
 
@@ -52,8 +60,14 @@ export class KpiReportService {
 
     rscKpiReportData: RscKpiReportData;
 
+    reportFileName: string;
+
     emitRsc() {
         this.rscSubject.next(this.rscs);
+    }
+
+    emitRegion() {
+        this.regionSubject.next(this.regions);
     }
 
     emitRscService() {
@@ -66,13 +80,16 @@ export class KpiReportService {
 
     initConfigData() {
         this.rscs = [];
+        this.regions = [];
         this.rscServices = [];
         this.kpiDataTypes = [];
-        this.httpClient.get(this.URL_REPORTING_CONFIG_DATA)
+        this.httpClient.get(this.URL_REPORTING_CONFIG_DATA, this.authService.tokenHeader)
             .subscribe(
                 (res: any) => {
                     res.rscs.forEach(item => this.rscs.push(this.rscAdapter.adapt(item)));
                     this.emitRsc();
+                    res.regions.forEach(item => this.regions.push(this.regionAdapter.adapt(item)));
+                    this.emitRegion();
                     res.rscServices.forEach(item => this.rscServices.push(this.rscServiceAdapter.adapt(item)));
                     this.emitRscService();
                     res.kpiDataTypes.forEach(item => this.kpiDataTypes.push(this.kpiDataTypeAdapter.adapt(item)));
@@ -81,43 +98,69 @@ export class KpiReportService {
             );
     }
 
-    getReportingData(startModel: NgbDateStruct, endModel: NgbDateStruct, rsc: Rsc, rscService: RscService, kpiDataType: KpiDataType) {
+    getReportingData(selectedDataGranularity: DataGranularityEnum , startModel: NgbDateStruct, endModel: NgbDateStruct, startYear: number, endYear: number,
+                     rsc: Rsc, rscs: Rsc[], region: Region, regions: Region[], rscService: RscService, kpiDataType: KpiDataType) {
         let rscKpiTypedData: RscKpiTypedData[] = [];
-        const startDate = new Date(Date.UTC(startModel.year, startModel.month - 1, startModel.day));
-        const endDate = new Date(Date.UTC(endModel.year, endModel.month - 1, endModel.day));
-        const requestBody = {
+        const startDate = selectedDataGranularity === DataGranularityEnum.DAILY
+            ? new Date(Date.UTC(startModel.year, startModel.month - 1, startModel.day))
+            : new Date(Date.UTC(startYear, 0, 1));
+        const endDate = selectedDataGranularity === DataGranularityEnum.DAILY
+            ? new Date(Date.UTC(endModel.year, endModel.month - 1, endModel.day))
+            : new Date(Date.UTC(endYear, 11, 31));
+        const submittedForm = {
+            dataGranularity: selectedDataGranularity,
             startDate: startDate,
             endDate: endDate,
-            rscCode: rsc.eicCode,
+            rscs: (selectedDataGranularity === DataGranularityEnum.DAILY ? (rsc ? [rsc] : []) : rscs),
+            regions: (selectedDataGranularity === DataGranularityEnum.DAILY ? (region ? [region] : []) : regions),
+            rscService: rscService,
+            kpiDataType: kpiDataType
+        }
+        const requestBody = {
+            dataGranularity: selectedDataGranularity,
+            startDate: startDate,
+            endDate: endDate,
+            rscCodes: (selectedDataGranularity === DataGranularityEnum.DAILY ? (rsc ? [rsc.eicCode] : []) : rscs.map(rsc => rsc.eicCode)),
+            regionCodes: (selectedDataGranularity === DataGranularityEnum.DAILY ? (region ? [region.eicCode] : []) : regions.map(region => region.eicCode)),
             rscServiceCode: rscService.code,
             kpiDataTypeCode: kpiDataType.code
         };
-        this.httpClient.post(this.URL_REPORTING_DATA, requestBody)
+        this.httpClient.post(this.URL_REPORTING_DATA, requestBody, this.authService.tokenHeader)
             .subscribe(
             (res: any) => {
-                if (kpiDataType.code === 'ALL' || kpiDataType.code === 'GP')
-                    rscKpiTypedData.push(this.rscKpiTypedDataAdapter.adapt(["GP", res.rscKpiTypedDataMap.GP], requestBody, res.rscKpiSubtypedDataMap));
-                if (kpiDataType.code === 'ALL' || kpiDataType.code === 'BP')
-                    rscKpiTypedData.push(this.rscKpiTypedDataAdapter.adapt(["BP", res.rscKpiTypedDataMap.BP], requestBody, res.rscKpiSubtypedDataMap));
+                this.reportFileName = res.reportFileName;
+                if ((kpiDataType.code === 'ALL' || kpiDataType.code === 'GP') && res.rscKpiTypedDataMap.GP)
+                    rscKpiTypedData.push(this.rscKpiTypedDataAdapter.adapt(["GP", res.rscKpiTypedDataMap.GP], submittedForm, res.rscKpiSubtypedDataMap));
+                if ((kpiDataType.code === 'ALL' || kpiDataType.code === 'BP') && res.rscKpiTypedDataMap.BP)
+                    rscKpiTypedData.push(this.rscKpiTypedDataAdapter.adapt(["BP", res.rscKpiTypedDataMap.BP], submittedForm, res.rscKpiSubtypedDataMap));
             }
         );
         this.rscKpiReportData = new RscKpiReportData(
-            new KpiSubmittedForm(startDate, endDate, rsc, rscService, kpiDataType),
+            new KpiSubmittedForm(
+                selectedDataGranularity,
+                startDate,
+                endDate,
+                (selectedDataGranularity === DataGranularityEnum.DAILY ? (rsc ? [rsc] : []) : rscs),
+                (selectedDataGranularity === DataGranularityEnum.DAILY ? (region ? [region] : []) : regions),
+                rscService,
+                kpiDataType),
             rscKpiTypedData
         );
     }
 
     downloadRscKpiReport(reportTypeEnum: ReportTypeEnum) {
         const requestBody = {
+            dataGranularity: this.rscKpiReportData.submittedForm.dataGranularity,
             startDate: this.rscKpiReportData.submittedForm.startDate,
             endDate: this.rscKpiReportData.submittedForm.endDate,
-            rscCode: this.rscKpiReportData.submittedForm.rsc.eicCode,
+            rscCodes: this.rscKpiReportData.submittedForm.rscs.map(r=>r.eicCode),
+            regionCodes: this.rscKpiReportData.submittedForm.regions.map(r=>r.eicCode),
             rscServiceCode: this.rscKpiReportData.submittedForm.rscService.code,
             kpiDataTypeCode: this.rscKpiReportData.submittedForm.kpiDataType.code
         };
         return new Promise((resolve, reject) => {
             this.httpClient.post(reportTypeEnum === ReportTypeEnum.EXCEL? this.URL_DOWNLOAD_EXCEL_REPORT : this.URL_DOWNLOAD_PDF_REPORT,
-                requestBody, {responseType: 'blob', observe: 'response'})
+                requestBody, {headers: this.authService.tokenHeader.headers, responseType: 'blob', observe: 'response'})
                     .subscribe((response: any) => {resolve(response)}, reject)
             }
         );

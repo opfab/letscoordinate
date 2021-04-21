@@ -23,4 +23,5 @@ import java.io.Serializable;
 public class KpiDataTypeDto implements Serializable {
     private String code;
     private String name;
+    private Integer index;
 }

@@ -9,14 +9,15 @@
  * This file is part of the Let’s Coordinate project.
  */
 
-import {RscService, RscServiceAdapter} from "./rsc-service.model";
 import {Injectable} from "@angular/core";
 import {Adapter} from "../utils/adapter";
 
 export class Rsc {
     constructor(public eicCode: string,
                 public name: string,
-                public rscServices: RscService[]) {
+                public shortName: string,
+                public index: number,
+                public checked: boolean) {
     }
 }
 
@@ -24,15 +25,13 @@ export class Rsc {
     providedIn: 'root'
 })
 export class RscAdapter implements Adapter<Rsc>{
-    constructor(private rscServiceAdapter: RscServiceAdapter) {}
-
     adapt(item: any, ...extraParams: any): Rsc {
-        let rscServices: RscService[] = [];
-        item.rscServiceDtos.forEach(rscServ => rscServices.push(this.rscServiceAdapter.adapt(rscServ)));
         return new Rsc(
             item.eicCode,
             item.name,
-            rscServices
+            item.shortName,
+            item.index,
+            false
         );
     }
 }

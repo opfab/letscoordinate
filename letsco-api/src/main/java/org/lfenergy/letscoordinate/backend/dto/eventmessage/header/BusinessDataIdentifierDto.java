@@ -14,31 +14,38 @@ package org.lfenergy.letscoordinate.backend.dto.eventmessage.header;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
+@EqualsAndHashCode
 public class BusinessDataIdentifierDto {
 
     @Getter(AccessLevel.NONE)
     private List<String> recipients;
     private String messageType;
+    @NotNull
     private String messageTypeName;
+    @NotNull
     private Instant businessDayFrom;
-    @Getter(AccessLevel.NONE)
     private Instant businessDayTo;
     @Getter(AccessLevel.NONE)
     private String processStep;
     @Getter(AccessLevel.NONE)
     private String timeframe;
     @Getter(AccessLevel.NONE)
+    private String businessApplication;
+    @Getter(AccessLevel.NONE)
     private Integer timeframeNumber;
     @Getter(AccessLevel.NONE)
     private String sendingUser;
+    @Getter(AccessLevel.NONE)
     private String fileName;
     @Getter(AccessLevel.NONE)
     private String tso;
@@ -85,6 +92,15 @@ public class BusinessDataIdentifierDto {
         return sendingUser;
     }
 
+    public Optional<String> getFileName() {
+        return Optional.ofNullable(fileName);
+    }
+
+    @JsonProperty("fileName")
+    public String getFileNameSimple() {
+        return fileName;
+    }
+
     public Optional<String> getTso() {
         return Optional.ofNullable(tso);
     }
@@ -103,12 +119,12 @@ public class BusinessDataIdentifierDto {
         return biddingZone;
     }
 
-    public Optional<Instant> getBusinessDayTo() {
-        return Optional.ofNullable(businessDayTo);
+    public Optional<String> getBusinessApplication() {
+        return Optional.ofNullable(businessApplication);
     }
 
-    @JsonProperty("businessDayTo")
-    public Instant getBusinessDayToSimple() {
-        return businessDayTo;
+    @JsonProperty("businessApplication")
+    public String getBusinessApplicationSimple() {
+        return businessApplication;
     }
 }

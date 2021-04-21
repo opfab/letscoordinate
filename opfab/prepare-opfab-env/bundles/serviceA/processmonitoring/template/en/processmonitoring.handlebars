@@ -1,0 +1,50 @@
+<!-- Copyright (c) 2020, RTE (https://www.rte-france.com)                          -->
+<!-- Copyright (c) 2020 RTE international (https://www.rte-international.com)      -->
+<!-- See AUTHORS.txt                                                               -->
+<!-- This Source Code Form is subject to the terms of the Mozilla Public           -->
+<!-- License, v. 2.0. If a copy of the MPL was not distributed with this           -->
+<!-- file, You can obtain one at http://mozilla.org/MPL/2.0/.                      -->
+<!-- SPDX-License-Identifier: MPL-2.0                                              -->
+<!-- This file is part of the Let’s Coordinate project.                            -->
+
+{{#with card.data}}
+  <div>
+
+    <div class="m-3" style="overflow: hidden;">
+      <h6>
+        {{#with businessDataIdentifier}}
+          <b>Business period:</b> {{dateFormat (math businessDayFrom.epochSecond '*' 1000) format='DD/MM/YYYY HH:mm'}} -
+          {{dateFormat (math businessDayTo.epochSecond '*' 1000) format='DD/MM/YYYY HH:mm'}}
+        {{/with}}
+      </h6>
+
+      <h4 class="mt-3" style="text-align: center;">
+        {{#if (bool noun '==' 'ProcessSuccessful')}}
+        <span class='text-success'>{{source}} process successful</span>
+        {{else}}
+          {{#if (bool noun '==' 'ProcessFailed')}}
+            <span class='text-danger'>{{source}} process failed</span>
+          {{/if}}
+        {{/if}}
+      </h4>
+
+      {{#each payload.text}}
+        <p class="mt-3">
+          <b>{{this.name}}:</b> {{this.value}}
+        </p>
+      {{/each}}
+      <br/>
+
+      {{#if payload.links}}
+        <p id="links">
+          <b>Download output files:</b><br/>
+          {{#each payload.links}}
+            <a class='ml-3' href='{{this.value}}'>{{this.name}}</a><br/>
+          {{/each}}
+        </p>
+      {{/if}}
+
+    </div>
+
+  </div>
+{{/with}}

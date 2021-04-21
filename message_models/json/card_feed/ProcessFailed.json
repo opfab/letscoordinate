@@ -4,15 +4,16 @@
     "header": {
       "verb": "created",
       "noun": "ProcessFailed",
-      "timestamp": "2020-08-20T09:30:00Z",
-      "source": "ServiceA",
+      "timestamp": "2021-08-20T09:30:00Z",
+      "source": "ServiceB",
       "messageId": "6576f548eb9f4079a56f231fcdd8b560",
       "properties": {
         "format": "JSON",
         "businessDataIdentifier": {
-          "messageTypeName": "NotificationTypeB",
-          "businessDayFrom": "2020-07-18T00:00:00Z",
-          "businessDayTo": "2020-09-17T00:00:00Z",
+          "businessApplication": "PanEuropeanServiceBTool",
+          "messageTypeName": "ProcessMonitoring",
+          "businessDayFrom": "2021-07-17T22:00:00Z",
+          "businessDayTo": "2021-09-16T22:00:00Z",
           "processStep": "Final calculation"
         }
       }
@@ -34,31 +35,6 @@
         {
           "name": "Reason of delay",
           "value": "Calculation delayed"
-        }
-      ],
-      "rscKpi": [
-        {
-          "name": "gp2",
-          "data": [
-            {
-              "timestamp": "2020-08-04T01:00:00Z",
-              "label": "ProcessFailedCount",
-              "detail": [
-                {
-                  "value": 0
-                }
-              ]
-            },
-            {
-              "timestamp": "2020-08-04T01:00:00Z",
-              "label": "ProcessDelayedCount",
-              "detail": [
-                {
-                  "value": 0
-                }
-              ]
-            }
-          ]
         }
       ]
     }

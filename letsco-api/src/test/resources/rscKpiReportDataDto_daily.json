@@ -1,0 +1,451 @@
+{
+  "submittedFormData": {
+    "dataGranularity": "D",
+    "startDate": "2021-01-01",
+    "endDate": "2021-12-31",
+    "rscCodes": [
+      "ALL_RSCS"
+    ],
+    "regionCodes": [],
+    "rscServiceCode": "SERVICE_A",
+    "kpiDataTypeCode": "ALL"
+  },
+  "rscKpiTypedDataMap": {
+    "BP": {
+      "BP1": {
+        "Process successful": [
+          {
+            "timestamp": "2021-08-02",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 5,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-08-02",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 5,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-10-01",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 6,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-10-01",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 6,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          }
+        ]
+      },
+      "BP2": {
+        "Process successful": [
+          {
+            "timestamp": "2021-04-01",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 4,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-04-01",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 4,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-06-01",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 4,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-06-01",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 4,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          }
+        ],
+        "Process failed": [
+          {
+            "timestamp": "2021-06-01",
+            "dataGranularity": "D",
+            "label": "Process failed",
+            "details": [
+              {
+                "value": 6,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-06-01",
+            "dataGranularity": "D",
+            "label": "Process failed",
+            "details": [
+              {
+                "value": 6,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          }
+        ]
+      },
+      "BP3": {},
+      "BP4": {},
+      "BP5": {},
+      "BP6": {},
+      "BP7": {
+        "Process successful": [
+          {
+            "timestamp": "2021-08-02",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 5,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-10-01",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 6,
+                "eicCode": "ALL_RSCS"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "GP": {
+      "GP1": {
+        "Process successful": [
+          {
+            "timestamp": "2021-01-16",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 1
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-01-16",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 1
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-09-02",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 1
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-09-02",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 1
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-10-03",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 1
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-10-03",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 1
+              }
+            ]
+          }
+        ],
+        "Process failed": [
+          {
+            "timestamp": "2021-01-16",
+            "dataGranularity": "D",
+            "label": "Process failed",
+            "details": [
+              {
+                "value": 1
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-01-16",
+            "dataGranularity": "D",
+            "label": "Process failed",
+            "details": [
+              {
+                "value": 1
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-05-21",
+            "dataGranularity": "D",
+            "label": "Process failed",
+            "details": [
+              {
+                "value": 1
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-05-21",
+            "dataGranularity": "D",
+            "label": "Process failed",
+            "details": [
+              {
+                "value": 1
+              }
+            ]
+          }
+        ],
+        "Process successful with warnings": [
+          {
+            "timestamp": "2021-01-16",
+            "dataGranularity": "D",
+            "label": "Process successful with warnings",
+            "details": [
+              {
+                "value": 1
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-01-16",
+            "dataGranularity": "D",
+            "label": "Process successful with warnings",
+            "details": [
+              {
+                "value": 1
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-05-21",
+            "dataGranularity": "D",
+            "label": "Process successful with warnings",
+            "details": [
+              {
+                "value": 1
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-05-21",
+            "dataGranularity": "D",
+            "label": "Process successful with warnings",
+            "details": [
+              {
+                "value": 1
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-11-01",
+            "dataGranularity": "D",
+            "label": "Process successful with warnings",
+            "details": [
+              {
+                "value": 1
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-11-01",
+            "dataGranularity": "D",
+            "label": "Process successful with warnings",
+            "details": [
+              {
+                "value": 1
+              }
+            ]
+          }
+        ]
+      },
+      "GP2": {
+        "Process successful": [
+          {
+            "timestamp": "2021-08-01",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 13
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-08-01",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 13
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-08-16",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 3
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-08-16",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 3
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-09-23",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 5
+              }
+            ]
+          },
+          {
+            "timestamp": "2021-09-23",
+            "dataGranularity": "D",
+            "label": "Process successful",
+            "details": [
+              {
+                "value": 5
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "rscKpiSubtypedDataMap": {
+    "BP3": {
+      "code": "BP3",
+      "name": "Business Process 3",
+      "graphType": "bar"
+    },
+    "BP5": {
+      "code": "BP5",
+      "name": "Business Process 5",
+      "graphType": "bar"
+    },
+    "BP1": {
+      "code": "BP1",
+      "name": "Business Process 1",
+      "graphType": "bar"
+    },
+    "BP2": {
+      "code": "BP2",
+      "name": "Business Process 2",
+      "graphType": "line",
+      "joinGraph": false
+    },
+    "BP6": {
+      "code": "BP6",
+      "name": "Business Process 6",
+      "graphType": "bar"
+    },
+    "BP7": {
+      "code": "BP7",
+      "name": "Business Process 7",
+      "graphType": "bar"
+    },
+    "GP2": {
+      "code": "GP2",
+      "name": "Global Perf 2",
+      "graphType": "line"
+    },
+    "GP1": {
+      "code": "GP1",
+      "name": "Global Perf 1",
+      "graphType": "bar",
+      "joinGraph": true
+    },
+    "BP4": {
+      "code": "BP4",
+      "name": "Business Process 4",
+      "graphType": "bar"
+    }
+  },
+  "reportFileName": "serviceA_allKpis_panEu_20210101_20211231"
+}

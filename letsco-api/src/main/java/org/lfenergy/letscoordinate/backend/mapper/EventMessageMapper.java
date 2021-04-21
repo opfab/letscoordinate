@@ -45,16 +45,16 @@ public class EventMessageMapper {
                 eventMessage.setFormat(propertiesDto.getFormat());
                 if(propertiesDto.getBusinessDataIdentifier() != null) {
                     final BusinessDataIdentifierDto businessDataIdentifierDto = propertiesDto.getBusinessDataIdentifier();
+                    eventMessage.setBusinessApplication(businessDataIdentifierDto.getBusinessApplication().orElse(null));
                     eventMessage.setMessageType(businessDataIdentifierDto.getMessageType());
                     eventMessage.setMessageTypeName(businessDataIdentifierDto.getMessageTypeName());
                     eventMessage.setBusinessDayFrom(businessDataIdentifierDto.getBusinessDayFrom());
-                    eventMessage.setBusinessDayTo(businessDataIdentifierDto.getBusinessDayTo().orElse(
-                            businessDataIdentifierDto.getBusinessDayFrom().plus(Duration.ofHours(24))));
+                    eventMessage.setBusinessDayTo(businessDataIdentifierDto.getBusinessDayTo());
                     eventMessage.setProcessStep(businessDataIdentifierDto.getProcessStep().orElse(null));
                     eventMessage.setTimeframe(businessDataIdentifierDto.getTimeframe().orElse(null));
                     eventMessage.setTimeframeNumber(businessDataIdentifierDto.getTimeframeNumber().orElse(null));
                     eventMessage.setSendingUser(businessDataIdentifierDto.getSendingUser().orElse(null));
-                    eventMessage.setFileName(businessDataIdentifierDto.getFileName());
+                    eventMessage.setFileName(businessDataIdentifierDto.getFileName().orElse(""));
                     eventMessage.setTso(businessDataIdentifierDto.getTso().orElse(null));
                     eventMessage.setBiddingZone(businessDataIdentifierDto.getBiddingZone().orElse(null));
                 }
@@ -123,6 +123,7 @@ public class EventMessageMapper {
         RscKpi rscKpi = new RscKpi();
         rscKpi.setId(null);
         rscKpi.setName(rscKpiDataDto.getName());
+        rscKpi.setJoinGraph(rscKpiDataDto.getJoinGraph());
         rscKpi.setRscKpiDatas(rscKpiDataDto.getData().stream()
                         .map(rscKpiData -> EventMessageMapper.fromDto(rscKpiData, rscKpi))
                         .collect(Collectors.toList()));
@@ -137,6 +138,7 @@ public class EventMessageMapper {
         rscKpiData.setId(null);
         rscKpiData.setRscKpi(rscKpi);
         rscKpiData.setTimestamp(rscKpiDataDetailsDto.getTimestamp());
+        rscKpiData.setGranularity(rscKpiDataDetailsDto.getGranularity());
         rscKpiData.setLabel(rscKpiDataDetailsDto.getLabel());
         rscKpiData.setRscKpiDataDetails(rscKpiDataDetailsDto.getDetail().stream()
                         .map(rscKpiDataDetails -> EventMessageMapper.fromDto(rscKpiDataDetails, rscKpiData))

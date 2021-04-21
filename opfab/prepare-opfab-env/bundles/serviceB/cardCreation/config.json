@@ -1,0 +1,29 @@
+{
+  "license": "MPL-2.0",
+  "id": "serviceb_cardcreation",
+  "name": "process.label",
+  "version": "1",
+  "uiVisibility": {
+    "monitoring": true,
+    "logging": true,
+    "calendar": true
+  },
+  "states": {
+    "freeMessageState": {
+      "name": "freeMessage.title",
+      "color": "#FAF0AF",
+      "userCard": {
+        "template": "usercard_freemessage",
+        "lttdVisible": false
+      },
+      "detailTitle": {
+        "key": "cardDetails.title"
+      },
+      "templateName": "freemessage",
+      "styles": [],
+      "acknowledgmentAllowed": "Always",
+      "editAllowed": false
+    }
+  },
+  "locales": ["en"]
+}

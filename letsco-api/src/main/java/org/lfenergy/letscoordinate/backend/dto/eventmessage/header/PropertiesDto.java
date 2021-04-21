@@ -11,16 +11,20 @@
 
 package org.lfenergy.letscoordinate.backend.dto.eventmessage.header;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class PropertiesDto {
+    @NotNull
     private String format;
+    @Valid @NotNull
     private BusinessDataIdentifierDto businessDataIdentifier = new BusinessDataIdentifierDto();
 }

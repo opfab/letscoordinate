@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.lfenergy.letscoordinate</groupId>
         <artifactId>letsco-core</artifactId>
-        <version>1.0.0-RELEASE</version>
+        <version>1.2.0.RELEASE</version>
     </parent>
 
     <artifactId>letsco-scanner</artifactId>
@@ -30,14 +30,14 @@
     </licenses>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.lfenergy.letscoordinate</groupId>
             <artifactId>letsco-common</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <!-- Spring Boot -->
@@ -84,6 +84,14 @@
             <version>0.10.0</version>
         </dependency>
 
+        <!-- Mock FTP Server -->
+        <dependency>
+            <groupId>org.mockftpserver</groupId>
+            <artifactId>MockFtpServer</artifactId>
+            <version>2.3</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -98,6 +106,39 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <classifier>exec</classifier>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.6</version>
+                <executions>
+                    <execution>
+                        <id>pre-unit-tests</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Sets the path to the file which contains the execution data. -->
+                            <!--<destFile>${sonar.coverage.jacoco.xmlReportPaths}</destFile>-->
+                        </configuration>
+                    </execution>
+                    <!-- Ensures that the code coverage report for unit tests is created after unit tests have been run -->
+                    <execution>
+                        <id>post-unit-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <!--<dataFile>${sonar.coverage.jacoco.xmlReportPaths}</dataFile>
+                            <outputDirectory>${jacoco.outputDir}</outputDirectory>-->
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

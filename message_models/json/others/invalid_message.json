@@ -1,0 +1,95 @@
+{
+  "eventMessage": {
+    "xmlns": "http://iec.ch/TC57/2011/schema/message",
+    "header": {
+      "verb": "created",
+      "noun": "File B",
+      "timestamp": "2021-08-25T12:32:00.444Z",
+      "source": "Service A",
+      "messageId": "b071aa50097f49f1bd69e82a070084b6",
+      "properties": {
+        "format": "JSON",
+        "businessDataIdentifier": {
+          "businessApplication": "test",
+          "messageType": "101",
+          "messageTypeName": "PositiveValidationWithWarnings",
+          "businessDayFrom": "2021-08-28T22:00:00.111Z",
+          "businessDayTo": "2021-12-28T23:00:00.998Z",
+          "sendingUser": "10XPT-REN------9",
+          "filename": "20210317_1230_ServiceA_2_PT.xlsx",
+          "tso": "10X1001A1001A345"
+        }
+      }
+    },
+    "payload": {
+      "validation": {
+        "validationType": "BUSINESS",
+        "status": "ACCEPTED",
+        "result": "WARNING",
+        "validationMessages": [
+          {
+            "code": "ServiceA_Warning_01",
+            "severity": "WARNING",
+            "title": "Rule_A_Violated",
+            "message": "Application check: Warning 01 detected in input file",
+            "timestamp": "2021-05-26T14:24:38.825Z",
+            "sourceDataRef": {
+              "relatedElement": "timeseries",
+              "relatedTimeseriesId": "Timeseries_12345",
+              "relatedPeriodStartId": 3247,
+              "relatedPeriodEndId": 3856
+            }
+          },
+          {
+            "code": "ServiceA_Warning_02",
+            "severity": "WARNING",
+            "title": "Rule_B_Violated",
+            "message": "Application check: Warning 02 detected in input file",
+            "timestamp": "2021-07-26T14:24:00Z",
+            "sourceDataRef": {
+              "relatedElement": "header"
+            }
+          }
+        ]
+      },
+      "rscKpi": [
+        {
+          "name": "gp1",
+          "data": [
+            {
+              "timestamp": "2025-06-30T22:00:00Z",
+              "granularity": "D",
+              "label": "Process successful",
+              "detail": [
+                {
+                  "value": 1
+                }
+              ]
+            },
+            {
+              "timestamp": "2025-09-01T22:00:00.123Z",
+              "granularity": "D",
+              "label": "Process successful",
+              "detail": [
+                {
+                  "value": 1
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "links": [
+        {
+          "name": "file3_link",
+          "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf",
+          "eicCode": ["10XPT-REN------9"]
+        },
+        {
+          "name": "file 4_link",
+          "value": "https://www.lfenergy.org/wp-content/uploads/sites/67/2019/11/2-10-Alexandra-LFE_Summit_2019_OperatorFabric_v1.2.pdf"
+        }
+      ]
+    }
+  }
+}

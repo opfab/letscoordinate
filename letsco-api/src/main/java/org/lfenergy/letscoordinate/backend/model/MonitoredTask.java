@@ -11,10 +11,7 @@
 
 package org.lfenergy.letscoordinate.backend.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -27,7 +24,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Table(name = "monitored_task", catalog = "letsco")
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
 public class MonitoredTask implements java.io.Serializable {
 

@@ -11,45 +11,149 @@
 
 package org.lfenergy.letscoordinate.backend.service;
 
+import io.vavr.control.Validation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
+import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
+import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
+import org.lfenergy.letscoordinate.backend.dto.ResponseErrorMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.HeaderDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.*;
-import org.lfenergy.letscoordinate.backend.exception.InvalidInputFileException;
+import org.lfenergy.letscoordinate.backend.enums.ResponseErrorSeverityEnum;
+import org.lfenergy.letscoordinate.backend.enums.UnknownEicCodesProcessEnum;
+import org.lfenergy.letscoordinate.backend.util.Constants;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Path;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EventMessageService {
 
     private final CoordinationConfig coordinationConfig;
+    private final LetscoProperties letscoProperties;
 
-    public void checkEicCodes(EventMessageDto eventMessageDto) throws InvalidInputFileException {
+    public Validation<ResponseErrorDto, EventMessageDto> validateEventMessageDto(EventMessageDto eventMessageDto) {
+        if (eventMessageDto == null) {
+            return Validation.invalid(ResponseErrorDto.builder()
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .code("INVALID_INPUT_FILE")
+                    .messages(Collections.singletonList(
+                            ResponseErrorMessageDto.builder()
+                                    .severity(ResponseErrorSeverityEnum.ERROR)
+                                    .message("eventMessageDto can not be null!")
+                                    .build()
+                    ))
+                    .build());
+        }
+
+        List<ResponseErrorMessageDto> errorMessages = new ArrayList<>();
+
+        // check that all mandatory fields are provided
+        if (eventMessageDto.getPayload() != null && eventMessageDto.getPayload().getText() == null
+                && eventMessageDto.getPayload().getLinks() == null
+                && eventMessageDto.getPayload().getRscKpi() == null
+                && eventMessageDto.getPayload().getTimeserie() == null
+                && eventMessageDto.getPayload().getValidation().isEmpty()
+        ) {
+            errorMessages.add(ResponseErrorMessageDto.builder()
+                    .severity(ResponseErrorSeverityEnum.ERROR)
+                    .message("The payload block should not be empty!")
+                    .build());
+        }
+        Set<String> missingMandatoryFields = getMissingMandatoryFields(eventMessageDto);
+        if(!missingMandatoryFields.isEmpty()) {
+            errorMessages.add(ResponseErrorMessageDto.builder()
+                    .severity(ResponseErrorSeverityEnum.ERROR)
+                    .message("Missing mandatory values! >>> " + missingMandatoryFields.toString())
+                    .build());
+        }
+
         // check that all eic_code provided by the dto exists in our database
-        Set<String> dtoEicCodes = extratEicCodesFromEventMessageDto(eventMessageDto);
+        checkEicCodes(eventMessageDto, errorMessages);
+
+        if(!errorMessages.isEmpty()) {
+            return Validation.invalid(ResponseErrorDto.builder()
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .code("INVALID_INPUT_FILE")
+                    .messages(errorMessages)
+                    .build());
+        }
+        return Validation.valid(eventMessageDto);
+    }
+
+    public Set<String> getMissingMandatoryFields(EventMessageDto eventMessageDto) {
+        Set<String> missingMandatoryFields = new LinkedHashSet<>();
+        if (eventMessageDto != null) {
+            ValidatorFactory factory = javax.validation.Validation.buildDefaultValidatorFactory();
+            Validator validator = factory.getValidator();
+            Set<ConstraintViolation<EventMessageDto>> violations = validator.validate(eventMessageDto);
+            missingMandatoryFields = violations.stream()
+                    .map(ConstraintViolation::getPropertyPath)
+                    .map(Path::toString)
+                    .collect(Collectors.toSet());
+        }
+        if (letscoProperties.getInputFile().getValidation().isBusinessDayFromOptional()) {
+            if (missingMandatoryFields.contains("header.properties.businessDataIdentifier.businessDayFrom")) {
+                if (eventMessageDto != null) {
+                    eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier()
+                            .setBusinessDayFrom(eventMessageDto.getHeader().getTimestamp());
+                    missingMandatoryFields.remove("header.properties.businessDataIdentifier.businessDayFrom");
+                }
+            }
+        }
+        if (letscoProperties.getInputFile().getValidation().isValidationBusinessTimestampOptional()) {
+            missingMandatoryFields = missingMandatoryFields.stream().filter(
+                    f -> !f.matches("payload\\.validation\\.validationMessages\\[[0-9]+\\]\\.businessTimestamp"))
+                    .collect(Collectors.toSet());
+        }
+        return missingMandatoryFields;
+    }
+
+    public void checkEicCodes(EventMessageDto eventMessageDto, List<ResponseErrorMessageDto> errorMessages) {
+        // check that all eic_code provided by the dto exists in our database
+        Set<String> dtoEicCodes = extractEicCodesFromEventMessageDto(eventMessageDto);
         List<String> knownEicCodes = getKnownEicCodes(dtoEicCodes);
+        knownEicCodes.addAll(Arrays.asList(Constants.ALL_RSCS_CODE, Constants.ALL_REGIONS_CODE));
         Set<String> unknownEicCodes = dtoEicCodes.stream()
                 .filter(eicCode -> !knownEicCodes.contains(eicCode))
                 .collect(Collectors.toSet());
         if(!unknownEicCodes.isEmpty()) {
-            // TODO monitoring
-            throw new InvalidInputFileException("Unknown eic_codes found! >>> " + unknownEicCodes.toString());
+            UnknownEicCodesProcessEnum unknownEicCodesProcess =
+                    letscoProperties.getInputFile().getValidation().getUnknownEicCodesProcess();
+            if(unknownEicCodesProcess == UnknownEicCodesProcessEnum.EXCEPTION) {
+                List<String> allowedEicCodes = letscoProperties.getInputFile().getValidation().getAllowedEicCodes()
+                        .orElse(new ArrayList<>());
+                if (!allowedEicCodes.containsAll(unknownEicCodes)) {
+                    errorMessages.add(ResponseErrorMessageDto.builder()
+                            .severity(ResponseErrorSeverityEnum.ERROR)
+                            .message("Unknown eic_codes found! >>> " + unknownEicCodes.toString())
+                            .build());
+                }
+            } else if (unknownEicCodesProcess == UnknownEicCodesProcessEnum.WARNING) {
+                log.warn("Unknown eic_codes found! >>> " + unknownEicCodes.toString());
+            }
         }
     }
 
-    private List<String> getKnownEicCodes(Set<String> eicCodes) {
+    public List<String> getKnownEicCodes(Set<String> eicCodes) {
         return coordinationConfig.getAllEicCodes().stream()
                 .filter(eicCode -> eicCodes.contains(eicCode))
                 .collect(Collectors.toList());
     }
 
-    private Set<String> extratEicCodesFromEventMessageDto(EventMessageDto eventMessageDto) {
+    private Set<String> extractEicCodesFromEventMessageDto(EventMessageDto eventMessageDto) {
         Set<String> eicCodes = new HashSet<>();
         if(eventMessageDto == null)
             return eicCodes;
@@ -109,5 +213,4 @@ public class EventMessageService {
 
         return eicCodes;
     }
-
 }

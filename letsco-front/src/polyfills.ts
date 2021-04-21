@@ -68,6 +68,11 @@
  */
 import 'zone.js/dist/zone';  // Included with Angular CLI.
 
+/***************************************************************************************************
+ * Angular Localize is required by default for Angular itself.
+ */
+import '@angular/localize/init';
+
 
 /***************************************************************************************************
  * APPLICATION IMPORTS

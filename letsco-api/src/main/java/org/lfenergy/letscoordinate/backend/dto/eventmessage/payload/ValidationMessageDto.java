@@ -11,25 +11,42 @@
 
 package org.lfenergy.letscoordinate.backend.dto.eventmessage.payload;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class ValidationMessageDto {
-
+    @NotNull
     private String code;
+    @NotNull
     private ValidationSeverityEnum severity;
+    @NotNull
     private String title;
+    @NotNull
     private String message;
-    private Instant timestamp;
+    @Getter(AccessLevel.NONE)
+    private Map<String, Object> params;
+    @NotNull
+    private Instant businessTimestamp;
     private Map<String, Object> sourceDataRef;
+
+    public Optional<Map<String, Object>> getParams() {
+        return Optional.ofNullable(params);
+    }
+
+    @JsonProperty("params")
+    public Map<String, Object> getParamsSimple() {
+        return params;
+    }
 }

@@ -16,7 +16,5 @@ RUN mkdir /var/www/letsco
 COPY ./nginx.conf /etc/nginx
 COPY ./letsco-front /var/www/letsco
 
-RUN rm /var/www/letsco/letsco-env/env.js
-
 EXPOSE 80
 EXPOSE 8080

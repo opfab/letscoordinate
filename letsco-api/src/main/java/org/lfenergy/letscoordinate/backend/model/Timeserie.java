@@ -38,7 +38,7 @@ public class Timeserie implements java.io.Serializable {
     @JoinColumn(name = "id_event_message", nullable = false)
     private EventMessage eventMessage;
 
-    @Column(name = "name", nullable = false, length = 100)
+    @Column(name = "name", nullable = false, length = 250)
     private String name;
 
     @Column(name = "coordination_status", length = 10)

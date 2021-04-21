@@ -11,25 +11,27 @@
 
 package org.lfenergy.letscoordinate.backend.processor;
 
+import io.vavr.control.Validation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
+import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.*;
 import org.lfenergy.letscoordinate.backend.dto.reporting.RscKpiDto;
 import org.lfenergy.letscoordinate.backend.dto.reporting.RscKpiReportDataDto;
-import org.lfenergy.letscoordinate.backend.enums.DataTypeEnum;
-import org.lfenergy.letscoordinate.backend.enums.ExcelBlocEnum;
-import org.lfenergy.letscoordinate.backend.enums.KpiDataSubtypeEnum;
-import org.lfenergy.letscoordinate.backend.enums.KpiDataTypeEnum;
+import org.lfenergy.letscoordinate.backend.dto.reporting.RscKpiReportSubmittedFormDataDto;
+import org.lfenergy.letscoordinate.backend.enums.*;
 import org.lfenergy.letscoordinate.backend.exception.InvalidInputFileException;
 import org.lfenergy.letscoordinate.backend.service.EventMessageService;
+import org.lfenergy.letscoordinate.backend.util.Constants;
 import org.lfenergy.letscoordinate.backend.util.DateUtil;
 import org.lfenergy.letscoordinate.backend.util.PojoUtil;
 import org.springframework.stereotype.Component;
@@ -51,56 +53,58 @@ import java.util.stream.Stream;
 public class ExcelDataProcessor implements DataProcessor {
 
     private final LetscoProperties letscoProperties;
+    private final CoordinationConfig coordinationConfig;
     private final EventMessageService eventMessageService;
 
 
     private final String XMLNS = "http://iec.ch/TC57/2011/schema/message";
-    private final int EFFECTIVE_DATA_SHEET_INDEX = 0;
+    protected final int EFFECTIVE_DATA_SHEET_INDEX = 0;
     private final List<String> EMPTY_CELL_SYMBOLS = Arrays.asList("", "-");
 
     private final List<String> headerExclusiveColNames = Arrays.asList("verb", "noun", "timestamp", "source", "messageId");
     private final List<String> headerPropertiesExclusiveColNames = Arrays.asList("format");
-    private final List<String> headerBusinessDateIdentifierColNames = Arrays.asList("messageType", "messageTypeName", "businessDayFrom",
+    private final List<String> headerBusinessDateIdentifierColNames = Arrays.asList("businessApplication", "messageType", "messageTypeName", "businessDayFrom",
             "businessDayTo", "processStep", "timeframe", "timeframeNumber", "sendingUser", "fileName", "tso", "biddingZone");
     private final List<String> headerPropertiesColNames = Stream.of(headerPropertiesExclusiveColNames, headerBusinessDateIdentifierColNames)
             .flatMap(Collection::stream).collect(Collectors.toList());
 
-    private final List<String> headerColNames = Stream.of(headerExclusiveColNames, headerPropertiesColNames)
+    protected final List<String> headerColNames = Stream.of(headerExclusiveColNames, headerPropertiesColNames)
             .flatMap(Collection::stream).collect(Collectors.toList());
 
     private final String dataTypeColName = "dataType";
     private final String nameColName = "name";
     private final String labelColName = "label";
+    private final String granularityColName = "granularity";
     private final String timestampColName = "timestamp";
     private final String eicCodeColName = "eicCode";
     private final String valueColName = "value";
     private final List<String> payloadTextDataColNames = Arrays.asList(nameColName, valueColName);
     private final List<String> payloadLinkDataColNames = Arrays.asList(nameColName, valueColName, eicCodeColName);
-    private final List<String> payloadDataColNames = Arrays.asList("id", labelColName, timestampColName, eicCodeColName, valueColName,
+    private final List<String> payloadDataColNames = Arrays.asList("id", labelColName, granularityColName, timestampColName, eicCodeColName, valueColName,
             "accept", "reject", "explanation", "comment");
 
-    private final List<String> payloadColNames = Stream.of(Arrays.asList(dataTypeColName, nameColName), payloadDataColNames)
+    protected final List<String> payloadColNames = Stream.of(Arrays.asList(dataTypeColName, nameColName), payloadDataColNames)
             .flatMap(Collection::stream).collect(Collectors.toList());
 
 
-    public EventMessageDto inputStreamToPojo(String filePath, InputStream inputStream)
-            throws IOException, NoSuchFieldException, IllegalAccessException, InstantiationException, InvalidInputFileException {
+    public Validation<ResponseErrorDto, EventMessageDto> inputStreamToPojo(String filePath, InputStream inputStream)
+            throws InvalidInputFileException, IllegalAccessException, NoSuchFieldException, InstantiationException, IOException {
         Workbook workbook = new XSSFWorkbook(inputStream);
 
         EventMessageDto eventMessageDto = new EventMessageDto();
         eventMessageDto.setXmlns(XMLNS);
 
+        // Validation of the file's structure (existence of header and payload blocks, column names, ...)
         Map<ExcelBlocEnum, Map<String, Integer>> columnIndexMap = validateExcelFileAndMapColTitlesIndexesByBloc(workbook);
 
         Sheet sheet = workbook.getSheetAt(EFFECTIVE_DATA_SHEET_INDEX);
         initEventMessageHeader(eventMessageDto, sheet, columnIndexMap.get(ExcelBlocEnum.HEADER));
         initEventMessagePayload(eventMessageDto, sheet, columnIndexMap.get(ExcelBlocEnum.PAYLOAD));
 
-        eventMessageService.checkEicCodes(eventMessageDto);
-
         log.info("POJO Generated from Excel file \"{}\" => {}", filePath, eventMessageDto);
 
-        return eventMessageDto;
+        // Validation of the file's content
+        return eventMessageService.validateEventMessageDto(eventMessageDto);
     }
 
     /**
@@ -111,19 +115,18 @@ public class ExcelDataProcessor implements DataProcessor {
      * @return the colTitleIndexMapByBloc if the {@link Workbook} is valid, throws {@link InvalidInputFileException}
      * exception otherwise
      */
-    private Map<ExcelBlocEnum, Map<String, Integer>> validateExcelFileAndMapColTitlesIndexesByBloc(Workbook workbook)
-            throws InvalidInputFileException{
+    protected Map<ExcelBlocEnum, Map<String, Integer>> validateExcelFileAndMapColTitlesIndexesByBloc(Workbook workbook)
+            throws InvalidInputFileException {
         Map<ExcelBlocEnum, Map<String, Integer>> colTitleIndexMapByBloc = new LinkedHashMap<>();
         if (workbook == null)
             return colTitleIndexMapByBloc;
 
-        Sheet effectiveDataSheet = workbook.getSheetAt(EFFECTIVE_DATA_SHEET_INDEX);
-        if (effectiveDataSheet != null) {
-            colTitleIndexMapByBloc.put(ExcelBlocEnum.HEADER, getColTitlesIndexesForExcelBloc(ExcelBlocEnum.HEADER, headerColNames, effectiveDataSheet));
-            colTitleIndexMapByBloc.put(ExcelBlocEnum.PAYLOAD, getColTitlesIndexesForExcelBloc(ExcelBlocEnum.PAYLOAD, payloadColNames, effectiveDataSheet));
-        } else {
+        if (workbook.getNumberOfSheets() < EFFECTIVE_DATA_SHEET_INDEX + 1 || workbook.getSheetAt(EFFECTIVE_DATA_SHEET_INDEX) == null)
             throw new InvalidInputFileException("effective data sheet not found!");
-        }
+
+        Sheet effectiveDataSheet = workbook.getSheetAt(EFFECTIVE_DATA_SHEET_INDEX);
+        colTitleIndexMapByBloc.put(ExcelBlocEnum.HEADER, getColTitlesIndexesForExcelBloc(ExcelBlocEnum.HEADER, headerColNames, effectiveDataSheet));
+        colTitleIndexMapByBloc.put(ExcelBlocEnum.PAYLOAD, getColTitlesIndexesForExcelBloc(ExcelBlocEnum.PAYLOAD, payloadColNames, effectiveDataSheet));
 
         log.debug("colTitleIndexMapByBloc: {}", colTitleIndexMapByBloc);
         return colTitleIndexMapByBloc;
@@ -139,9 +142,9 @@ public class ExcelDataProcessor implements DataProcessor {
      * @return The colTitleIndexMap if the {@link Workbook} is valid, throws {@link InvalidInputFileException}
      * exception otherwise
      */
-    private Map<String, Integer> getColTitlesIndexesForExcelBloc(ExcelBlocEnum excelBloc,
-                                                                 List<String> colTitleNames,
-                                                                 Sheet sheet) throws InvalidInputFileException{
+    protected Map<String, Integer> getColTitlesIndexesForExcelBloc(ExcelBlocEnum excelBloc,
+                                                                   List<String> colTitleNames,
+                                                                   Sheet sheet) throws InvalidInputFileException{
         Map<String, Integer> colTitleIndexMap = new LinkedHashMap<>();
         boolean acceptPropertiesIgnoreCase = letscoProperties.getInputFile().getValidation().isAcceptPropertiesIgnoreCase();
         boolean failOnUnknownProperties = letscoProperties.getInputFile().getValidation().isFailOnUnknownProperties();
@@ -183,12 +186,9 @@ public class ExcelDataProcessor implements DataProcessor {
      * @see ExcelDataProcessor#setProperties(Object, List, Row, Map)
      */
     public void initEventMessageHeader(EventMessageDto eventMessageDto,
-                                              Sheet sheet,
-                                              Map<String, Integer> columnIndexMap) throws NoSuchFieldException, IllegalAccessException {
+                                       Sheet sheet,
+                                       Map<String, Integer> columnIndexMap) throws NoSuchFieldException, IllegalAccessException {
         if (sheet != null) {
-            if (eventMessageDto == null)
-                eventMessageDto = new EventMessageDto();
-
             Row currentRow = sheet.getRow(ExcelBlocEnum.HEADER.getTitlesRowIndex()+1);
 
             setProperties(eventMessageDto.getHeader(), headerExclusiveColNames, currentRow, columnIndexMap);
@@ -209,8 +209,8 @@ public class ExcelDataProcessor implements DataProcessor {
      * @see ExcelDataProcessor#getPayloadDataDetails(Map, DataTypeEnum, Class)
      */
     public void initEventMessagePayload(EventMessageDto eventMessageDto,
-                                               Sheet sheet,
-                                               Map<String, Integer> columnIndexMap)
+                                        Sheet sheet,
+                                        Map<String, Integer> columnIndexMap)
             throws NoSuchFieldException, InstantiationException, IllegalAccessException {
         if (eventMessageDto != null && sheet != null && columnIndexMap != null) {
             Map<DataTypeEnum, Map<String, List<IPayloadData>>> payloadMap = buildPayloadAsMap(sheet, columnIndexMap);
@@ -257,8 +257,8 @@ public class ExcelDataProcessor implements DataProcessor {
 
         if (sheet.getPhysicalNumberOfRows() > 0) {
             for (int i = ExcelBlocEnum.PAYLOAD.getTitlesRowIndex()+1; i <= sheet.getLastRowNum(); i++) {
-                if (sheet.getRow(i) != null) {
-                    Row currentRow = sheet.getRow(i);
+                Row currentRow = sheet.getRow(i);
+                if (currentRow != null && currentRow.getCell(dataTypeColIndex) != null) {
                     String dataTypeCellValue = currentRow.getCell(dataTypeColIndex).getStringCellValue();
                     DataTypeEnum dataType = DataTypeEnum.getByValue(dataTypeCellValue);
                     Map<String,List<IPayloadData>> payloadDataMap = payloadMap.get(dataType);
@@ -298,10 +298,12 @@ public class ExcelDataProcessor implements DataProcessor {
     }
 
     private void createRscKpiDataAndAddToDataList(Map<String, Integer> columnIndexMap,
-                                                         Row currentRow,
-                                                         List nameDataList) throws NoSuchFieldException, IllegalAccessException {
+                                                  Row currentRow,
+                                                  List nameDataList) throws NoSuchFieldException, IllegalAccessException {
         OffsetDateTime offsetDateTime = DateUtil.toOffsetDateTime(getCellValueAsString(currentRow.getCell(columnIndexMap.get(timestampColName))));
         String label = getCellValueAsString(currentRow.getCell(columnIndexMap.get(labelColName)));
+        Integer granularityIndex = columnIndexMap.get(granularityColName);
+        String granularityStr = granularityIndex != null ? getCellValueAsString(currentRow.getCell(granularityIndex)) : null;
         RscKpiDataDetailsDto dataDetailsDto = null;
         for (Object data : nameDataList) {
             if (data != null && data instanceof RscKpiDataDetailsDto
@@ -317,6 +319,7 @@ public class ExcelDataProcessor implements DataProcessor {
             dataDetailsDto = new RscKpiDataDetailsDto();
             dataDetailsDto.setTimestamp(offsetDateTime);
             dataDetailsDto.setLabel(label);
+            dataDetailsDto.setGranularity(DataGranularityEnum.getByValue(granularityStr));
             nameDataList.add(dataDetailsDto);
         }
         RscKpiTemporalDataDto temporalDataDto = new RscKpiTemporalDataDto();
@@ -327,8 +330,8 @@ public class ExcelDataProcessor implements DataProcessor {
     }
 
     private void createTimeserieDataAndAddToDataList(Map<String, Integer> columnIndexMap,
-                                                            Row currentRow,
-                                                            List nameDataList) throws NoSuchFieldException, IllegalAccessException {
+                                                     Row currentRow,
+                                                     List nameDataList) throws NoSuchFieldException, IllegalAccessException {
         OffsetDateTime offsetDateTime = DateUtil.toOffsetDateTime(getCellValueAsString(currentRow.getCell(columnIndexMap.get(timestampColName))));
         TimeserieDataDetailsDto dataDetailsDto = null;
         for (Object data : nameDataList) {
@@ -459,6 +462,9 @@ public class ExcelDataProcessor implements DataProcessor {
 
     public byte[] generateRscKpiExcelReport(RscKpiReportDataDto rscKpiReportDataDto) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook();
+        final CellStyle COLUMN_TITLE_STYLE = workbook.createCellStyle();
+        COLUMN_TITLE_STYLE.setVerticalAlignment(VerticalAlignment.CENTER);
+        COLUMN_TITLE_STYLE.setAlignment(HorizontalAlignment.CENTER);
         if (rscKpiReportDataDto != null
                 && rscKpiReportDataDto.getSubmittedFormData() != null
                 && rscKpiReportDataDto.getRscKpiTypedDataMap() != null
@@ -477,6 +483,7 @@ public class ExcelDataProcessor implements DataProcessor {
                     Map<String, List<RscKpiDto.DataDto>> dataList = subtypeMap.get(kpiDataSubtypeEnum);
                     // Create sheet
                     XSSFSheet sheet = workbook.createSheet(kpiDataSubtypeEnum.name());
+                    int lastColumnNumber = 0;
                     // Create first row with the GPx/BPx title
                     int rowCount = 0;
                     Row row = sheet.createRow(rowCount++);
@@ -484,53 +491,186 @@ public class ExcelDataProcessor implements DataProcessor {
                     Cell cell = row.createCell(columnCount++);
                     CoordinationConfig.KpiDataSubtype kpiDataSubtype = rscKpiReportDataDto.getRscKpiSubtypedDataMap().get(kpiDataSubtypeEnum.name());
                     cell.setCellValue("KPI " + kpiDataSubtypeEnum.name() + (kpiDataSubtype != null ? " - " + kpiDataSubtype.getName() : ""));
-                    // Create second row for columns titles
-                    row = sheet.createRow(rowCount++);
-                    columnCount = 0;
-                    cell = row.createCell(columnCount++);
-                    cell.setCellValue("Date");
-                    List<String> colTitleList = new ArrayList();
-                    if(CollectionUtils.isNotEmpty(dataList.keySet())) {
-                        for (String dataName : dataList.keySet()) {
-                            colTitleList.add(dataName);
-                            cell = row.createCell(columnCount++);
-                            cell.setCellValue(dataName);
-                        }
-                    } else {
-                        String dataName = kpiDataSubtype != null ? kpiDataSubtype.getName() : kpiDataSubtypeEnum.name();
-                        colTitleList.add(dataName);
-                        cell = row.createCell(columnCount++);
-                        cell.setCellValue(dataName);
-                    }
+                    cell.setCellStyle(COLUMN_TITLE_STYLE);
 
-                    // Create data rows
-                    LocalDate startDate = rscKpiReportDataDto.getSubmittedFormData().getStartDate();
-                    LocalDate incrementedDate = LocalDate.of(startDate.getYear(), startDate.getMonth(), startDate.getDayOfMonth());
-                    LocalDate endDate = rscKpiReportDataDto.getSubmittedFormData().getEndDate();
-                    while(incrementedDate.isBefore(endDate) || incrementedDate.isEqual(endDate)) {
+                    if (rscKpiReportDataDto.getSubmittedFormData().getDataGranularity() == DataGranularityEnum.DAILY) { // CASE: DAILY VIEW
+                        // Prepare data (letscoEntityList) to be used to do sheetMergeRegion for the first coming row (graph_legend_row)
+                        // and to be used as data for the second coming row (letsco_entity_row)
+                        List<CoordinationConfig.LetscoEntity> letscoEntityList = new ArrayList<>();
+                        if (CollectionUtils.isNotEmpty(rscKpiReportDataDto.getSubmittedFormData().getRscCodes())) {
+                            if (isAllRscSelected(rscKpiReportDataDto.getSubmittedFormData()))
+                                letscoEntityList.add(0, CoordinationConfig.Rsc.builder()
+                                        .eicCode(Constants.ALL_RSCS_CODE)
+                                        .name(Constants.ALL_RSCS_NAME)
+                                        .shortName(Constants.ALL_RSCS_NAME)
+                                        .index(0).build());
+                            else
+                                letscoEntityList.add(coordinationConfig.getRscByEicCode(rscKpiReportDataDto.getSubmittedFormData().getRscCodes().get(0)));
+                        } else {
+                            if (isAllRegionSelected(rscKpiReportDataDto.getSubmittedFormData()))
+                                letscoEntityList.add(0, CoordinationConfig.Region.builder()
+                                        .eicCode(Constants.ALL_REGIONS_CODE)
+                                        .name(Constants.ALL_REGIONS_NAME)
+                                        .shortName(Constants.ALL_REGIONS_NAME)
+                                        .index(0).build());
+                            else
+                                letscoEntityList.add(coordinationConfig.getRegionByEicCode(rscKpiReportDataDto.getSubmittedFormData().getRegionCodes().get(0)));
+                        }
+
+                        if (kpiDataTypeEnum == KpiDataTypeEnum.BP && isAllRscOrRegionSelected(rscKpiReportDataDto.getSubmittedFormData())) {
+                            if (isAllRscSelected(rscKpiReportDataDto.getSubmittedFormData())) {
+                                letscoEntityList.addAll(coordinationConfig.getRscs().values().stream()
+                                        .sorted(Comparator.comparing(CoordinationConfig.Rsc::getIndex))
+                                        .collect(Collectors.toList()));
+                            } else if (isAllRegionSelected(rscKpiReportDataDto.getSubmittedFormData())) {
+                                letscoEntityList.addAll(coordinationConfig.getRegions().values().stream()
+                                        .sorted(Comparator.comparing(CoordinationConfig.Region::getIndex))
+                                        .collect(Collectors.toList()));
+                            }
+                        }
+                        // Create graph_legend_row
+                        int graphLegendRowNumber = rowCount;
                         row = sheet.createRow(rowCount++);
-                        // First column is for dates
                         columnCount = 0;
                         cell = row.createCell(columnCount++);
-                        cell.setCellValue(DateTimeFormatter.ISO_LOCAL_DATE.format(incrementedDate));
-                        // data columns
-                        for(String colTitle : colTitleList) {
+                        cell.setCellValue("Date");
+                        cell.setCellStyle(COLUMN_TITLE_STYLE);
+                        if (letscoEntityList.size() > 1) {
+                            sheet.addMergedRegion(new CellRangeAddress(graphLegendRowNumber, graphLegendRowNumber + 1, 0, 0));
+                        }
+                        List<String> colTitleList = new ArrayList();
+                        if (CollectionUtils.isNotEmpty(dataList.keySet())) {
+                            int letscoEntityColumnNumber = columnCount;
+                            for (String dataName : dataList.keySet()) {
+                                colTitleList.add(dataName);
+                                cell = row.createCell(columnCount);
+                                cell.setCellValue(dataName);
+                                cell.setCellStyle(COLUMN_TITLE_STYLE);
+                                if (letscoEntityList.size() > 1) {
+                                    sheet.addMergedRegion(new CellRangeAddress(graphLegendRowNumber, graphLegendRowNumber, columnCount, columnCount+=(letscoEntityList.size()-1)));
+                                }
+                                columnCount++;
+                            }
+                        } else {
+                            String dataName = kpiDataSubtype != null ? kpiDataSubtype.getName() : kpiDataSubtypeEnum.name();
+                            colTitleList.add(dataName);
+                            cell = row.createCell(columnCount);
+                            cell.setCellValue(dataName);
+                            cell.setCellStyle(COLUMN_TITLE_STYLE);
+                            if (letscoEntityList.size() > 1) {
+                                sheet.addMergedRegion(new CellRangeAddress(graphLegendRowNumber, graphLegendRowNumber, columnCount, columnCount+=(letscoEntityList.size()-1)));
+                            }
+                            columnCount++;
+                        }
+                        lastColumnNumber = columnCount;
+                        // Create letsco_entity_row (only for BP dataType)
+                        if (kpiDataTypeEnum == KpiDataTypeEnum.BP && isAllRscOrRegionSelected(rscKpiReportDataDto.getSubmittedFormData())) {
+                            row = sheet.createRow(rowCount++);
+                            columnCount = 0;
                             cell = row.createCell(columnCount++);
-                            cell.setCellValue(0);
-                            List<RscKpiDto.DataDto> dataDetails = dataList.get(colTitle);
-                            if(dataDetails != null) {
-                                for(RscKpiDto.DataDto dataDetail: dataDetails) {
-                                    if(dataDetail != null && CollectionUtils.isNotEmpty(dataDetail.getDetails())
-                                            && incrementedDate.isEqual(dataDetail.getTimestamp())) {
-                                        cell.setCellValue(dataDetail.getDetails().get(0).getValue()); // Override cell value
-                                        break;
-                                    }
+                            cell.setCellValue("Date");
+                            cell.setCellStyle(COLUMN_TITLE_STYLE);
+                            for (String colTitle : colTitleList) {
+                                for (CoordinationConfig.LetscoEntity letscoEntity : letscoEntityList) {
+                                    cell = row.createCell(columnCount++);
+                                    cell.setCellValue(letscoEntity.getName());
+                                    cell.setCellStyle(COLUMN_TITLE_STYLE);
                                 }
                             }
                         }
-                        // increment date
-                        incrementedDate = incrementedDate.plusDays(1);
+
+                        // Create data rows
+                        LocalDate startDate = rscKpiReportDataDto.getSubmittedFormData().getStartDate();
+                        LocalDate incrementedDate = LocalDate.of(startDate.getYear(), startDate.getMonth(), startDate.getDayOfMonth());
+                        LocalDate endDate = rscKpiReportDataDto.getSubmittedFormData().getEndDate();
+                        while (incrementedDate.isBefore(endDate) || incrementedDate.isEqual(endDate)) {
+                            row = sheet.createRow(rowCount++);
+                            // First column is for dates
+                            columnCount = 0;
+                            cell = row.createCell(columnCount++);
+                            cell.setCellValue(DateTimeFormatter.ISO_LOCAL_DATE.format(incrementedDate));
+                            // data columns
+                            for (String colTitle : colTitleList) {
+                                for (CoordinationConfig.LetscoEntity letscoEntity : letscoEntityList) {
+                                    boolean letscoEntityValueFound = false;
+                                    cell = row.createCell(columnCount++);
+                                    cell.setCellValue(0);
+                                    List<RscKpiDto.DataDto> dataDtoList = dataList.get(colTitle);
+                                    if (dataDtoList != null) {
+                                        dataDtoList = dataDtoList.stream().
+                                                sorted(Comparator.comparing(RscKpiDto.DataDto::getTimestamp).reversed())
+                                                .collect(Collectors.toList());
+                                        for (RscKpiDto.DataDto datumDto : dataDtoList) {
+                                            if (datumDto != null && CollectionUtils.isNotEmpty(datumDto.getDetails())
+                                                    && incrementedDate.isEqual(datumDto.getTimestamp())) {
+                                                for (RscKpiDto.DataDto.DetailsDto detailsDto : datumDto.getDetails()) {
+                                                    if (letscoEntity.getEicCode().equals(detailsDto.getEicCode())) {
+                                                        cell.setCellValue(detailsDto.getValue());
+                                                        letscoEntityValueFound = true;
+                                                        break;
+                                                    }
+                                                }
+                                                if (letscoEntityValueFound) {
+                                                    break;
+                                                } else if (kpiDataTypeEnum == KpiDataTypeEnum.GP) {
+                                                    for (RscKpiDto.DataDto.DetailsDto detailsDto : datumDto.getDetails()) {
+                                                        if (detailsDto.getEicCode() == null) {
+                                                            cell.setCellValue(detailsDto.getValue());
+                                                            letscoEntityValueFound = true;
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                                if (letscoEntityValueFound)
+                                                    break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            // increment date
+                            incrementedDate = incrementedDate.plusDays(1);
+                        }
+                    } else { // CASE: YEARLY VIEW
+                        // List of selected Entities (RSC or Region)
+                        List<CoordinationConfig.LetscoEntity> selectedLetscoEntityList = getSelectedLetscoEntityList(rscKpiReportDataDto.getSubmittedFormData());
+                        // Create second row for columns titles
+                        row = sheet.createRow(rowCount++);
+                        columnCount = 0;
+                        cell = row.createCell(columnCount++);
+                        cell.setCellValue("Date");
+                        cell.setCellStyle(COLUMN_TITLE_STYLE);
+                        for (CoordinationConfig.LetscoEntity selectedEntity : selectedLetscoEntityList) {
+                            cell = row.createCell(columnCount++);
+                            cell.setCellValue(selectedEntity.getName());
+                            cell.setCellStyle(COLUMN_TITLE_STYLE);
+                        }
+                        lastColumnNumber = columnCount;
+                        // Create data rows
+                        int startYear = rscKpiReportDataDto.getSubmittedFormData().getStartDate().getYear();
+                        int endYear = rscKpiReportDataDto.getSubmittedFormData().getEndDate().getYear();
+                        int incrementedYear = startYear;
+                        while (incrementedYear <= endYear) {
+                            row = sheet.createRow(rowCount++);
+                            // First column is for years
+                            columnCount = 0;
+                            cell = row.createCell(columnCount++);
+                            cell.setCellValue(incrementedYear);
+                            // data columns
+                            for (CoordinationConfig.LetscoEntity selectedEntity : selectedLetscoEntityList) {
+                                cell = row.createCell(columnCount++);
+                                cell.setCellValue(getDataDetailsByEicCode(selectedEntity.getEicCode(), kpiDataTypeEnum, dataList.get(""+incrementedYear))
+                                        .map(RscKpiDto.DataDto.DetailsDto::getValue)
+                                        .orElse(0l));
+                            }
+                            // increment year
+                            incrementedYear++;
+                        }
                     }
+                    // add Merge region for the sheet title cell and autosize sheet columns
+                    sheet.addMergedRegion(new CellRangeAddress(0, 0 , 0, lastColumnNumber - 1));
+                    for (int i = 0   ; i < lastColumnNumber ; i++)
+                        sheet.autoSizeColumn(i, true);
                 }
             }
         }
@@ -539,5 +679,100 @@ public class ExcelDataProcessor implements DataProcessor {
             workbook.write(byteArrayOutputStream);
             return byteArrayOutputStream.toByteArray();
         }
+    }
+
+    /**
+     * check if Pan-EU item checked for RSCs or Regions
+     *
+     * @param submittedFormDataDto
+     * @return true if Pan-EU item checked for RSCs or Regions, else false
+     */
+    private boolean isAllRscOrRegionSelected(RscKpiReportSubmittedFormDataDto submittedFormDataDto) {
+        return isAllRscSelected(submittedFormDataDto) || isAllRegionSelected(submittedFormDataDto);
+    }
+
+    /**
+     * check if Pan-EU item checked for RSCs
+     *
+     * @param submittedFormDataDto
+     * @return true if Pan-EU item checked for RSCs, else false
+     */
+    protected boolean isAllRscSelected(RscKpiReportSubmittedFormDataDto submittedFormDataDto) {
+        return submittedFormDataDto != null
+                && CollectionUtils.isNotEmpty(submittedFormDataDto.getRscCodes())
+                && submittedFormDataDto.getRscCodes().contains(Constants.ALL_RSCS_CODE);
+    }
+
+    /**
+     * check if Pan-EU item checked for Regions
+     *
+     * @param submittedFormDataDto
+     * @return true if Pan-EU item checked for Regions, else false
+     */
+    protected boolean isAllRegionSelected(RscKpiReportSubmittedFormDataDto submittedFormDataDto) {
+        return submittedFormDataDto != null
+                && CollectionUtils.isNotEmpty(submittedFormDataDto.getRegionCodes())
+                && submittedFormDataDto.getRegionCodes().contains(Constants.ALL_REGIONS_CODE);
+    }
+
+    private List<CoordinationConfig.LetscoEntity> getSelectedLetscoEntityList(RscKpiReportSubmittedFormDataDto submittedFormData) {
+        List<CoordinationConfig.LetscoEntity> letscoEntityList = new ArrayList<>();
+        if (submittedFormData != null) {
+            if (CollectionUtils.isNotEmpty(submittedFormData.getRscCodes())) {
+                letscoEntityList = coordinationConfig.getRscs().values().stream()
+                        .filter(r -> submittedFormData.getRscCodes().contains(r.getEicCode()))
+                        .sorted(Comparator.comparing(CoordinationConfig.Rsc::getIndex))
+                        .collect(Collectors.toList());
+                if (submittedFormData.getRscCodes().contains(Constants.ALL_RSCS_CODE))
+                    letscoEntityList.add(0, CoordinationConfig.Rsc.builder()
+                            .eicCode(Constants.ALL_RSCS_CODE)
+                            .name(Constants.ALL_RSCS_NAME)
+                            .shortName(Constants.ALL_RSCS_NAME)
+                            .index(0).build());
+            } else if (CollectionUtils.isNotEmpty(submittedFormData.getRegionCodes())) {
+                letscoEntityList = coordinationConfig.getRegions().values().stream()
+                        .filter(r -> submittedFormData.getRegionCodes().contains(r.getEicCode()))
+                        .sorted(Comparator.comparing(CoordinationConfig.Region::getIndex))
+                        .collect(Collectors.toList());
+                if (submittedFormData.getRegionCodes().contains(Constants.ALL_REGIONS_CODE))
+                    letscoEntityList.add(0, CoordinationConfig.Region.builder()
+                            .eicCode(Constants.ALL_REGIONS_CODE)
+                            .name(Constants.ALL_REGIONS_NAME)
+                            .shortName(Constants.ALL_REGIONS_NAME)
+                            .index(0).build());
+            }
+        }
+        return letscoEntityList;
+    }
+
+    protected Optional<RscKpiDto.DataDto.DetailsDto> getDataDetailsByEicCode(String eicCode,
+                                                                           KpiDataTypeEnum kpiDataTypeEnum,
+                                                                           List<RscKpiDto.DataDto> dataDtoList) {
+        if(eicCode == null || kpiDataTypeEnum == null || CollectionUtils.isEmpty(dataDtoList))
+            return Optional.empty();
+        // sort desc by timestamp to get latest value
+        dataDtoList = dataDtoList.stream()
+                .sorted(Comparator.comparing(RscKpiDto.DataDto::getTimestamp).reversed())
+                .collect(Collectors.toList());
+        // get value (dataDetails) by eicCode
+        for (RscKpiDto.DataDto data : dataDtoList) {
+            for (RscKpiDto.DataDto.DetailsDto details: data.getDetails()) {
+                if (details != null && eicCode.equals(details.getEicCode())) {
+                    return Optional.of(details);
+                }
+            }
+        }
+        // for GP case and value for specific eicCode not found, we should return global value if found (eicCode = null)
+        if (kpiDataTypeEnum == KpiDataTypeEnum.GP) {
+            for (RscKpiDto.DataDto data : dataDtoList) {
+                for (RscKpiDto.DataDto.DetailsDto details: data.getDetails()) {
+                    if (details != null && details.getEicCode() == null) {
+                        return Optional.of(details);
+                    }
+                }
+            }
+        }
+        // if nothing found
+        return Optional.empty();
     }
 }

@@ -1,0 +1,31 @@
+{
+  "license": "MPL-2.0",
+  "cardDetails":{
+    "title":"{{title}}"
+  },
+  "cardFeed": {
+    "title": "{{title}}",
+    "summary": "{{summary}}"
+  },
+  "process": {
+    "name": "File A validation"
+  },
+  "positivevalidation": {
+    "name": "Positive validation",
+    "cardDetails":{
+      "title":"Service B File A - positive validation"
+    }
+  },
+  "positivevalidationwithwarnings": {
+    "name": "Positive validation with warnings",
+    "cardDetails":{
+      "title":"Service B File A - positive validation with warnings"
+    }
+  },
+  "negativevalidation": {
+    "name": "Negative validation",
+    "cardDetails":{
+      "title":"Service B File A - negative validation"
+    }
+  }
+}

@@ -11,24 +11,31 @@
 
 package org.lfenergy.letscoordinate.backend.dto.eventmessage.header;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class HeaderDto {
 
+    @NotNull
     private String verb;
+    @NotNull
     private String noun;
+    @NotNull
     private Instant timestamp;
+    @NotNull
     private String source;
+    @NotNull
     private String messageId;
+    @Valid @NotNull
     private PropertiesDto properties = new PropertiesDto();
 
 }

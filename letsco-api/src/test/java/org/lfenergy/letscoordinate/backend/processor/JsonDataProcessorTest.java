@@ -13,47 +13,53 @@ package org.lfenergy.letscoordinate.backend.processor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.vavr.control.Validation;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
+import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
+import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
-import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageWrapperDto;
 import org.lfenergy.letscoordinate.backend.service.EventMessageService;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.lfenergy.letscoordinate.backend.util.ApplicationContextUtil;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class JsonDataProcessorTest {
 
-    @InjectMocks
     JsonDataProcessor jsonDataProcessor;
-
-    @Mock
     ObjectMapper objectMapper;
-
-    @Mock
+    CoordinationConfig coordinationConfig;
+    LetscoProperties letscoProperties;
     EventMessageService eventMessageService;
 
+    @BeforeEach
+    public void before() {
+        objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        coordinationConfig = ApplicationContextUtil.initCoordinationConfig();
+        letscoProperties = ApplicationContextUtil.initLetscoProperties();
+        eventMessageService = new EventMessageService(coordinationConfig, letscoProperties);
+        jsonDataProcessor = new JsonDataProcessor(objectMapper, eventMessageService);
+    }
+
     @Test
-    public void should_create_eventmessage_dto_from_valid_json_file() throws Exception {
-        File file = new File("src/generateRscKpiExcelReport/resources/ValidJsonTestFile_1.json");
+    public void inputStreamToPojo_shouldReturnEventMessageDto() throws Exception {
+        File file = new File("src/test/resources/validTestFile_1.json");
         InputStream inputStream = new FileInputStream(file);
-
-        when(objectMapper.readValue(any(InputStream.class), any(Class.class)))
-                .thenReturn(new ObjectMapper().registerModule(new JavaTimeModule())
-                        .readValue(inputStream, EventMessageWrapperDto.class));
-
-        EventMessageDto eventMessageDto = jsonDataProcessor.inputStreamToPojo(inputStream);
-        Assertions.assertThat(eventMessageDto).isNotNull();
-        Assertions.assertThat(eventMessageDto.getHeader().getNoun()).isEqualTo("ProcessSuccess");
+        Validation<ResponseErrorDto, EventMessageDto> validation = jsonDataProcessor.inputStreamToPojo(inputStream);
+        assertAll(
+                () -> assertTrue(validation.isValid()),
+                () -> assertNotNull(validation.get()),
+                () -> assertEquals("ProcessSuccess", validation.get().getHeader().getNoun())
+        );
         // TODO Test fields values one by one
     }
 

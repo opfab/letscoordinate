@@ -12,6 +12,7 @@
 import {Injectable} from '@angular/core';
 import {ChartOptions} from 'chart.js';
 import {Theme} from "../models/theme.model";
+import {DataGranularityEnum} from "../enums/data-granularity-enum";
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,7 @@ export class ThemeService {
 
   themeMap: Map<string, Theme> = new Map<string, Theme>([
       ['DAY', {color: 'black', bgColor:'white', gridLinesColor: 'rgba(0, 0, 0, 0.1)', textComponentColor: '#343940', textComponentBgColor: 'white'}],
-      ['NIGHT', {color: '#e0e0e0', bgColor:'#343940', gridLinesColor: 'rgba(255,255,255,0.1)', textComponentColor: '#343940', textComponentBgColor: '#e0e0e0'}]
+      ['NIGHT', {color: '#bababa', bgColor:'#262f3d', gridLinesColor: 'rgba(255,255,255,0.1)', textComponentColor: '#343940', textComponentBgColor: '#e0e0e0'}]
   ]);
   currentThemeCode : string = 'NIGHT';
 
@@ -40,13 +41,19 @@ export class ThemeService {
     }
   }
 
-  updateChartColors(options: ChartOptions) {
+  updateChartColors(options: ChartOptions, dataGranularity: DataGranularityEnum) {
     if (options) {
       options.legend = {
         labels: {
           fontColor: this.currentTheme.color
-        }
+        },
+        position: (dataGranularity === DataGranularityEnum.YEARLY ? 'bottom' : 'top')
       };
+      options.layout = {
+        padding: {
+          top: (dataGranularity === DataGranularityEnum.YEARLY ? 15 : 0)
+        }
+      }
 
       options.scales.xAxes = [{
         ticks: {fontColor: this.currentTheme.color},
