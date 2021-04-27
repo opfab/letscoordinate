@@ -211,7 +211,7 @@ public class ExcelDataProcessor implements DataProcessor {
     public void initEventMessagePayload(EventMessageDto eventMessageDto,
                                         Sheet sheet,
                                         Map<String, Integer> columnIndexMap)
-            throws NoSuchFieldException, InstantiationException, IllegalAccessException {
+            throws NoSuchFieldException, InstantiationException, IllegalAccessException, InvalidInputFileException {
         if (eventMessageDto != null && sheet != null && columnIndexMap != null) {
             Map<DataTypeEnum, Map<String, List<IPayloadData>>> payloadMap = buildPayloadAsMap(sheet, columnIndexMap);
 
@@ -249,7 +249,7 @@ public class ExcelDataProcessor implements DataProcessor {
      * @throws IllegalAccessException see {@link PojoUtil#setProperty(Object, String, String)}
      */
     private Map<DataTypeEnum, Map<String, List<IPayloadData>>> buildPayloadAsMap(Sheet sheet,
-                                                                                 Map<String, Integer> columnIndexMap) throws NoSuchFieldException, IllegalAccessException, InstantiationException {
+                                                                                 Map<String, Integer> columnIndexMap) throws NoSuchFieldException, IllegalAccessException, InstantiationException, InvalidInputFileException {
         Map<DataTypeEnum, Map<String,List<IPayloadData>>> payloadMap = new LinkedHashMap<>();
 
         Integer dataTypeColIndex = columnIndexMap.get(dataTypeColName.toLowerCase());
@@ -261,36 +261,39 @@ public class ExcelDataProcessor implements DataProcessor {
                 if (currentRow != null && currentRow.getCell(dataTypeColIndex) != null) {
                     String dataTypeCellValue = currentRow.getCell(dataTypeColIndex).getStringCellValue();
                     DataTypeEnum dataType = DataTypeEnum.getByValue(dataTypeCellValue);
-                    Map<String,List<IPayloadData>> payloadDataMap = payloadMap.get(dataType);
-                    if (payloadDataMap == null) {
-                        payloadDataMap = new LinkedHashMap<>();
-                        payloadMap.put(dataType, payloadDataMap);
+                    if (dataType != null) {
+                        Map<String, List<IPayloadData>> payloadDataMap = payloadMap.get(dataType);
+                        if (payloadDataMap == null) {
+                            payloadDataMap = new LinkedHashMap<>();
+                            payloadMap.put(dataType, payloadDataMap);
+                        }
+                        String nameCellValue = currentRow.getCell(nameColIndex).getStringCellValue();
+                        List nameDataList = payloadDataMap.get(nameCellValue);
+                        if (nameDataList == null) {
+                            nameDataList = new ArrayList();
+                            payloadDataMap.put(nameCellValue, nameDataList);
+                        }
+                        switch (dataType) {
+                            case TEXT:
+                                TextDataDto textDataDto = new TextDataDto();
+                                setProperties(textDataDto, payloadTextDataColNames, currentRow, columnIndexMap);
+                                nameDataList.add(textDataDto);
+                                break;
+                            case LINK:
+                                LinkDataDto linkDataDto = new LinkDataDto();
+                                setProperties(linkDataDto, payloadLinkDataColNames, currentRow, columnIndexMap);
+                                nameDataList.add(linkDataDto);
+                                break;
+                            case RSC_KPI:
+                                createRscKpiDataAndAddToDataList(columnIndexMap, currentRow, nameDataList);
+                                break;
+                            case TIMESERIE:
+                                createTimeserieDataAndAddToDataList(columnIndexMap, currentRow, nameDataList);
+                                break;
+                        }
+                    } else if (StringUtils.isNotBlank(dataTypeCellValue)) {
+                        throw new InvalidInputFileException("Unknown dataType: " + dataTypeCellValue);
                     }
-                    String nameCellValue = currentRow.getCell(nameColIndex).getStringCellValue();
-                    List nameDataList = payloadDataMap.get(nameCellValue);
-                    if (nameDataList == null) {
-                        nameDataList = new ArrayList();
-                        payloadDataMap.put(nameCellValue, nameDataList);
-                    }
-                    switch (dataType) {
-                        case TEXT:
-                            TextDataDto textDataDto = new TextDataDto();
-                            setProperties(textDataDto, payloadTextDataColNames, currentRow, columnIndexMap);
-                            nameDataList.add(textDataDto);
-                            break;
-                        case LINK:
-                            LinkDataDto linkDataDto = new LinkDataDto();
-                            setProperties(linkDataDto, payloadLinkDataColNames, currentRow, columnIndexMap);
-                            nameDataList.add(linkDataDto);
-                            break;
-                        case RSC_KPI:
-                            createRscKpiDataAndAddToDataList(columnIndexMap, currentRow, nameDataList);
-                            break;
-                        case TIMESERIE:
-                            createTimeserieDataAndAddToDataList(columnIndexMap, currentRow, nameDataList);
-                            break;
-                    }
-
                 }
             }
         }
