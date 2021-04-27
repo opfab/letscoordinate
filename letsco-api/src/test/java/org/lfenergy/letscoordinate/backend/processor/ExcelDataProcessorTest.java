@@ -241,7 +241,7 @@ public class ExcelDataProcessorTest {
     }
 
     @Test
-    public void initEventMessagePayload_shouldNotUpdateEventMessageDtoPayload() throws NoSuchFieldException, IllegalAccessException, InstantiationException {
+    public void initEventMessagePayload_shouldNotUpdateEventMessageDtoPayload() throws NoSuchFieldException, IllegalAccessException, InstantiationException, InvalidInputFileException {
         EventMessageDto eventMessageDto = new EventMessageDto();
         int initialHashCode = eventMessageDto.hashCode();
         excelDataProcessor.initEventMessagePayload(eventMessageDto, null, null);
