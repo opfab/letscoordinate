@@ -357,7 +357,7 @@ public class OpfabPublisherComponent {
                     payloadDto.getTimeserie().forEach(t ->
                             t.getData().forEach(d ->
                                     d.getDetail().forEach(detail -> {
-                                        if (c.containsKey(detail.getLabel())) {
+                                        if (detail.getValue() != null && c.containsKey(detail.getLabel())) {
                                             OpfabConfig.ChangeTimeserieDataDetailValueTypeEnum changeTimeserieDataDetailValueTypeEnum =
                                                     c.get(detail.getLabel());
                                             if (changeTimeserieDataDetailValueTypeEnum == INSTANT) {

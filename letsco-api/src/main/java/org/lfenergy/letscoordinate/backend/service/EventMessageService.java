@@ -36,6 +36,9 @@ import javax.validation.ValidatorFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+import static org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.TimeserieTemporalDataDto.TIMESERIE_TEMPORAL_DATA_DEFAULT_VALUE;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -80,6 +83,8 @@ public class EventMessageService {
                     .build());
         }
 
+        verifyTimeserieTemporalData(eventMessageDto, errorMessages);
+
         // check that all eic_code provided by the dto exists in our database
         checkEicCodes(eventMessageDto, errorMessages);
 
@@ -91,6 +96,33 @@ public class EventMessageService {
                     .build());
         }
         return Validation.valid(eventMessageDto);
+    }
+
+    void verifyTimeserieTemporalData(EventMessageDto eventMessage,
+                                             List<ResponseErrorMessageDto> errorMessages) {
+        if (eventMessage != null && eventMessage.getPayload() != null &&
+                eventMessage.getPayload().getTimeserie() != null) {
+            Set<TimeserieTemporalDataDto> absentValues = new HashSet<>();
+            eventMessage.getPayload().getTimeserie().forEach(ts -> {
+                if (ts.getData() != null) {
+                    ts.getData().forEach(d -> {
+                        if (d.getDetail() != null) {
+                            absentValues.addAll(d.getDetail().stream()
+                                    .filter(t -> TIMESERIE_TEMPORAL_DATA_DEFAULT_VALUE.equals(t.getValue()))
+                                    .collect(Collectors.toSet()));
+                            }
+                    });
+                }
+            });
+            if (!absentValues.isEmpty()) {
+                errorMessages.add(ResponseErrorMessageDto.builder()
+                        .severity(ResponseErrorSeverityEnum.ERROR)
+                        .message("You must specify a value - null is acceptable - in the timeserie" +
+                                " details data. Concerned label(s): " + absentValues.stream()
+                                .map(TimeserieTemporalDataDto::getLabel).sorted().collect(toList()))
+                        .build());
+            }
+        }
     }
 
     public Set<String> getMissingMandatoryFields(EventMessageDto eventMessageDto) {
@@ -150,7 +182,7 @@ public class EventMessageService {
     public List<String> getKnownEicCodes(Set<String> eicCodes) {
         return coordinationConfig.getAllEicCodes().stream()
                 .filter(eicCode -> eicCodes.contains(eicCode))
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     private Set<String> extractEicCodesFromEventMessageDto(EventMessageDto eventMessageDto) {
@@ -175,7 +207,7 @@ public class EventMessageService {
                         .filter(Objects::nonNull)
                         .flatMap(Collection::stream)
                         .filter(StringUtils::isNotBlank)
-                        .collect(Collectors.toList()));
+                        .collect(toList()));
             }
             if(payloadDto.getRscKpi() != null) {
                 eicCodes.addAll(payloadDto.getRscKpi().stream()
@@ -190,7 +222,7 @@ public class EventMessageService {
                         .filter(Objects::nonNull)
                         .map(RscKpiTemporalDataDto::getEicCode)
                         .filter(StringUtils::isNotBlank)
-                        .collect(Collectors.toList()));
+                        .collect(toList()));
             }
             if(payloadDto.getTimeserie() != null) {
                 eicCodes.addAll(payloadDto.getTimeserie().stream()
@@ -207,7 +239,7 @@ public class EventMessageService {
                         .filter(Objects::nonNull)
                         .flatMap(Collection::stream)
                         .filter(StringUtils::isNotBlank)
-                        .collect(Collectors.toList()));
+                        .collect(toList()));
             }
         }
 
