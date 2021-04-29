@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
 import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
+import org.lfenergy.letscoordinate.backend.dto.ResponseErrorMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageWrapperDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.*;
@@ -28,10 +29,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -136,7 +136,6 @@ public class EventMessageServiceTest {
                 "payload.rscKpi[0].data[0].detail[0].value",
                 "payload.timeserie[0].name",
                 "payload.timeserie[0].data[0].timestamp",
-                "payload.timeserie[0].data[0].detail[0].value",
                 "payload.validation.status",
                 "payload.validation.result",
                 "payload.validation.validationType",
@@ -265,5 +264,16 @@ public class EventMessageServiceTest {
                 vm -> vm.setBusinessTimestamp(null));
         Set<String> missingMandatoryFields = eventMessageService.getMissingMandatoryFields(eventMessageDto);
         assertEquals(0, missingMandatoryFields.size());
+    }
+
+    @Test
+    public void verifyTimeserieTemporalData() throws IOException {
+        EventMessageWrapperDto eventMessageWrapper = JsonUtils.jsonToObject(
+                "error_jsons/timeserie-details-data-value-absent.json", EventMessageWrapperDto.class);
+        List<ResponseErrorMessageDto> errorMessages = new ArrayList<>();
+        eventMessageService.verifyTimeserieTemporalData(eventMessageWrapper.getEventMessage(), errorMessages);
+        assertEquals(1, errorMessages.size());
+        errorMessages.forEach(e -> assertTrue(e.getMessage().contains("You must specify a value - null is " +
+                "acceptable - in the timeserie details data. Concerned label(s): [label1, label3]")));
     }
 }

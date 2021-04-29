@@ -20,12 +20,14 @@ import java.util.List;
 @Getter
 @Setter
 public class TimeserieTemporalDataDto implements IPayloadTemporalData {
+
+    public static String TIMESERIE_TEMPORAL_DATA_DEFAULT_VALUE = "!@#$%^&*(";
+
     // Common fields (Input and Output)
     private String id;
     private String label;
     private List<String> eicCode;
-    @NotNull
-    private String value;
+    private String value = TIMESERIE_TEMPORAL_DATA_DEFAULT_VALUE;
     // Output fields
     private Integer accept;
     private Integer reject;
