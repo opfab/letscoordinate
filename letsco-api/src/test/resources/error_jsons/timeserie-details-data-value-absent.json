@@ -1,0 +1,67 @@
+{
+  "eventMessage": {
+    "xmlns": "http://iec.ch/TC57/2011/schema/message",
+    "header": {
+      "verb": "created",
+      "noun": "ProcessInformation",
+      "timestamp": "2021-04-22T20:03:51.732Z",
+      "source": "SOURCE",
+      "messageId": "95c16fa7f7db4390b5e86363c160666f",
+      "properties": {
+        "format": "JSON",
+        "businessDataIdentifier": {
+          "recipients": [
+            "10X1001A1001A329",
+            "10XAT-APG------Z",
+            "10XDE-EON-NETZ-C",
+            "10XDE-RWENET---W",
+            "10XDE-VE-TRANSMK",
+            "10XPL-TSO------P",
+            "10XSK-SEPS-GRIDB",
+            "10XCZ-CEPS-GRIDE"
+          ],
+          "businessDayFrom": "2021-04-22T20:03:51.732Z",
+          "sendingUser": "10XCZ-CEPS-GRIDE",
+          "messageTypeName": "MessageTypeName"
+        }
+      }
+    },
+    "payload": {
+      "timeserie": [
+        {
+          "name": "firstElement",
+          "data": [
+            {
+              "timestamp": "2014-12-27T23:00:00Z",
+              "detail": [
+                {
+                  "label": "label1"
+                },
+                {
+                  "label": "label2",
+                  "value": "value2"
+                }
+              ]
+            },
+            {
+              "timestamp": "2014-12-27T23:00:00Z",
+              "detail": [
+                {
+                  "label": "label1",
+                  "value": null
+                },
+                {
+                  "label": "label2",
+                  "value": "label2"
+                },
+                {
+                  "label": "label3"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
