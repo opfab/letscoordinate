@@ -21,6 +21,7 @@ spring:
       hibernate:
         jdbc:
           time_zone: UTC
+        enable_lazy_load_no_trans: true
     hibernate:
       ddl-auto: none
     database-platform: org.hibernate.dialect.MariaDB103Dialect
@@ -94,6 +95,9 @@ opfab:
     servicea_validation_fileb_error:
       title: " Service A File B - negative validation"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
+    servicea_coordinationa:
+      title: " Service A Coordination A"
+#      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
     # SERVICE B
     serviceb_processmonitoring_processsuccessful:
       title: " Service B process successful - {{processStep}}"
@@ -120,10 +124,7 @@ opfab:
       title: " Service B File B - negative validation"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
   entityRecipients:
-    sourceA_messageTypeNameA:
-      notAllowed: sendingUser
-      addRscs: true
-    sourceA_messageTypeNameB:
+    servicea_coordinationa:
       notAllowed: sendingUser
       addRscs: true
   processWithFilename: false

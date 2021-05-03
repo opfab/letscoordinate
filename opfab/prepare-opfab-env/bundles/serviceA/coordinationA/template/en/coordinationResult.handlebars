@@ -1,0 +1,191 @@
+<!-- Copyright (c) 2020-2021, RTE (https://www.rte-france.com)                     -->
+<!-- Copyright (c) 2020-2021 RTE international (https://www.rte-international.com) -->
+<!-- See AUTHORS.txt                                                               -->
+<!-- This Source Code Form is subject to the terms of the Mozilla Public           -->
+<!-- License, v. 2.0. If a copy of the MPL was not distributed with this           -->
+<!-- file, You can obtain one at http://mozilla.org/MPL/2.0/.                      -->
+<!-- SPDX-License-Identifier: MPL-2.0                                              -->
+<!-- This file is part of the Let’s Coordinate project.                            -->
+
+{{#with card.data}}
+    <div class="row">
+        <div class="col-6">Status: <span class="text-success">Finished</span></div>
+        <div class="col-6">
+            <div style="float: right;">
+                <span>Answers :</span> {{#each tsos as |tsoEicCode|}}<span data-tso="{{tsoEicCode}}" class="tso-name-cell text-success">{{tsoEicCode}}</span>&nbsp;&nbsp;{{/each}}
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="m-3" style="overflow: hidden;">
+            <p>
+                <b>Business period:</b> {{dateFormat (math coordination.startDate.epochSecond '*' 1000)
+                                                     format='DD/MM/YYYY HH:mm'}} -
+                {{dateFormat (math coordination.endDate.epochSecond '*' 1000) format='DD/MM/YYYY HH:mm'}}
+            </p>
+
+            {{#if (bool sendingUser '!=' null)}}
+                <p class="mt-4 mb-3">
+                    <b>Proposed by:</b> {{sendingUser}}
+                </p>
+            {{/if}}
+
+            <h4 class="mt-3 txt-align-center">
+                {{#if agreementFound}}
+                    <span class='text-success'>An agreement has been found!</span>
+                {{else}}
+                    <span class='text-danger'>No agreement found. More coordination needed!</span>
+                {{/if}}
+            </h4>
+            <br/>
+            <br/>
+
+            {{#if (bool coordination.coordinationRas.length '>' 0)}}
+                <div>
+                    <table class="card-table col-sm-10" style="margin-left: auto; margin-right: auto;">
+                        <thead>
+                        <tr>
+                            <th scope="col">Event</th>
+                            <th scope="col">Constraint</th>
+                            <th scope="col">Remedial actions</th>
+                            <th scope="col" class="tso-col-cell" style="width: 40px;">TSO</th>
+                            <th scope="col" class="txt-align-center bg-green" style="width: 40px;">OK</th>
+                            <th scope="col" class="txt-align-center bg-red" style="width: 40px;">NOK</th>
+                            <th scope="col" class="txt-align-center bg-red" style="width: 200px;">Explanation</th>
+                            <th scope="col" class="txt-align-center" style="width: 200px;">Comment</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{#each coordination.coordinationRas as |ra|}}
+                            {{#each ../tsos as |tsoEicCode|}}
+                                <tr id="trAnswer_{{ra.id}}" class="crd-data-tr" data-tso="{{tsoEicCode}}">
+                                    {{#if (bool @index '==' 0)}}
+                                    <td class="crd-data-common-td" data-tso="{{tsoEicCode}}" rowspan="{{../../tsos.length}}">{{ra.event}}</td>
+                                    <td class="crd-data-common-td" data-tso="{{tsoEicCode}}" rowspan="{{../../tsos.length}}">{{ra.constraintt}}</td>
+                                    <td class="crd-data-common-td" data-tso="{{tsoEicCode}}" rowspan="{{../../tsos.length}}">{{ra.remedialAction}}</td>
+                                    {{/if}}
+                                    <td id="idTdAnswerTso_{{ra.id}}_{{tsoEicCode}}" class="tso-col-cell tso-name-cell"
+                                        data-tso="{{tsoEicCode}}" style="white-space: nowrap;">{{tsoEicCode}}</td>
+                                    <td id="idTdAnswerOK_{{ra.id}}_{{tsoEicCode}}"
+                                        class="crd-data-td txt-align-center">
+                                        <span id="idSpanAnswerOK_{{ra.id}}_{{tsoEicCode}}" class="output-component">?</span>
+                                    </td>
+                                    <td id="idTdAnswerNOK_{{ra.id}}_{{tsoEicCode}}"
+                                        class="crd-data-td txt-align-center">
+                                        <span id="idSpanAnswerNOK_{{ra.id}}_{{tsoEicCode}}" class="output-component">?</span>
+                                    </td>
+                                    <td id="idTdAnswerExpl_{{ra.id}}_{{tsoEicCode}}"
+                                        class="crd-data-td txt-align-center">
+                                        <span id="idSpanAnswerExpl_{{ra.id}}_{{tsoEicCode}}" class="output-component"></span>
+                                    </td>
+                                    <td id="idTdAnswerComment_{{ra.id}}_{{tsoEicCode}}" class="crd-data-td">
+                                        <span id="idSpanAnswerComment_{{ra.id}}_{{tsoEicCode}}"
+                                              class="output-component"></span>
+                                    </td>
+                                </tr>
+                            {{/each}}
+                        {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            {{/if}}
+
+            <p class="mt-4 mb-3">
+                <b>General comment:</b>
+            </p>
+            <div class="visible">
+                {{#each coordination.coordinationGeneralComments as |gc|}}
+                    {{#if (bool gc.generalComment '!=' '')}}
+                    <p id="idPAnswerTso_{{gc.eicCode}}" data-tso="{{gc.eicCode}}" class="output-component bold tso-name-cell ml-3 mb-1">{{gc.eicCode}}</p>
+                    <p id="idPAnswerGeneralComment_{{gc.eicCode}}" class="output-component ml-5">{{gc.generalComment}}</p>
+                    {{/if}}
+                {{/each}}
+            </div>
+
+
+        </div>
+    </div>
+{{/with}}
+
+<input id="answersRenderingStatus" type="hidden" value="">
+
+<script>
+    var currentCard = {{ json card }};
+    var entities;
+    var opfabUrl = location.origin;
+    var access_token = window.sessionStorage.getItem('access_token');
+
+    applyAnswers();
+
+    /* ---------------------------------------- RETRIEVE THE ENTITIES DETAILS --------------------------------------- */
+
+    function getAllEntities() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    var concernedTsos = {{json card.entityRecipients}};
+                    entities = JSON.parse(this.response)
+                            .filter(entity => concernedTsos.indexOf(entity.id) > -1)
+                            .reduce((acc, entity) => {
+                                acc[entity.id] = entity.name;
+                                return acc;
+                            }, {});
+                    updateEntitiesNames();
+                }
+            }
+        };
+        xhttp.open("GET", opfabUrl + "/users/entities", true);
+        xhttp.setRequestHeader("Authorization", "Bearer " + access_token);
+        xhttp.send();
+    }
+
+    getAllEntities();
+
+    function updateEntitiesNames() {
+        Array.from(document.getElementsByClassName('tso-name-cell'))
+                .forEach(e => e.innerHTML = entities[e.getAttribute('data-tso')]);
+    }
+
+    /* -------------------------------------------- DISPLAY TSOS ANSWERS -------------------------------------------- */
+
+    function applyAnswers() {
+        console.warn("APPLY RESULT CARD ANSERS...")
+        var answersRenderingStatus = document.getElementById("answersRenderingStatus");
+        //if (answersRenderingStatus.value === 'FINISHED')
+        //    return;
+
+        document.querySelectorAll('td[class*="tso-name-cell"]').forEach(function (el) {
+            el.classList.add('bg-orange');
+            el.classList.add('txt-color-black');
+        });
+        var coordination = {{json card.data.coordination}};
+        Array.from(coordination.coordinationRas).forEach(ra => {
+            for (let answer of ra.coordinationRaAnswers) {
+                //alert(JSON.stringify(answer));
+                document.getElementById('idTdAnswerTso_' + ra.id + '_' + answer.eicCode).classList.remove('bg-orange');
+                document.getElementById('idTdAnswerTso_' + ra.id + '_' + answer.eicCode).classList.add(answer.answer === 'OK' ? 'bg-green-light' : 'bg-red-light');
+
+                document.getElementById('idSpanAnswerOK_' + ra.id + '_' + answer.eicCode).innerText = '';
+                document.getElementById('idSpanAnswerNOK_' + ra.id + '_' + answer.eicCode).innerText = '';
+                document.getElementById('idSpanAnswer' + answer.answer + '_' + ra.id + '_' + answer.eicCode).innerText = 'X';
+                document.getElementById('idTdAnswer' + answer.answer + '_' + ra.id + '_' + answer.eicCode).classList.add(answer.answer === 'OK' ? 'bg-green-light' : 'bg-red-light');
+                document.getElementById('idTdAnswer' + answer.answer + '_' + ra.id + '_' + answer.eicCode).classList.add('txt-color-black');
+
+                document.getElementById('idSpanAnswerExpl_' + ra.id + '_' + answer.eicCode).innerText = answer.explanation;
+                if (answer.explanation !== '') {
+                    document.getElementById('idTdAnswerExpl_' + ra.id + '_' + answer.eicCode).classList.add('bg-red-light');
+                    document.getElementById('idTdAnswerExpl_' + ra.id + '_' + answer.eicCode).classList.add('txt-color-black');
+                }
+
+                if (answer.comment !== '') {
+                    document.getElementById('idSpanAnswerComment_' + ra.id + '_' + answer.eicCode).innerText = answer.comment;
+                    document.getElementById('idTdAnswerComment_' + ra.id + '_' + answer.eicCode).classList.add(answer.answer === 'OK' ? 'bg-green-light' : 'bg-red-light');
+                    document.getElementById('idTdAnswerComment_' + ra.id + '_' + answer.eicCode).classList.add('txt-color-black');
+                }
+            }
+        });
+        answersRenderingStatus.value = 'FINISHED';
+    }
+</script>

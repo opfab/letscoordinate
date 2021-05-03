@@ -4,9 +4,9 @@
   "name": "process.label",
   "version": "1",
   "uiVisibility": {
-    "monitoring": true,
-    "logging": true,
-    "calendar": true
+    "monitoring": false,
+    "logging": false,
+    "calendar": false
   },
   "states": {
     "freeMessageState": {

@@ -42,10 +42,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .csrf().ignoringAntMatchers("/letsco/api/v1/coordination")
+                .and()
                 .cors()
                 .and()
                 .authorizeRequests() //NOSONAR
                 .mvcMatchers("/letsco/api/v1/auth/token").permitAll()
+                .mvcMatchers("/letsco/api/v1/coordination").permitAll()
                 .mvcMatchers("/letsco/api/v1/**").hasAnyRole("TSO", "RSC")
                 .and()
                 .oauth2ResourceServer()

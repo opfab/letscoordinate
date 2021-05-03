@@ -25,7 +25,8 @@ public enum BasicGenericNounEnum {
     PROCESS_FAILED("ProcessFailed", "process failed", ALARM),
     PROCESS_ACTION("ProcessAction", "process action", ACTION),
     PROCESS_INFORMATION("ProcessInformation", "process information", INFORMATION),
-    MESSAGE_VALIDATED("DfgMessageValidated", "message validated", null);
+    MESSAGE_VALIDATED("DfgMessageValidated", "message validated", null),
+    COORDINATION("Coordination", "coordination", ACTION);
 
     private String noun;
     private String titleProcessType;
