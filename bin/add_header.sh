@@ -102,9 +102,9 @@ if [ -z "$key" ] || [ -z "$file_extensions" ] || [ -z "$header" ]; then
 fi
 
 cd $LETSCO_HOME
-licenceLines=$(wc -l <"$LETSCO_HOME/headers/$header")
+licenceLines=$(wc -l <"$LETSCO_HOME/util/headers/$header")
 licenceLines=$((licenceLines+1)) #Because wc is actually counting newline chars and header files aren't ending on newlines?
-licenceContent=$(cat "$LETSCO_HOME/headers/$header")
+licenceContent=$(cat "$LETSCO_HOME/util/headers/$header")
 findCommand="find $LETSCO_HOME "
 echo "Licence header line count: $licenceLines"
 echo -e "Licence header content: \n$licenceContent"
@@ -112,7 +112,7 @@ echo -e "\n"
 
 #Exclude sh and  files
 findCommand+="! -path \"$LETSCO_HOME/bin/*\" "
-findCommand+="-and ! -path \"$LETSCO_HOME/messages_models/*\" "
+findCommand+="-and ! -path \"$LETSCO_HOME/util/messages_models/*\" "
 
 findCommand+=" -and "
 for ((i=0; i<${#file_extensions[*]}; i=$((i+1))));
