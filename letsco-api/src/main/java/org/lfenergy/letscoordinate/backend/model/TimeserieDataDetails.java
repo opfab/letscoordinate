@@ -47,19 +47,11 @@ public class TimeserieDataDetails implements java.io.Serializable {
     @Column(name = "value", nullable = false, length = 1000)
     private String value;
 
-    @Column(name = "accept", nullable = false)
-    private Integer accept;
-
-    @Column(name = "reject", nullable = false)
-    private Integer reject;
-
-    @Column(name = "explanation", nullable = false, length = 1000)
-    private String explanation;
-
-    @Column(name = "comment", nullable = false, length = 1000)
-    private String comment;
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "timeserieDataDetails", cascade = CascadeType.ALL)
     private List<TimeserieDataDetailsEicCode> timeserieDataDetailsEicCodes = new ArrayList<>();
+
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "timeserieDataDetails", cascade = CascadeType.ALL)
+    private List<TimeserieDataDetailsResult> timeserieDataDetailsResults = new ArrayList<>();
 
 }

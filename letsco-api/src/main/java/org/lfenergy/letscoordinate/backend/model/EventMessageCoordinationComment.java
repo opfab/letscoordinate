@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018-2020, RTE (https://www.rte-france.com)
- * Copyright (c) 2019-2020 RTE international (https://www.rte-international.com)
+ * Copyright (c) 2020-2021, RTE (https://www.rte-france.com)
+ * Copyright (c) 2020-2021 RTE international (https://www.rte-international.com)
  * See AUTHORS.txt
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,20 +14,18 @@ package org.lfenergy.letscoordinate.backend.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
-@Table(name = "timeserie", catalog = "letsco")
+@Table(name = "event_message_coordination_comment", catalog = "letsco")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Builder
 @ToString(exclude = {"eventMessage"})
-public class Timeserie implements java.io.Serializable {
+public class EventMessageCoordinationComment implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -38,10 +36,10 @@ public class Timeserie implements java.io.Serializable {
     @JoinColumn(name = "id_event_message", nullable = false)
     private EventMessage eventMessage;
 
-    @Column(name = "name", nullable = false, length = 250)
-    private String name;
+    @Column(name = "eic_code", nullable = false, length = 50)
+    private String eicCode;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "timeserie", cascade = CascadeType.ALL)
-    private List<TimeserieData> timeserieDatas = new ArrayList<>();
+    @Column(name = "general_comment", nullable = false, length = 1000)
+    private String generalComment;
 
 }

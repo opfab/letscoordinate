@@ -26,7 +26,7 @@ import java.util.List;
 public abstract class AbstractPayloadComplexData<T extends IPayloadDataDetails> implements IPayloadData {
     @NotNull
     private String name;
-    private Boolean joinGraph;
+    private Boolean joinGraph; // only for RSC Kpis
     @NotNull
     @NotEmpty
     @Valid
