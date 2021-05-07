@@ -13,12 +13,12 @@ package org.lfenergy.letscoordinate.backend.mapper;
 
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
+import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.CoordinationCommentDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.HeaderDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.PropertiesDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.*;
 import org.lfenergy.letscoordinate.backend.model.*;
 
-import java.time.Duration;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -57,6 +57,20 @@ public class EventMessageMapper {
                     eventMessage.setFileName(businessDataIdentifierDto.getFileName().orElse(""));
                     eventMessage.setTso(businessDataIdentifierDto.getTso().orElse(null));
                     eventMessage.setBiddingZone(businessDataIdentifierDto.getBiddingZone().orElse(null));
+                    eventMessage.setEventMessageRecipients(businessDataIdentifierDto.getRecipients()
+                            .map(recipients -> recipients.stream()
+                                    .map(recipient -> EventMessageRecipient.builder()
+                                            .eventMessage(eventMessage)
+                                            .eicCode(recipient)
+                                            .build())
+                                    .collect(Collectors.toList()))
+                            .orElse(null));
+                    eventMessage.setCoordinationStatus(businessDataIdentifierDto.getCoordinationStatus().orElse(null));
+                    eventMessage.setEventMessageCoordinationComments(businessDataIdentifierDto.getCoordinationComments()
+                            .map(coordinationCommentDtos -> coordinationCommentDtos.stream()
+                                    .map(cc -> fromDto(cc, eventMessage))
+                                    .collect(Collectors.toList()))
+                            .orElse(null));
                 }
             }
         }
@@ -84,6 +98,19 @@ public class EventMessageMapper {
                     .orElse(null));
         }
         return eventMessage;
+    }
+
+    // Text
+
+    private static EventMessageCoordinationComment fromDto(CoordinationCommentDto coordinationCommentDto,
+                                                           EventMessage eventMessage) {
+        if(coordinationCommentDto == null)
+            return null;
+        return EventMessageCoordinationComment.builder()
+                .eicCode(coordinationCommentDto.getEicCode())
+                .generalComment(coordinationCommentDto.getGeneralComment())
+                .eventMessage(eventMessage)
+                .build();
     }
 
     // Text
@@ -165,7 +192,6 @@ public class EventMessageMapper {
         Timeserie timeserie = new Timeserie();
         timeserie.setId(null);
         timeserie.setName(timeserieDataDto.getName());
-        timeserie.setCoordinationStatus(null);
         timeserie.setTimeserieDatas(timeserieDataDto.getData().stream()
                 .map(timeserieDataDetailsDto -> EventMessageMapper.fromDto(timeserieDataDetailsDto, timeserie))
                 .collect(Collectors.toList()));
@@ -202,6 +228,17 @@ public class EventMessageMapper {
                         .map(eicCode -> TimeserieDataDetailsEicCode.builder()
                                 .timeserieDataDetails(timeserieDataDetails)
                                 .eicCode(eicCode)
+                                .build())
+                        .collect(Collectors.toList()))
+                .orElse(null));
+        timeserieDataDetails.setTimeserieDataDetailsResults(Optional.ofNullable(timeserieTemporalDataDto.getResults())
+                .map(resultDtos -> resultDtos.stream()
+                        .map(resultDto -> TimeserieDataDetailsResult.builder()
+                                .timeserieDataDetails(timeserieDataDetails)
+                                .eicCode(resultDto.getEicCode())
+                                .answer(resultDto.getAnswer())
+                                .explanation(resultDto.getExplanation())
+                                .comment(resultDto.getComment())
                                 .build())
                         .collect(Collectors.toList()))
                 .orElse(null));
