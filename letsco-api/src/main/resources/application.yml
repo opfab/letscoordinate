@@ -57,7 +57,7 @@ letsco:
     dir: D:\_RTE_\tmp\input
     validation:
       accept-properties-ignore-case: true
-      fail-on-unknown-properties: false
+      fail-on-unknown-properties: true
   security:
     allowed-origins:
       - http://localhost:4200

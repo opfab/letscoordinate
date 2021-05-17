@@ -14,6 +14,7 @@ package org.lfenergy.letscoordinate.backend.dto.eventmessage.payload;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -23,14 +24,12 @@ public class TimeserieTemporalDataDto implements IPayloadTemporalData {
     // Common fields (Input and Output)
     private String id;
     private String label;
-    private List<String> eicCode;
     @NotNull
     private String value;
+    private List<String> eicCode;
     // Output fields
-    private Integer accept;
-    private Integer reject;
-    private String explanation;
-    private String comment;
+    @Valid
+    private List<TimeserieOutputResultDto> results;
     // OpFab data field
     private Object opfabDataValue;
 }

@@ -134,7 +134,6 @@ public class PojoTest {
                 .id(1L)
                 .name("name")
                 .eventMessage(new EventMessage())
-                .coordinationStatus("coordinationStatus")
                 .timeserieDatas(Arrays.asList(
                         TimeserieData.builder()
                                 .id(1L)
@@ -144,7 +143,7 @@ public class PojoTest {
                                 .build()
                 ))
                 .build();
-        Timeserie timeserie2 = new Timeserie(null, null, null, null, null);
+        Timeserie timeserie2 = new Timeserie(null, null, null, null);
 
         assertNotNull(timeserie.toString());
         assertNotNull(timeserie2.toString());
@@ -167,10 +166,6 @@ public class PojoTest {
                 .timeserieData(TimeserieData.builder().id(1L).build())
                 .label("label")
                 .value("value")
-                .accept(1)
-                .reject(1)
-                .explanation("explanation")
-                .comment("comment")
                 .timeserieDataDetailsEicCodes(Arrays.asList(
                         TimeserieDataDetailsEicCode.builder()
                                 .id(1L)

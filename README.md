@@ -108,12 +108,12 @@ To see more about the server.sh commands and options, please try:
 - Click on *kafka-producer-controller*
 - Click on *POST /letsco/data-provider/v1/kafka/json/raw-msg*
 - Click on *Try it out*
-- In the data body value, put the content of one of the files from the directory "*message_models/json/card_feed/*" (e.g: *ProcessSuccessful.json*, *MessageValidated_NEGATIVE_ACK.json*, ...)
+- In the data body value, put the content of one of the files from the directory "*util/messages_models/json/card_feed/*" (e.g: *ProcessSuccessful.json*, *MessageValidated_NEGATIVE_ACK.json*, ...)
 - Click on *Execute*
 
 If you open a browser and connect to application ([http://localhost/ui/](http://localhost/ui/)) with the username **user.test** and password **test**, you should see the new card in the Feed (if it is not the case, please change the timeline view or/and period to include the card's dates: timestamp or/and business period).
 
-Feel free to test the other json samples from the directory "*message_models/json/card_feed/*" 
+Feel free to test the other json samples from the directory "*util/messages_models/json/card_feed/*" 
 
 #### 3.2. Generate a RSC KPI report
 
@@ -128,7 +128,7 @@ Feel free to test the other json samples from the directory "*message_models/jso
 - Click on *POST /letsco/api/v1/upload/save*
 - Click on *Try it out*
 - Past the previous copied token in the *Authorization* field
-- Click the "*Browse...*" button and choose the "*message_models/json/rsc_kpi_report/kpi_use_cases.json*" file.
+- Click the "*Browse...*" button and choose the "*util/messages_models/json/rsc_kpi_report/kpi_use_cases.json*" file.
 - Click on *Execute*
 - Connect to OpFab ([http://localhost/ui/](http://localhost/ui/)) with the username **user.test** and password **test**.
 - Select the *"RSC KPI Report"* menu.

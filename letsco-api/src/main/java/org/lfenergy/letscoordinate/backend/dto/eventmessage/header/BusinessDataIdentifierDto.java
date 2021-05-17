@@ -13,7 +13,9 @@ package org.lfenergy.letscoordinate.backend.dto.eventmessage.header;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import org.lfenergy.letscoordinate.backend.enums.CoordinationStatusEnum;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.List;
@@ -51,6 +53,11 @@ public class BusinessDataIdentifierDto {
     private String tso;
     @Getter(AccessLevel.NONE)
     private String biddingZone;
+    @Getter(AccessLevel.NONE)
+    private CoordinationStatusEnum coordinationStatus;
+    @Getter(AccessLevel.NONE)
+    @Valid
+    private List<CoordinationCommentDto> coordinationComments;
 
     public Optional<String> getProcessStep() {
         return Optional.ofNullable(processStep);
@@ -126,5 +133,23 @@ public class BusinessDataIdentifierDto {
     @JsonProperty("businessApplication")
     public String getBusinessApplicationSimple() {
         return businessApplication;
+    }
+
+    public Optional<CoordinationStatusEnum> getCoordinationStatus() {
+        return Optional.ofNullable(coordinationStatus);
+    }
+
+    @JsonProperty("coordinationStatus")
+    public CoordinationStatusEnum getCoordinationStatusSimple() {
+        return coordinationStatus;
+    }
+
+    public Optional<List<CoordinationCommentDto>> getCoordinationComments() {
+        return Optional.ofNullable(coordinationComments);
+    }
+
+    @JsonProperty("coordinationComment")
+    public List<CoordinationCommentDto> getCoordinationCommentsSimple() {
+        return coordinationComments;
     }
 }
