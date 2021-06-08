@@ -48,6 +48,8 @@ public class BusinessDataIdentifierDto {
     @Getter(AccessLevel.NONE)
     private String sendingUser;
     @Getter(AccessLevel.NONE)
+    private String caseId;
+    @Getter(AccessLevel.NONE)
     private String fileName;
     @Getter(AccessLevel.NONE)
     private String tso;
@@ -128,6 +130,15 @@ public class BusinessDataIdentifierDto {
 
     public Optional<String> getBusinessApplication() {
         return Optional.ofNullable(businessApplication);
+    }
+
+    @JsonProperty("caseId")
+    public String getCaseIdSimple() {
+        return caseId;
+    }
+
+    public Optional<String> getCaseId() {
+        return Optional.ofNullable(caseId);
     }
 
     @JsonProperty("businessApplication")
