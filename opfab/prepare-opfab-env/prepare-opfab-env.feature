@@ -57,12 +57,12 @@ Feature: Prepare OpFab env. for Let's Co open source
     And match response.name == group.name
     And match response.id == group.id
 
-  Scenario: Create perimeter for Service A
+  Scenario: Create perimeter for Service A Card Creation
 
-    * def serviceAPerimeter =
+    * def serviceACardCreationPerimeter =
 """
 {
-  "id" : "serviceAPerimeter",
+  "id" : "serviceACardCreationPerimeter",
   "process" : "servicea_cardcreation",
   "stateRights" : [
     {
@@ -75,16 +75,16 @@ Feature: Prepare OpFab env. for Let's Co open source
 
     Given url opfabUrl + 'users/perimeters'
     And header Authorization = 'Bearer ' + authToken
-    And request serviceAPerimeter
+    And request serviceACardCreationPerimeter
     When method post
-    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceAPerimeter")
+    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceACardCreationPerimeter")
 
-  Scenario: Create perimeter for Service B
+  Scenario: Create perimeter for Service B Card Creation
 
-    * def serviceBPerimeter =
+    * def serviceBCardCreationPerimeter =
 """
 {
-  "id" : "serviceBPerimeter",
+  "id" : "serviceBCardCreationPerimeter",
   "process" : "serviceb_cardcreation",
   "stateRights" : [
     {
@@ -97,27 +97,53 @@ Feature: Prepare OpFab env. for Let's Co open source
 
     Given url opfabUrl + 'users/perimeters'
     And header Authorization = 'Bearer ' + authToken
-    And request serviceBPerimeter
+    And request serviceBCardCreationPerimeter
     When method post
-    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceBPerimeter")
+    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceBCardCreationPerimeter")
 
-  Scenario: Add serviceAPerimeter for group 'servicea'
+  Scenario: Create perimeter for Service A Smart Notification
+
+    * def serviceACoordinationAPerimeter =
+"""
+{
+  "id" : "serviceACoordinationAPerimeter",
+  "process" : "servicea_coordinationa",
+  "stateRights" : [
+    {
+      "state" : "initial",
+      "right" : "ReceiveAndWrite"
+    },
+    {
+      "state" : "answer",
+      "right" : "ReceiveAndWrite"
+    }
+  ]
+}
+"""
+
+    Given url opfabUrl + 'users/perimeters'
+    And header Authorization = 'Bearer ' + authToken
+    And request serviceACoordinationAPerimeter
+    When method post
+    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceACoordinationAPerimeter")
+
+  Scenario: Add perimeters to group 'servicea'
 
     * def group = 'servicea'
 
     Given url opfabUrl + 'users/groups/' + group + '/perimeters'
     And header Authorization = 'Bearer ' + authToken
-    And request ["serviceAPerimeter"]
+    And request ["serviceACardCreationPerimeter", "serviceACoordinationAPerimeter"]
     When method patch
     Then status 200
 
-  Scenario: Add serviceBPerimeter for group 'serviceb'
+  Scenario: Add perimeters to group 'serviceb'
 
     * def group = 'serviceb'
 
     Given url opfabUrl + 'users/groups/' + group + '/perimeters'
     And header Authorization = 'Bearer ' + authToken
-    And request ["serviceBPerimeter"]
+    And request ["serviceBCardCreationPerimeter"]
     When method patch
     Then status 200
 
@@ -213,17 +239,6 @@ Feature: Prepare OpFab env. for Let's Co open source
     # And match response.dateFormat == userSettings.dateFormat
     # And match response.defaultTags == userSettings.defaultTags
 
-  Scenario: Get current user (user.test) with perimeters
-
-    * def signInUserTest = call read('./getToken.feature') { username: 'user.test'}
-
-    Given url opfabUrl + 'users/CurrentUserWithPerimeters'
-    And header Authorization = 'Bearer ' + signInUserTest.authToken
-    When method get
-    Then status 200
-    And match response.userData.login == 'user.test'
-    And assert response.computedPerimeters.length == 2
-
 #################################################
 #               USER.TEST2 (TERNA)              #
 #################################################
@@ -302,6 +317,360 @@ Feature: Prepare OpFab env. for Let's Co open source
     # And match response.dateFormat == userSettings.dateFormat
     # And match response.defaultTags == userSettings.defaultTags
 
+
+#################################################
+#                   USER.RTE                    #
+#################################################
+
+  Scenario: Create user user.rte
+
+    * def user =
+"""
+{
+   "login" : "user.rte"
+}
+"""
+
+    Given url opfabUrl + 'users/users'
+    And header Authorization = 'Bearer ' + authToken
+    And request user
+    When method post
+    Then assert responseStatus == 200 || responseStatus == 201
+    And match response.login == user.login
+
+  Scenario: Add user user.rte to group Service A
+
+    * def group = 'servicea'
+    * def usersArray =
+"""
+[ "user.rte" ]
+"""
+
+    Given url opfabUrl + 'users/groups/' + group + '/users'
+    And header Authorization = 'Bearer ' + authToken
+    And request usersArray
+    When method patch
+    And status 200
+
+  Scenario: Add user user.rte to group Service B
+
+    * def group = 'serviceb'
+    * def usersArray =
+"""
+[ "user.rte" ]
+"""
+
+    Given url opfabUrl + 'users/groups/' + group + '/users'
+    And header Authorization = 'Bearer ' + authToken
+    And request usersArray
+    When method patch
+    And status 200
+
+  Scenario: Add user user.rte to entity RTE
+
+    * def entity = '10XFR-RTE------Q'
+    * def usersArray =
+"""
+[ "user.rte" ]
+"""
+
+    Given url opfabUrl + 'users/entities/' + entity + '/users'
+    And header Authorization = 'Bearer ' + authToken
+    And request usersArray
+    When method patch
+    And status 200
+
+  Scenario: Patch user settings with user.rte
+
+    * def userSettings =
+"""
+{
+  "login" : "user.rte",
+  "timeZone" : "Europe/Paris",
+  "locale" : "en"
+}
+"""
+
+    Given url opfabUrl + 'users/users/' + userSettings.login + '/settings'
+    And header Authorization = 'Bearer ' + authToken
+    And request userSettings
+    When method patch
+    Then print response
+    And status 200
+    And match response.login == userSettings.login
+    And match response.timeZone == userSettings.timeZone
+    And match response.locale == userSettings.locale
+    # And match response.timeFormat == userSettings.timeFormat
+    # And match response.dateFormat == userSettings.dateFormat
+    # And match response.defaultTags == userSettings.defaultTags
+
+
+#################################################
+#                  USER.TERNA                   #
+#################################################
+
+  Scenario: Create user user.terna
+
+    * def user =
+"""
+{
+   "login" : "user.terna"
+}
+"""
+
+    Given url opfabUrl + 'users/users'
+    And header Authorization = 'Bearer ' + authToken
+    And request user
+    When method post
+    Then assert responseStatus == 200 || responseStatus == 201
+    And match response.login == user.login
+
+  Scenario: Add user user.terna to group Service A
+
+    * def group = 'servicea'
+    * def usersArray =
+"""
+[ "user.terna" ]
+"""
+
+    Given url opfabUrl + 'users/groups/' + group + '/users'
+    And header Authorization = 'Bearer ' + authToken
+    And request usersArray
+    When method patch
+    And status 200
+
+  Scenario: Add user user.terna to group Service B
+
+    * def group = 'serviceb'
+    * def usersArray =
+"""
+[ "user.terna" ]
+"""
+
+    Given url opfabUrl + 'users/groups/' + group + '/users'
+    And header Authorization = 'Bearer ' + authToken
+    And request usersArray
+    When method patch
+    And status 200
+
+  Scenario: Add user user.terna to entity Terna
+
+    * def entity = '10X1001A1001A345'
+    * def usersArray =
+"""
+[ "user.terna" ]
+"""
+
+    Given url opfabUrl + 'users/entities/' + entity + '/users'
+    And header Authorization = 'Bearer ' + authToken
+    And request usersArray
+    When method patch
+    And status 200
+
+  Scenario: Patch user settings with user.terna
+
+    * def userSettings =
+"""
+{
+  "login" : "user.terna",
+  "timeZone" : "Europe/Paris",
+  "locale" : "en"
+}
+"""
+
+    Given url opfabUrl + 'users/users/' + userSettings.login + '/settings'
+    And header Authorization = 'Bearer ' + authToken
+    And request userSettings
+    When method patch
+    Then print response
+    And status 200
+    And match response.login == userSettings.login
+    And match response.timeZone == userSettings.timeZone
+    And match response.locale == userSettings.locale
+    # And match response.timeFormat == userSettings.timeFormat
+    # And match response.dateFormat == userSettings.dateFormat
+    # And match response.defaultTags == userSettings.defaultTags
+
+
+#################################################
+#                 USER.AMPRION                  #
+#################################################
+
+  Scenario: Create user user.amprion
+
+    * def user =
+"""
+{
+   "login" : "user.amprion"
+}
+"""
+
+    Given url opfabUrl + 'users/users'
+    And header Authorization = 'Bearer ' + authToken
+    And request user
+    When method post
+    Then assert responseStatus == 200 || responseStatus == 201
+    And match response.login == user.login
+
+  Scenario: Add user user.amprion to group Service A
+
+    * def group = 'servicea'
+    * def usersArray =
+"""
+[ "user.amprion" ]
+"""
+
+    Given url opfabUrl + 'users/groups/' + group + '/users'
+    And header Authorization = 'Bearer ' + authToken
+    And request usersArray
+    When method patch
+    And status 200
+
+  Scenario: Add user user.amprion to group Service B
+
+    * def group = 'serviceb'
+    * def usersArray =
+"""
+[ "user.amprion" ]
+"""
+
+    Given url opfabUrl + 'users/groups/' + group + '/users'
+    And header Authorization = 'Bearer ' + authToken
+    And request usersArray
+    When method patch
+    And status 200
+
+  Scenario: Add user user.amprion to entity Amprion
+
+    * def entity = '10XDE-RWENET---W'
+    * def usersArray =
+"""
+[ "user.amprion" ]
+"""
+
+    Given url opfabUrl + 'users/entities/' + entity + '/users'
+    And header Authorization = 'Bearer ' + authToken
+    And request usersArray
+    When method patch
+    And status 200
+
+  Scenario: Patch user settings with user.amprion
+
+    * def userSettings =
+"""
+{
+  "login" : "user.amprion",
+  "timeZone" : "Europe/Paris",
+  "locale" : "en"
+}
+"""
+
+    Given url opfabUrl + 'users/users/' + userSettings.login + '/settings'
+    And header Authorization = 'Bearer ' + authToken
+    And request userSettings
+    When method patch
+    Then print response
+    And status 200
+    And match response.login == userSettings.login
+    And match response.timeZone == userSettings.timeZone
+    And match response.locale == userSettings.locale
+    # And match response.timeFormat == userSettings.timeFormat
+    # And match response.dateFormat == userSettings.dateFormat
+    # And match response.defaultTags == userSettings.defaultTags
+
+
+#################################################
+#                 USER.CORESO                   #
+#################################################
+
+  Scenario: Create user user.coreso
+
+    * def user =
+"""
+{
+   "login" : "user.coreso"
+}
+"""
+
+    Given url opfabUrl + 'users/users'
+    And header Authorization = 'Bearer ' + authToken
+    And request user
+    When method post
+    Then assert responseStatus == 200 || responseStatus == 201
+    And match response.login == user.login
+
+  Scenario: Add user user.coreso to group Service A
+
+    * def group = 'servicea'
+    * def usersArray =
+"""
+[ "user.coreso" ]
+"""
+
+    Given url opfabUrl + 'users/groups/' + group + '/users'
+    And header Authorization = 'Bearer ' + authToken
+    And request usersArray
+    When method patch
+    And status 200
+
+  Scenario: Add user user.coreso to group Service B
+
+    * def group = 'serviceb'
+    * def usersArray =
+"""
+[ "user.coreso" ]
+"""
+
+    Given url opfabUrl + 'users/groups/' + group + '/users'
+    And header Authorization = 'Bearer ' + authToken
+    And request usersArray
+    When method patch
+    And status 200
+
+  Scenario: Add user user.coreso to entity CORESO
+
+    * def entity = '22XCORESO------S'
+    * def usersArray =
+"""
+[ "user.coreso" ]
+"""
+
+    Given url opfabUrl + 'users/entities/' + entity + '/users'
+    And header Authorization = 'Bearer ' + authToken
+    And request usersArray
+    When method patch
+    And status 200
+
+  Scenario: Patch user settings with user.coreso
+
+    * def userSettings =
+"""
+{
+  "login" : "user.coreso",
+  "timeZone" : "Europe/Paris",
+  "locale" : "en"
+}
+"""
+
+    Given url opfabUrl + 'users/users/' + userSettings.login + '/settings'
+    And header Authorization = 'Bearer ' + authToken
+    And request userSettings
+    When method patch
+    Then print response
+    And status 200
+    And match response.login == userSettings.login
+    And match response.timeZone == userSettings.timeZone
+    And match response.locale == userSettings.locale
+    # And match response.timeFormat == userSettings.timeFormat
+    # And match response.dateFormat == userSettings.dateFormat
+    # And match response.defaultTags == userSettings.defaultTags
+
+
+#################################################
+#                    CHECK!!!                   #
+#################################################
+
+
   Scenario: Get current user (user.test2) with perimeters
 
     * def signInUserTest = call read('./getToken.feature') { username: 'user.test2'}
@@ -311,9 +680,9 @@ Feature: Prepare OpFab env. for Let's Co open source
     When method get
     Then status 200
     And match response.userData.login == 'user.test2'
-    And assert response.computedPerimeters.length == 1
+    And assert response.computedPerimeters.length == 3
 
-Scenario: Get current user (user.test) with perimeters
+  Scenario: Get current user (user.test) with perimeters
 
     * def signInUserTest = call read('./getToken.feature') { username: 'user.test'}
 
@@ -322,4 +691,4 @@ Scenario: Get current user (user.test) with perimeters
     When method get
     Then status 200
     And match response.userData.login == 'user.test'
-    And assert response.computedPerimeters.length == 2
+    And assert response.computedPerimeters.length == 4

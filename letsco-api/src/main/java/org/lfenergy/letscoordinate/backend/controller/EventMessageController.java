@@ -14,11 +14,17 @@ package org.lfenergy.letscoordinate.backend.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import io.vavr.control.Validation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.lfenergy.letscoordinate.backend.component.OpfabPublisherComponent;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
 import org.lfenergy.letscoordinate.backend.dto.ProcessedFileDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageWrapperDto;
+import org.lfenergy.letscoordinate.backend.model.Coordination;
+import org.lfenergy.letscoordinate.backend.service.CoordinationService;
 import org.lfenergy.letscoordinate.backend.service.InputFileToPojoService;
+import org.opfab.cards.model.Card;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,10 +34,13 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/letsco/api/v1")
 @RequiredArgsConstructor
 @Api(description = "Controller providing APIs to manage XLSX and JSON EventMessage data")
+@Slf4j
 public class EventMessageController {
 
     final private LetscoProperties letscoProperties;
     final private InputFileToPojoService inputFileToPojoService;
+    final private CoordinationService coordinationService;
+    private final OpfabPublisherComponent opfabPublisherComponent;
 
     @PostMapping(value = "/upload/validate")
     @ApiOperation(value = "Validate uploaded file (Excel or JSON) and generate JSON from validated data")
@@ -105,6 +114,18 @@ public class EventMessageController {
                 invalid -> ResponseEntity.status(invalid.getStatus()).body(invalid),
                 valid -> ResponseEntity.ok().build()
         );
+    }
+
+    @PostMapping("/coordination")
+    @ApiOperation(value = "Coordination callback", hidden = true)
+    public ResponseEntity postValidation(@RequestBody Card card) {
+        Validation<Boolean, Coordination> validation = coordinationService.saveAnswersAndCheckIfAllTsosHaveAnswered(card);
+        if (validation.isValid()) {
+            opfabPublisherComponent.publishOpfabCoordinationResultCard(validation.get());
+        } else {
+            log.debug("Some entities did not respond yet!");
+        }
+        return ResponseEntity.ok().build();
     }
 
 }

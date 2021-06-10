@@ -9,19 +9,13 @@
  * This file is part of the Let’s Coordinate project.
  */
 
-package org.lfenergy.letscoordinate.backend.enums;
+package org.lfenergy.letscoordinate.backend.repository;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import org.lfenergy.letscoordinate.backend.model.Coordination;
+import org.springframework.data.repository.CrudRepository;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public enum OutputResultAnswerEnum {
-    CON ("proposalConfirmed"),
-    REJ ("proposalRejected"),
-    MIX ("differentChoices"),
-    NOT ("noAnswerProvided");
+import java.util.Optional;
 
-    @Getter
-    private String bundleStateName;
+public interface CoordinationRepository extends CrudRepository<Coordination, Long> {
+    Optional<Coordination> findByEventMessage_Id(Long idEventMessage);
 }

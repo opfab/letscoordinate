@@ -12,3 +12,5 @@ databaseChangeLog:
       file: db/changelog/version/1.3.0/001_set_cascade_mode_for_all_constraints.sql
   - include:
       file: db/changelog/version/1.3.0/002_create_output_tables.sql
+  - include:
+      file: db/changelog/version/1.3.0/003_create_coordination_tables.sql

@@ -62,3 +62,4 @@ sed "s/\${SERVER_IP}/$SERVER_IP/g" ${LC_HOME}/bin/config/templates/ui-menu.json.
 sed "s/\${SERVER_IP}/$SERVER_IP/g" ${LC_HOME}/bin/config/templates/web-ui.json.template > ${LC_HOME}/opfab/operatorfabric-getting-started/server/web-ui.json
 sed "s/\${SERVER_IP}/$SERVER_IP/g" ${LC_HOME}/bin/config/templates/karate-config.js.template > ${LC_HOME}/opfab/prepare-opfab-env/karate-config.js
 sed "s/\${DOCKER_IP}/$DOCKER_IP/g" ${LC_HOME}/bin/config/templates/nginx.conf.template > ${LC_HOME}/opfab/operatorfabric-getting-started/server/nginx.conf
+sed "s/\${DOCKER_IP}/$DOCKER_IP/g" ${LC_HOME}/bin/config/templates/cards-publication.yml.template > ${LC_HOME}/opfab/operatorfabric-getting-started/server/docker-configurations/cards-publication.yml
