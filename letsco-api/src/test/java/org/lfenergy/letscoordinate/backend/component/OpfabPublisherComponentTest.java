@@ -102,6 +102,7 @@ public class OpfabPublisherComponentTest {
                                 .businessDataIdentifier(BusinessDataIdentifierDto.builder()
                                         .sendingUser(sendingUser)
                                         .recipients(recipients)
+                                        .caseId("caseId")
                                         .businessDayFrom(businessDayFrom)
                                         .businessDayTo(businessDayTo)
                                         .messageTypeName(messageTypeName).build()).build())
@@ -148,7 +149,7 @@ public class OpfabPublisherComponentTest {
         assertAll(
                 () -> assertEquals(expectedTags, card.getTags()),
                 () -> assertEquals(process, card.getProcess()),
-                () -> assertEquals(process + "_" + id, card.getProcessInstanceId()),
+                () -> assertEquals("caseId", card.getProcessInstanceId()),
                 () -> assertEquals(opfabConfig.getPublisher(), card.getPublisher()),
                 () -> assertEquals("1", card.getProcessVersion()),
                 () -> assertEquals(StringUtil.toLowercaseIdentifier("processaction"), card.getState())
@@ -170,7 +171,7 @@ public class OpfabPublisherComponentTest {
         assertAll(
                 () -> assertEquals(expectedTags, card.getTags()),
                 () -> assertEquals(process, card.getProcess()),
-                () -> assertEquals(process + "_" + id, card.getProcessInstanceId()),
+                () -> assertEquals("caseId", card.getProcessInstanceId()),
                 () -> assertEquals(opfabConfig.getPublisher(), card.getPublisher()),
                 () -> assertEquals("1", card.getProcessVersion()),
                 () -> assertEquals(StringUtil.toLowercaseIdentifier("processaction"), card.getState())
