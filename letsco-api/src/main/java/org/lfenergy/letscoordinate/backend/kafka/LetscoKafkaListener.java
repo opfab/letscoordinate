@@ -41,6 +41,7 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
 import java.time.Duration;
@@ -67,6 +68,7 @@ public class LetscoKafkaListener {
     private final OpfabConfig opfabConfig;
 
     @KafkaListener(topicPattern = "#{@kafkaTopicPattern}")
+    @Transactional
     public void handleLetscoEventMessages(@Payload String data,
                                           @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition,
                                           @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
@@ -94,6 +96,8 @@ public class LetscoKafkaListener {
             verifyData(eventMessageDto);
 
             log.info("Received data type: \"{}\"", eventMessageDto.getHeader().getNoun());
+            eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getCaseId()
+                    .ifPresent(eventMessageRepository::deleteByCaseId);
             EventMessage eventMessage = eventMessageRepository.save(EventMessageMapper.fromDto(eventMessageDto));
             log.info("New \"{}\" data successfully saved! (id={})", eventMessage.getNoun(), eventMessage.getId());
             log.debug("Saved data >>> {}", eventMessage.toString());
@@ -120,6 +124,7 @@ public class LetscoKafkaListener {
         bdi.setBusinessDayTo(bdi.getBusinessDayTo() == null ?
                 bdi.getBusinessDayFrom().plus(Duration.ofHours(24)).minus(Duration.ofSeconds(1)) :
                 bdi.getBusinessDayTo().minus(Duration.ofSeconds(1)));
+        bdi.setCaseId(bdi.getCaseId().orElse(OpfabUtil.generateCaseId(eventMessageDto)));
     }
 
     void ignoreMessageTypeNameIfNeeded(String messageTypeName) {

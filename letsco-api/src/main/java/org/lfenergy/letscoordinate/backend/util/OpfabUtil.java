@@ -15,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
+import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
 import org.lfenergy.letscoordinate.backend.enums.CoordinationAnswerEnum;
 import org.lfenergy.letscoordinate.backend.enums.CoordinationStatusEnum;
 import org.lfenergy.letscoordinate.backend.enums.OutputResultAnswerEnum;
@@ -84,5 +85,14 @@ public final class OpfabUtil {
         builder.append(coordination.getCoordinationRas().stream().limit(NBR_EVENTS_TO_DISPLAY_IN_CARD_SUMMARY)
                 .map(CoordinationRa::getConstraintt).collect(Collectors.joining(", ")));
         return builder.append(coordinationRasSize > NBR_EVENTS_TO_DISPLAY_IN_CARD_SUMMARY ? ", ..." : "").toString();
+    }
+
+    public static String generateCaseId(EventMessageDto eventMessageDto) {
+        BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        return new StringBuilder().append(eventMessageDto.getHeader().getSource()).append("_")
+                .append(bdi.getBusinessApplication().orElse(null)).append("_")
+                .append(bdi.getMessageTypeName()).append("_")
+                .append(bdi.getBusinessDayFrom()).append("_")
+                .append(bdi.getBusinessDayTo()).toString();
     }
 }

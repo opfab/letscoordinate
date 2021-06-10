@@ -68,6 +68,7 @@ public final class EventMessageMapper {
                                             .build())
                                     .collect(Collectors.toList()))
                             .orElse(null));
+                    eventMessage.setCaseId(businessDataIdentifierDto.getCaseId().orElse(null));
                     eventMessage.setCoordinationStatus(businessDataIdentifierDto.getCoordinationStatus().orElse(null));
                     eventMessage.setEventMessageCoordinationComments(businessDataIdentifierDto.getCoordinationComments()
                             .map(coordinationCommentDtos -> coordinationCommentDtos.stream()
