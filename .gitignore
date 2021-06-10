@@ -17,7 +17,6 @@ HELP.md
 **/*.env
 opfab/operatorfabric-getting-started/server/businessconfig-storage
 dockerfiles/**/*.jar
-dockerfiles/back/Dockerfile
 dockerfiles/front/letsco-front
 
 ### STS ###
