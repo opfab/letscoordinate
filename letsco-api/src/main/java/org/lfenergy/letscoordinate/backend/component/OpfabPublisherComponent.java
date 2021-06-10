@@ -27,7 +27,7 @@ import org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 import org.lfenergy.letscoordinate.backend.model.opfab.ValidationData;
 import org.lfenergy.letscoordinate.backend.util.*;
-import org.lfenergy.operatorfabric.cards.model.*;
+import org.opfab.cards.model.*;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -235,8 +235,7 @@ public class OpfabPublisherComponent {
         Optional<String> sendingUser = businessDataIdentifier.getSendingUser();
         Optional<List<String>> recipient = businessDataIdentifier.getRecipients();
 
-        card.setRecipient(new Recipient().type(RecipientEnum.GROUP).identity(
-                opfabConfig.isRecipientToLowerCaseIdentifier() ?
+        card.setGroupRecipients(Collections.singletonList(opfabConfig.isRecipientToLowerCaseIdentifier() ?
                         StringUtil.toLowercaseIdentifier(source) : source));
 
         Set<String> entityRecipientList = new HashSet<>();
