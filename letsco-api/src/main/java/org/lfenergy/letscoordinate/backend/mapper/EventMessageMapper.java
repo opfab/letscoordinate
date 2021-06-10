@@ -11,6 +11,8 @@
 
 package org.lfenergy.letscoordinate.backend.mapper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.CoordinationCommentDto;
@@ -22,7 +24,8 @@ import org.lfenergy.letscoordinate.backend.model.*;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class EventMessageMapper {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class EventMessageMapper {
 
     // EventMessage
 
@@ -244,6 +247,20 @@ public class EventMessageMapper {
                 .orElse(null));
         timeserieDataDetails.setTimeserieData(timeserieData);
         return timeserieDataDetails;
+    }
+
+    public static EventMessageDto buildEventMessageDtoLightForCoordination(EventMessage eventMessage) {
+        return EventMessageDto.builder()
+                .header(HeaderDto.builder()
+                        .properties(PropertiesDto.builder()
+                                .businessDataIdentifier(BusinessDataIdentifierDto.builder()
+                                        .businessDayFrom(eventMessage.getBusinessDayFrom())
+                                        .businessDayTo(eventMessage.getBusinessDayTo())
+                                        .sendingUser(eventMessage.getSendingUser())
+                                        .build())
+                                .build())
+                        .build())
+                .build();
     }
 
 }

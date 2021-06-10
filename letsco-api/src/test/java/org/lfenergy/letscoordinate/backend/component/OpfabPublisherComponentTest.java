@@ -26,6 +26,8 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationDt
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationMessageDto;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 import org.lfenergy.letscoordinate.backend.model.opfab.ValidationData;
+import org.lfenergy.letscoordinate.backend.repository.CoordinationRepository;
+import org.lfenergy.letscoordinate.backend.service.CoordinationService;
 import org.lfenergy.letscoordinate.backend.util.DateUtil;
 import org.lfenergy.letscoordinate.backend.util.OpfabUtil;
 import org.lfenergy.letscoordinate.backend.util.StringUtil;
@@ -60,7 +62,8 @@ public class OpfabPublisherComponentTest {
     private CoordinationConfig coordinationConfig;
     private OpfabPublisherComponent opfabPublisherComponent;
     private EventMessageDto eventMessageDto;
-    LetscoProperties letscoProperties;
+    private LetscoProperties letscoProperties;
+    private CoordinationService coordinationService;
 
     String process;
     String source = "source";
@@ -76,6 +79,7 @@ public class OpfabPublisherComponentTest {
 
         opfabConfig = new OpfabConfig();
         letscoProperties = new LetscoProperties();
+        coordinationService = Mockito.mock(CoordinationService.class);
 
         CoordinationConfig coordinationConfig = new CoordinationConfig();
         coordinationConfig.setTsos(Map.of(
@@ -104,7 +108,8 @@ public class OpfabPublisherComponentTest {
                         .build())
                 .payload(PayloadDto.builder().build()).build();
 
-        opfabPublisherComponent = new OpfabPublisherComponent(opfabConfig, coordinationConfig, letscoProperties);
+
+        opfabPublisherComponent = new OpfabPublisherComponent(opfabConfig, coordinationConfig, letscoProperties, coordinationService);
         process = OpfabUtil.generateProcessKey(eventMessageDto, true);
         opfabPublisherComponent.setProcessKey(process);
     }
@@ -693,20 +698,20 @@ public class OpfabPublisherComponentTest {
     @Test
     public void setOpfabCardProcess_ProcessWithFilename() {
         opfabConfig.setProcessWithFilename(true);
+        eventMessageDto.getHeader().setNoun("DfgMessageValidated");
         eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().setFileName("filename.txt");
         Card card = new Card();
-        opfabPublisherComponent.setOpfabCardProcess(card,
-                eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier());
+        opfabPublisherComponent.setOpfabCardProcess(card, eventMessageDto);
         assertEquals(process + "_filename", card.getProcess());
     }
 
     @Test
     public void setOpfabCardProcess_ProcessWithFilename_FilenameHasNoExtension() {
         opfabConfig.setProcessWithFilename(true);
+        eventMessageDto.getHeader().setNoun("DfgMessageValidated");
         eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().setFileName("filenameNoExtension");
         Card card = new Card();
-        opfabPublisherComponent.setOpfabCardProcess(card,
-                eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier());
+        opfabPublisherComponent.setOpfabCardProcess(card, eventMessageDto);
         assertEquals(process + "_filenamenoextension", card.getProcess());
     }
 

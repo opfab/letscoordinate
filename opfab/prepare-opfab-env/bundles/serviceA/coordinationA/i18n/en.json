@@ -1,0 +1,43 @@
+{
+  "license": "MPL-2.0",
+  "cardDetails":{
+    "title":"{{title}}"
+  },
+  "cardFeed": {
+    "title": "{{title}}",
+    "summary": "{{summary}}"
+  },
+  "process": {
+    "name": "Smart notifications"
+  },
+  "coordination": {
+    "name": "Coordination A",
+    "cardDetails":{
+      "title":"Service A Coordination A"
+    },
+    "status": {
+      "inprogress": "In progress",
+      "finished": "Finished"
+    },
+    "logging": {
+      "initial": {
+        "description": "Coordination request"
+      },
+      "answer": {
+        "description": "Answer provided"
+      },
+      "proposalConfirmed": {
+        "description": "Proposal confirmed"
+      },
+      "proposalRejected": {
+        "description": "Proposal rejected"
+      },
+      "noAnswerProvided": {
+        "description": "No answer provided"
+      },
+      "differentChoices": {
+        "description": "Different choices"
+      }
+    }
+  }
+}

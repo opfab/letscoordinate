@@ -42,6 +42,6 @@ public class LetscoApiApplicationTest {
         assertTrue(Arrays.stream(beansNames).anyMatch("coordinationConfig"::equals));
         CoordinationConfig coordinationConfig = applicationContext.getBean(CoordinationConfig.class);
         assertTrue(coordinationConfig.getTsos().size() > 0);
-        assertEquals(5, letscoProperties.getInputFile().allGenericNouns().size());
+        assertEquals(6, letscoProperties.getInputFile().allGenericNouns().size());
     }
 }

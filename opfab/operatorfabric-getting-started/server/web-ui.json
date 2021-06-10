@@ -144,7 +144,7 @@
     "width": 363
   },
   "navbar": {
-    "hidden": [ "logging", "monitoring", "freemessage", "calendar" ],
+    "hidden": [ "freemessage", "calendar" ],
     "thirdmenus": {
       "type": "IFRAME"
     },

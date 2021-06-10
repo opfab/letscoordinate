@@ -1,0 +1,74 @@
+/*
+ * Copyright (c) 2020-2021, RTE (https://www.rte-france.com)
+ * Copyright (c) 2020-2021 RTE international (https://www.rte-international.com)
+ * See AUTHORS.txt
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * SPDX-License-Identifier: MPL-2.0
+ * This file is part of the Let’s Coordinate project.
+ */
+
+.hidden {
+    display: none;
+}
+
+.inline-block {
+    display: inline-block;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.visible {
+    display: block;
+}
+
+.card-table {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.card-table td, .card-table th {
+    padding: .5rem;
+    //vertical-align: top;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.card-table thead {
+    color: #fff;
+    background-color: #52585487;
+}
+
+.bg-red {
+    background-color: #ff0000;
+}
+
+.bg-red-light {
+    background-color: #fa817e;
+}
+
+.bg-green {
+    background-color: #00b050;
+}
+
+.bg-green-light {
+    background-color: #92d050;
+}
+
+.bg-orange {
+    background-color: #FFC000;
+}
+
+.txt-align-center {
+    text-align: center;
+}
+
+.txt-color-black {
+    color: black;
+}
+
+.select-expl {
+    width: 100%;
+}
