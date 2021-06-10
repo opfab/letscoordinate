@@ -29,10 +29,9 @@ import org.lfenergy.letscoordinate.backend.model.opfab.ValidationData;
 import org.lfenergy.letscoordinate.backend.util.DateUtil;
 import org.lfenergy.letscoordinate.backend.util.OpfabUtil;
 import org.lfenergy.letscoordinate.backend.util.StringUtil;
-import org.lfenergy.operatorfabric.cards.model.Card;
-import org.lfenergy.operatorfabric.cards.model.RecipientEnum;
-import org.lfenergy.operatorfabric.cards.model.SeverityEnum;
-import org.lfenergy.operatorfabric.cards.model.TimeSpan;
+import org.opfab.cards.model.Card;
+import org.opfab.cards.model.SeverityEnum;
+import org.opfab.cards.model.TimeSpan;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -50,7 +49,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum.*;
 import static org.lfenergy.letscoordinate.backend.util.Constants.*;
 import static org.lfenergy.letscoordinate.backend.util.DateUtilTest.getParisZoneId;
-import static org.lfenergy.operatorfabric.cards.model.SeverityEnum.*;
+import static org.opfab.cards.model.SeverityEnum.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
@@ -428,8 +427,7 @@ public class OpfabPublisherComponentTest {
         Card card = new Card();
         opfabPublisherComponent.setCardRecipients(card, eventMessageDto);
         assertAll(
-                () -> assertEquals(RecipientEnum.GROUP, card.getRecipient().getType()),
-                () -> assertEquals(source, card.getRecipient().getIdentity()),
+                () -> assertEquals(Collections.singletonList(source), card.getGroupRecipients()),
                 () -> assertEquals(Collections.EMPTY_LIST, card.getEntityRecipients())
         );
     }
@@ -442,8 +440,7 @@ public class OpfabPublisherComponentTest {
         Card card = new Card();
         opfabPublisherComponent.setCardRecipients(card, eventMessageDto);
         assertAll(
-                () -> assertEquals(RecipientEnum.GROUP, card.getRecipient().getType()),
-                () -> assertEquals(source, card.getRecipient().getIdentity()),
+                () -> assertEquals(Collections.singletonList(source), card.getGroupRecipients()),
                 () -> assertEquals(recipients.stream().sorted().collect(Collectors.toList()),
                         card.getEntityRecipients().stream().sorted().collect(Collectors.toList()))
         );
@@ -457,8 +454,7 @@ public class OpfabPublisherComponentTest {
         Card card = new Card();
         opfabPublisherComponent.setCardRecipients(card, eventMessageDto);
         assertAll(
-                () -> assertEquals(RecipientEnum.GROUP, card.getRecipient().getType()),
-                () -> assertEquals(source, card.getRecipient().getIdentity()),
+                () -> assertEquals(Collections.singletonList(source), card.getGroupRecipients()),
                 () -> assertEquals(Arrays.asList(sendingUser), card.getEntityRecipients())
         );
     }
@@ -471,8 +467,7 @@ public class OpfabPublisherComponentTest {
         expectedEntityRecipients.add(sendingUser);
         expectedEntityRecipients.addAll(recipients);
         assertAll(
-                () -> assertEquals(RecipientEnum.GROUP, card.getRecipient().getType()),
-                () -> assertEquals(source, card.getRecipient().getIdentity()),
+                () -> assertEquals(Collections.singletonList(source), card.getGroupRecipients()),
                 () -> assertEquals(expectedEntityRecipients.stream().sorted().collect(Collectors.toList()),
                         card.getEntityRecipients().stream().sorted().collect(toList()))
         );

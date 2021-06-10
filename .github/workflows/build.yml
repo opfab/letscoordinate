@@ -29,8 +29,8 @@ jobs:
           java-version: 11
       - name: Install OpFab cards-client dependancy
         run: |
-          cp bin/cards-client-data-2.3.0.RELEASE.jar /home/runner/work/letscoordinate/letscoordinate/cards-client-data-2.3.0.RELEASE.jar
-          mvn install:install-file -Dfile=cards-client-data-2.3.0.RELEASE.jar -DgroupId=org.lfenergy.operatorfabric -DartifactId=cards-client -Dversion=2.3.0.RELEASE -Dpackaging=jar
+          cp bin/cards-client-data-2.5.0.RELEASE.jar /home/runner/work/letscoordinate/letscoordinate/cards-client-data-2.5.0.RELEASE.jar
+          mvn install:install-file -Dfile=cards-client-data-2.5.0.RELEASE.jar -DgroupId=org.lfenergy.operatorfabric -DartifactId=cards-client -Dversion=2.5.0.RELEASE -Dpackaging=jar
       - name: Cache SonarCloud packages
         uses: actions/cache@v1
         with:

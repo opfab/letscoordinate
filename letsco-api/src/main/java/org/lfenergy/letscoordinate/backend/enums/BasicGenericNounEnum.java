@@ -12,11 +12,11 @@
 package org.lfenergy.letscoordinate.backend.enums;
 
 import lombok.Getter;
-import org.lfenergy.operatorfabric.cards.model.SeverityEnum;
+import org.opfab.cards.model.SeverityEnum;
 
 import java.util.Arrays;
 
-import static org.lfenergy.operatorfabric.cards.model.SeverityEnum.*;
+import static org.opfab.cards.model.SeverityEnum.*;
 
 @Getter
 public enum BasicGenericNounEnum {
