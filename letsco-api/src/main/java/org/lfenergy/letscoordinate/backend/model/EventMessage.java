@@ -93,6 +93,9 @@ public class EventMessage implements java.io.Serializable {
     @Column(name = "coordination_status", length = 50)
     private CoordinationStatusEnum coordinationStatus;
 
+    @Column(name = "case_id", length = 1000)
+    private String caseId;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "eventMessage", cascade = CascadeType.ALL)
     private List<EventMessageRecipient> eventMessageRecipients = new ArrayList<>();
 

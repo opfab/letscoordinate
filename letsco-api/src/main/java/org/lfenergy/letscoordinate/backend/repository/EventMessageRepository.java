@@ -15,4 +15,5 @@ import org.lfenergy.letscoordinate.backend.model.EventMessage;
 import org.springframework.data.repository.CrudRepository;
 
 public interface EventMessageRepository extends CrudRepository<EventMessage, Long> {
+    void deleteByCaseId(String caseId);
 }
