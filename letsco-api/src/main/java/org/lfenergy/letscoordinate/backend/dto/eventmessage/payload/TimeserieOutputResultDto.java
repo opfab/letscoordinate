@@ -11,6 +11,7 @@
 
 package org.lfenergy.letscoordinate.backend.dto.eventmessage.payload;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.lfenergy.letscoordinate.backend.enums.OutputResultAnswerEnum;
@@ -19,6 +20,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
+@Builder
 public class TimeserieOutputResultDto implements java.io.Serializable {
     @NotNull
     private String eicCode;

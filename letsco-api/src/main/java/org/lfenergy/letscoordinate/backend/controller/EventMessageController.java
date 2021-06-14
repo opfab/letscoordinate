@@ -118,7 +118,7 @@ public class EventMessageController {
 
     @PostMapping("/coordination")
     @ApiOperation(value = "Coordination callback", hidden = true)
-    public ResponseEntity postValidation(@RequestBody Card card) {
+    public ResponseEntity coordinationCallback(@RequestBody Card card) {
         Validation<Boolean, Coordination> validation = coordinationService.saveAnswersAndCheckIfAllTsosHaveAnswered(card);
         if (validation.isValid()) {
             opfabPublisherComponent.publishOpfabCoordinationResultCard(validation.get());
