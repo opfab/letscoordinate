@@ -69,7 +69,7 @@ public class CoordinationService {
         Instant businessDayFrom = businessDataIdentifierDto.getBusinessDayFrom();
         Instant businessDayTo = businessDataIdentifierDto.getBusinessDayTo();
         Coordination coordination = new Coordination();
-        coordination.setEventMessage(eventMessageRepository.findById(idEventMessage).get());
+        coordination.setEventMessage(eventMessageRepository.findById(idEventMessage).orElse(null));
         coordination.setProcessKey(card.getProcess());
         coordination.setPublishDate(timestamp);
         coordination.setStartDate(businessDayFrom.isBefore(timestamp) ? businessDayFrom : timestamp);

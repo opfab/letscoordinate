@@ -26,17 +26,17 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationDt
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationMessageDto;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 import org.lfenergy.letscoordinate.backend.model.opfab.ValidationData;
-import org.lfenergy.letscoordinate.backend.repository.CoordinationRepository;
 import org.lfenergy.letscoordinate.backend.service.CoordinationService;
+import org.lfenergy.letscoordinate.backend.util.CoordinationFactory;
 import org.lfenergy.letscoordinate.backend.util.DateUtil;
 import org.lfenergy.letscoordinate.backend.util.OpfabUtil;
 import org.lfenergy.letscoordinate.backend.util.StringUtil;
-import org.opfab.cards.model.Card;
-import org.opfab.cards.model.SeverityEnum;
-import org.opfab.cards.model.TimeSpan;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opfab.cards.model.Card;
+import org.opfab.cards.model.SeverityEnum;
+import org.opfab.cards.model.TimeSpan;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -51,9 +51,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum.*;
 import static org.lfenergy.letscoordinate.backend.util.Constants.*;
 import static org.lfenergy.letscoordinate.backend.util.DateUtilTest.getParisZoneId;
-import static org.opfab.cards.model.SeverityEnum.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.opfab.cards.model.SeverityEnum.*;
 
 @ExtendWith(MockitoExtension.class)
 public class OpfabPublisherComponentTest {
@@ -871,6 +871,19 @@ public class OpfabPublisherComponentTest {
         opfabPublisherComponent.addPayloadData(data, payloadDto);
         assertTrue(data.containsKey("payload"));
         assertEquals(hashCode, data.get("payload").hashCode());
+    }
+
+    @Test
+    public void publishOpfabCoordinationResultCard_feedConfigNotSet() {
+        opfabPublisherComponent.publishOpfabCoordinationResultCard(CoordinationFactory.initCoordination());
+    }
+
+    @Test
+    public void publishOpfabCoordinationResultCard_feedConfigSet() {
+        Map<String, OpfabConfig.OpfabFeed> feedConfigMap = new HashMap();
+        feedConfigMap.put("coordinationProcessKey", new OpfabConfig.OpfabFeed("title", "summary"));
+        opfabConfig.setFeed(feedConfigMap);
+        opfabPublisherComponent.publishOpfabCoordinationResultCard(CoordinationFactory.initCoordination());
     }
 
 }

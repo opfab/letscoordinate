@@ -42,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().ignoringAntMatchers("/letsco/api/v1/coordination")
+                .csrf().ignoringAntMatchers("/letsco/api/v1/coordination") //NOSONAR
                 .and()
                 .cors()
                 .and()

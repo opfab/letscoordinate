@@ -11,16 +11,23 @@
 
 package org.lfenergy.letscoordinate.backend.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.vavr.control.Validation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.lfenergy.letscoordinate.backend.component.OpfabPublisherComponent;
+import org.lfenergy.letscoordinate.backend.model.Coordination;
 import org.lfenergy.letscoordinate.backend.model.EventMessage;
 import org.lfenergy.letscoordinate.backend.repository.EventMessageRepository;
+import org.lfenergy.letscoordinate.backend.service.CoordinationService;
+import org.opfab.cards.model.Card;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,8 +41,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,8 +53,14 @@ public class EventMessageControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
     @MockBean
     EventMessageRepository eventMessageRepository;
+    @MockBean
+    CoordinationService coordinationService;
+    @MockBean
+    OpfabPublisherComponent opfabPublisherComponent;
 
     MockMultipartFile validMultipartFile;
     MockMultipartFile validMultipartFileWithLowercaseTitles;
@@ -162,6 +174,31 @@ public class EventMessageControllerTest {
                 .andExpect(jsonPath("$.status").value(HttpStatus.INTERNAL_SERVER_ERROR.value()))
                 .andExpect(jsonPath("$.code").value("ERROR"))
                 .andExpect(jsonPath("$.messages", hasSize(1)));
+    }
+
+    @Test
+    @WithMockCustomUser
+    public void coordinationCallback_entitiesTotallyRespond_shouldReturn200() throws Exception {
+        when(coordinationService.saveAnswersAndCheckIfAllTsosHaveAnswered(any(Card.class))).thenReturn(Validation.valid(Coordination.builder().build()));
+        doNothing().when(opfabPublisherComponent).publishOpfabCoordinationResultCard(any(Coordination.class));
+        mockMvc.perform(post("/letsco/api/v1/coordination")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(objectMapper.writeValueAsString(new Card())))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockCustomUser
+    public void coordinationCallback_entitiesPartiallyRespond_shouldReturn200() throws Exception {
+        when(coordinationService.saveAnswersAndCheckIfAllTsosHaveAnswered(any(Card.class))).thenReturn(Validation.invalid(Boolean.FALSE));
+        mockMvc.perform(post("/letsco/api/v1/coordination")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(objectMapper.writeValueAsString(new Card())))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
 }
