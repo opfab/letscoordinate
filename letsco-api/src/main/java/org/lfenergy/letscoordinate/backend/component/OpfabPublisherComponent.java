@@ -154,7 +154,7 @@ public class OpfabPublisherComponent {
         }
         card.setTags(tags);
         setOpfabCardProcess(card, eventMessageDto);
-        card.setProcessInstanceId(bdi.getCaseId().get());
+        card.setProcessInstanceId(bdi.getCaseId().orElse(processKey + "_" + id));
         card.setPublisher(opfabConfig.getPublisher());
         card.setProcessVersion("1");
     }

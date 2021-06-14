@@ -17,7 +17,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
 import org.lfenergy.letscoordinate.backend.enums.CoordinationAnswerEnum;
-import org.lfenergy.letscoordinate.backend.enums.CoordinationStatusEnum;
 import org.lfenergy.letscoordinate.backend.enums.OutputResultAnswerEnum;
 import org.lfenergy.letscoordinate.backend.model.Coordination;
 import org.lfenergy.letscoordinate.backend.model.CoordinationRa;
