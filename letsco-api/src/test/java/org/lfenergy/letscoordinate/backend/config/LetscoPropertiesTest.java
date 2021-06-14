@@ -41,8 +41,8 @@ public class LetscoPropertiesTest {
     @Test
     public void allGenericNouns() {
         assertEquals(
-                List.of("ProcessSuccessful", "ProcessFailed", "otherPS_1", "otherPS_2", "otherPF_1", "ProcessAction",
-                        "ProcessInformation", "DfgMessageValidated").stream().sorted().collect(toList()),
+                List.of("Coordination", "ProcessSuccessful", "ProcessFailed", "otherPS_1", "otherPS_2", "otherPF_1",
+                        "ProcessAction", "ProcessInformation", "DfgMessageValidated").stream().sorted().collect(toList()),
                 letscoProperties.getInputFile().allGenericNouns().stream().sorted().collect(toList()));
     }
 }

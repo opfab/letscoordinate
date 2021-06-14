@@ -144,7 +144,7 @@
     "width": 363
   },
   "navbar": {
-    "hidden": [ "logging", "monitoring", "freemessage", "calendar" ],
+    "hidden": [ "freemessage", "calendar" ],
     "thirdmenus": {
       "type": "IFRAME"
     },
@@ -174,7 +174,7 @@
       "operatorfabric": {
         "name": "OperatorFabric",
         "rank": 0,
-        "version": "2.3.0.RELEASE"
+        "version": "2.5.0.RELEASE"
       },
       "letscoordinate": {
         "name": "Let's Coordinate OS",

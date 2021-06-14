@@ -1,0 +1,102 @@
+{
+  "license": "MPL-2.0",
+  "id": "servicea_coordinationa",
+  "name": "process.name",
+  "version": "1",
+  "defaultLocale": "en",
+  "uiVisibility": {
+    "monitoring": true,
+    "logging": true,
+    "calendar": false
+  },
+  "csses": [
+    "main"
+  ],
+  "menuEntries": [],
+  "locales": ["en"],
+  "states": {
+    "initial": {
+      "name": "coordination.status.inprogress",
+      "color": "orange",
+      "description": "coordination.logging.initial.description",
+      "response": {
+        "lock": false,
+        "state": "answer",
+        "externalRecipients": [ "letsco_opensource" ]
+      },
+      "detailTitle": {
+        "key": "coordination.cardDetails.title"
+      },
+      "templateName": "coordinationRequest",
+      "styles": [
+        "main"
+      ],
+      "acknowledgmentAllowed": "Always",
+      "type" : "INPROGRESS"
+    },
+    "answer": {
+      "name": "coordination.status.inprogress",
+      "color": "orange",
+      "description": "coordination.logging.answer.description",
+      "type" : "INPROGRESS"
+    },
+    "proposalConfirmed": {
+      "name": "coordination.status.finished",
+      "color": "green",
+      "description": "coordination.logging.proposalConfirmed.description",
+      "detailTitle": {
+        "key": "coordination.cardDetails.title"
+      },
+      "templateName": "coordinationResult",
+      "styles": [
+        "main"
+      ],
+      "acknowledgmentAllowed": "Always",
+      "type" : "FINISHED"
+    },
+    "proposalRejected": {
+      "name": "coordination.status.finished",
+      "color": "green",
+      "description": "coordination.logging.proposalRejected.description",
+      "detailTitle": {
+        "key": "coordination.cardDetails.title"
+      },
+      "templateName": "coordinationResult",
+      "styles": [
+        "main"
+      ],
+      "acknowledgmentAllowed": "Always",
+      "type" : "FINISHED"
+    },
+    "noAnswerProvided": {
+      "name": "coordination.status.finished",
+      "color": "green",
+      "description": "coordination.logging.noAnswerProvided.description",
+      "detailTitle": {
+        "key": "coordination.cardDetails.title"
+      },
+      "templateName": "coordinationResult",
+      "styles": [
+        "main"
+      ],
+      "acknowledgmentAllowed": "Always",
+      "type" : "FINISHED"
+    },
+    "differentChoices": {
+      "name": "coordination.status.finished",
+      "color": "green",
+      "description": "coordination.logging.differentChoices.description",
+      "detailTitle": {
+        "key": "coordination.cardDetails.title"
+      },
+      "templateName": "coordinationResult",
+      "styles": [
+        "main"
+      ],
+      "acknowledgmentAllowed": "Always",
+      "type" : "FINISHED"
+    }
+  }
+}
+
+
