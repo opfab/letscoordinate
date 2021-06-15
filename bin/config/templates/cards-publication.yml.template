@@ -11,11 +11,6 @@ spring:
   application:
     name: cards-publication
 
-
-#here we put urls for all feign clients
-users:
-  ribbon:
-    listOfServers: users:8080
 # WARNING - You shoud replace localhost with the real IP , as locahost related to IP internal to docker
 externalRecipients-url: "{\
            letsco_opensource: \"http://${DOCKER_IP}/letsco/api/v1/coordination\" \
