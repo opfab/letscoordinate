@@ -154,9 +154,9 @@
 
 		<!-- OpFab Cards Client -->
 		<dependency>
-			<groupId>org.lfenergy.operatorfabric</groupId>
-			<artifactId>cards-client</artifactId>
-			<version>2.5.0.RELEASE</version>
+			<groupId>org.opfab</groupId>
+			<artifactId>cards-client-data</artifactId>
+			<version>2.6.0.RELEASE</version>
 		</dependency>
 
 		<!-- Keycloak -->
