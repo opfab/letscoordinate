@@ -57,49 +57,49 @@ operatorfabric.users.default:
 # Generic entities
 
     - id: EICCODE-ALL-RSCS
-      name: All RSCs
-      description: All RSCs
+      name: 'All RSCs'
+      description: 'All RSCs'
       entityAllowedToSendCard: false
 
     - id: EICCODE-ALL-TSOS
-      name: All TSOs
-      description: All TSOs
+      name: 'All TSOs'
+      description: 'All TSOs'
       entityAllowedToSendCard: false
 
     - id: EICCODE-ALL-TSOS-AND-RSCS
-      name: All TSOs & RSCs
-      description: All TSOs & RSCs
+      name: 'All TSOs & RSCs'
+      description: 'All TSOs & RSCs'
       entityAllowedToSendCard: false
 
 # RSCs and their TSOs
 
     - id: RSC-BALTIC-AND-TSOS
-      name: 'RSC Baltic & TSOs'
+      name: 'Baltic & TSOs'
       description: 'RSC Baltic & TSOs'
       entityAllowedToSendCard: false
 
     - id: RSC-CORESO-AND-TSOS
-      name: 'RSC CORESO & TSOs'
+      name: 'CORESO & TSOs'
       description: 'RSC CORESO & TSOs'
       entityAllowedToSendCard: false
 
     - id: RSC-NORDIC-AND-TSOS
-      name: 'RSC Nordic & TSOs'
+      name: 'Nordic & TSOs'
       description: 'RSC Nordic & TSOs'
       entityAllowedToSendCard: false
 
     - id: RSC-SCC-AND-TSOS
-      name: 'RSC SCC & TSOs'
+      name: 'SCC & TSOs'
       description: 'RSC SCC & TSOs'
       entityAllowedToSendCard: false
 
     - id: RSC-SELENE-CC-AND-TSOS
-      name: 'RSC SEleNe CC & TSOs'
+      name: 'SEleNe CC & TSOs'
       description: 'RSC SEleNe CC & TSOs'
       entityAllowedToSendCard: false
 
     - id: RSC-TSCNET-AND-TSOS
-      name: 'RSC TSCNET & TSOs'
+      name: 'TSCNET & TSOs'
       description: 'RSC TSCNET & TSOs'
       entityAllowedToSendCard: false
 
@@ -158,7 +158,7 @@ operatorfabric.users.default:
 # RSC
 
     - id: 38X-BALTIC-RSC-H
-      name: 'RSC Baltic'
+      name: 'Baltic'
       description: 'RSC Baltic'
       parents:
         - 10Y1001C--00120B
@@ -167,7 +167,7 @@ operatorfabric.users.default:
         - RSC-BALTIC-AND-TSOS
 
     - id: 22XCORESO------S
-      name: 'RSC CORESO'
+      name: 'CORESO'
       description: 'RSC CORESO'
       parents:
         - 10Y1001C--000239
@@ -181,7 +181,7 @@ operatorfabric.users.default:
         - RSC-CORESO-AND-TSOS
 
     - id: 10X1001C--00008J
-      name: 'RSC Nordic'
+      name: 'Nordic'
       description: 'RSC Nordic'
       parents:
         - 10Y1001C--00120B
@@ -192,7 +192,7 @@ operatorfabric.users.default:
         - RSC-NORDIC-AND-TSOS
 
     - id: 34X-0000000068-Q
-      name: 'RSC SCC'
+      name: 'SCC'
       description: 'RSC SCC'
       parents:
         - 10Y1001C--00138T
@@ -202,7 +202,7 @@ operatorfabric.users.default:
         - RSC-SCC-AND-TSOS
 
     - id: EICCODE-SELENECC
-      name: 'RSC SEleNe CC'
+      name: 'SEleNe CC'
       description: 'RSC SEleNe CC'
       parents:
         - 10Y1001C--00059P
@@ -213,7 +213,7 @@ operatorfabric.users.default:
         - RSC-SELENE-CC-AND-TSOS
 
     - id: 10X1001C--00003T
-      name: 'RSC TSCNET'
+      name: 'TSCNET'
       description: 'RSC TSCNET'
       parents:
         - 10Y1001C--00120B
@@ -228,7 +228,7 @@ operatorfabric.users.default:
 # TSO
 
     - id: 10X1001A1001A39W
-      name: 'TSO Elering'
+      name: 'Elering'
       description: 'TSO Elering'
       parents:
         - 10Y1001C--00120B
@@ -237,7 +237,7 @@ operatorfabric.users.default:
         - RSC-BALTIC-AND-TSOS
 
     - id: 10X1001A1001A55Y
-      name: 'TSO Litgrid'
+      name: 'Litgrid'
       description: 'TSO Litgrid'
       parents:
         - 10Y1001C--00120B
@@ -246,7 +246,7 @@ operatorfabric.users.default:
         - RSC-BALTIC-AND-TSOS
 
     - id: 10X1001A1001B54W
-      name: 'TSO AST'
+      name: 'AST'
       description: 'TSO AST'
       parents:
         - 10Y1001C--00120B
@@ -255,7 +255,7 @@ operatorfabric.users.default:
         - RSC-BALTIC-AND-TSOS
 
     - id: 10X1001A1001A094
-      name: 'TSO Elia'
+      name: 'Elia'
       description: 'TSO Elia'
       parents:
         - 10Y1001C--00059P
@@ -264,7 +264,7 @@ operatorfabric.users.default:
         - RSC-CORESO-AND-TSOS
 
     - id: 10XES-REE------E
-      name: 'TSO REE'
+      name: 'REE'
       description: 'TSO REE'
       parents:
         - 10Y1001C--00095L
@@ -273,7 +273,7 @@ operatorfabric.users.default:
         - RSC-CORESO-AND-TSOS
 
     - id: 10XFR-RTE------Q
-      name: 'TSO RTE'
+      name: 'RTE'
       description: 'TSO RTE'
       parents:
         - 10Y1001C--000239
@@ -285,7 +285,7 @@ operatorfabric.users.default:
         - RSC-CORESO-AND-TSOS
 
     - id: 21X-GB-A-A0A0A-7
-      name: 'TSO National Grid'
+      name: 'National Grid'
       description: 'TSO National Grid'
       parents:
         - 10Y1001C--000239
@@ -295,7 +295,7 @@ operatorfabric.users.default:
         - RSC-CORESO-AND-TSOS
 
     - id: 10X1001A1001A531
-      name: 'TSO EirGrid'
+      name: 'EirGrid'
       description: 'TSO EirGrid'
       parents:
         - 10Y1001C--00022B
@@ -304,7 +304,7 @@ operatorfabric.users.default:
         - RSC-CORESO-AND-TSOS
 
     - id: 10X1001A1001A345
-      name: 'TSO Terna'
+      name: 'Terna'
       description: 'TSO Terna'
       parents:
         - 10Y1001C--00138T
@@ -314,7 +314,7 @@ operatorfabric.users.default:
         - RSC-CORESO-AND-TSOS
 
     - id: 10XNITSO-12345-O
-      name: 'TSO SONI'
+      name: 'SONI'
       description: 'TSO SONI'
       parents:
         - 10Y1001C--00022B
@@ -323,7 +323,7 @@ operatorfabric.users.default:
         - RSC-CORESO-AND-TSOS
 
     - id: 10XPT-REN------9
-      name: 'TSO REN'
+      name: 'REN'
       description: 'TSO REN'
       parents:
         - 10Y1001C--00095L
@@ -332,7 +332,7 @@ operatorfabric.users.default:
         - RSC-CORESO-AND-TSOS
 
     - id: 10X1001A1001A248
-      name: 'TSO Energinet'
+      name: 'Energinet'
       description: 'TSO Energinet'
       parents:
         - 10Y1001C--00136X
@@ -342,7 +342,7 @@ operatorfabric.users.default:
         - RSC-NORDIC-AND-TSOS
 
     - id: 10X1001A1001A264
-      name: 'TSO Fingrid'
+      name: 'Fingrid'
       description: 'TSO Fingrid'
       parents:
         - 10Y1001C--00120B
@@ -352,7 +352,7 @@ operatorfabric.users.default:
         - RSC-NORDIC-AND-TSOS
 
     - id: 10X1001A1001A38Y
-      name: 'TSO Statnett'
+      name: 'Statnett'
       description: 'TSO Statnett'
       parents:
         - 10Y1001A1001A91G
@@ -361,7 +361,7 @@ operatorfabric.users.default:
         - RSC-NORDIC-AND-TSOS
 
     - id: 10X1001A1001A418
-      name: 'TSO Svenska kraftnät'
+      name: 'Svenska kraftnät'
       description: 'TSO Svenska kraftnät'
       parents:
         - 10Y1001C--00120B
@@ -372,7 +372,7 @@ operatorfabric.users.default:
         - RSC-NORDIC-AND-TSOS
 
     - id: 10XAL-KESH-----J
-      name: 'TSO OST'
+      name: 'OST'
       description: 'TSO OST'
       parents:
         - EICCODE-ALL-TSOS
@@ -380,7 +380,7 @@ operatorfabric.users.default:
         - RSC-SCC-AND-TSOS
 
     - id: 10XBA-JPCCZEKC-K
-      name: 'TSO NOS BiH'
+      name: 'NOS BiH'
       description: 'TSO NOS BiH'
       parents:
         - EICCODE-ALL-TSOS
@@ -388,7 +388,7 @@ operatorfabric.users.default:
         - RSC-SCC-AND-TSOS
 
     - id: 10XBG-ESO------A
-      name: 'TSO ESO'
+      name: 'ESO'
       description: 'TSO ESO'
       parents:
         - 10Y1001C--00139R
@@ -398,7 +398,7 @@ operatorfabric.users.default:
         - RSC-SELENE-CC-AND-TSOS
 
     - id: 10XGR-HTSO-----B
-      name: 'TSO IPTO'
+      name: 'IPTO'
       description: 'TSO IPTO'
       parents:
         - 10Y1001C--00138T
@@ -409,7 +409,7 @@ operatorfabric.users.default:
         - RSC-SELENE-CC-AND-TSOS
 
     - id: 10XCS-CG-TSO---5
-      name: 'TSO CGES'
+      name: 'CGES'
       description: 'TSO CGES'
       parents:
         - EICCODE-ALL-TSOS
@@ -417,7 +417,7 @@ operatorfabric.users.default:
         - RSC-SCC-AND-TSOS
 
     - id: 10XMK-MEPSO----M
-      name: 'TSO MEPSO'
+      name: 'MEPSO'
       description: 'TSO MEPSO'
       parents:
         - EICCODE-ALL-TSOS
@@ -425,7 +425,7 @@ operatorfabric.users.default:
         - RSC-SCC-AND-TSOS
 
     - id: 10XCS-SERBIATSO8
-      name: 'TSO EMS'
+      name: 'EMS'
       description: 'TSO EMS'
       parents:
         - EICCODE-ALL-TSOS
@@ -433,7 +433,7 @@ operatorfabric.users.default:
         - RSC-SCC-AND-TSOS
 
     - id: 10XTR-TEIAS----9
-      name: 'TSO TEIAS'
+      name: 'TEIAS'
       description: 'TSO TEIAS'
       parents:
         - EICCODE-ALL-TSOS
@@ -441,7 +441,7 @@ operatorfabric.users.default:
         - RSC-SCC-AND-TSOS
 
     - id: 10XRO-TEL------2
-      name: 'TSO Transelectrica'
+      name: 'Transelectrica'
       description: 'TSO Transelectrica'
       parents:
         - 10Y1001C--00059P
@@ -452,7 +452,7 @@ operatorfabric.users.default:
         - RSC-TSCNET-AND-TSOS
 
     - id: 10XAT-APG------Z
-      name: 'TSO APG'
+      name: 'APG'
       description: 'TSO APG'
       parents:
         - 10Y1001C--00059P
@@ -462,7 +462,7 @@ operatorfabric.users.default:
         - RSC-TSCNET-AND-TSOS
 
     - id: 10XCH-SWISSGRIDC
-      name: 'TSO Swissgrid'
+      name: 'Swissgrid'
       description: 'TSO Swissgrid'
       parents:
         - 10Y1001C--00059P
@@ -472,7 +472,7 @@ operatorfabric.users.default:
         - RSC-TSCNET-AND-TSOS
 
     - id: 10XCZ-CEPS-GRIDE
-      name: 'TSO CEPS'
+      name: 'CEPS'
       description: 'TSO CEPS'
       parents:
         - 10Y1001C--00059P
@@ -481,7 +481,7 @@ operatorfabric.users.default:
         - RSC-TSCNET-AND-TSOS
 
     - id: 10XDE-VE-TRANSMK
-      name: 'TSO 50Hertz'
+      name: '50Hertz'
       description: 'TSO 50Hertz'
       parents:
         - 10Y1001C--00059P
@@ -491,7 +491,7 @@ operatorfabric.users.default:
         - RSC-TSCNET-AND-TSOS
 
     - id: 10XDE-RWENET---W
-      name: 'TSO Amprion'
+      name: 'Amprion'
       description: 'TSO Amprion'
       parents:
         - 10Y1001C--00059P
@@ -500,7 +500,7 @@ operatorfabric.users.default:
         - RSC-TSCNET-AND-TSOS
 
     - id: 10XDE-EON-NETZ-C
-      name: 'TSO TenneT DE'
+      name: 'TenneT DE'
       description: 'TSO TenneT DE'
       parents:
         - 10Y1001C--00059P
@@ -510,7 +510,7 @@ operatorfabric.users.default:
         - RSC-TSCNET-AND-TSOS
 
     - id: 10XDE-ENBW--TNGX
-      name: 'TSO TransnetBW'
+      name: 'TransnetBW'
       description: 'TSO TransnetBW'
       parents:
         - 10Y1001C--00059P
@@ -519,7 +519,7 @@ operatorfabric.users.default:
         - RSC-TSCNET-AND-TSOS
 
     - id: 10XHR-HEP-OPS--A
-      name: 'TSO HOPS'
+      name: 'HOPS'
       description: 'TSO HOPS'
       parents:
         - 10Y1001C--00059P
@@ -528,7 +528,7 @@ operatorfabric.users.default:
         - RSC-TSCNET-AND-TSOS
 
     - id: 10X1001A1001A329
-      name: 'TSO MAVIR'
+      name: 'MAVIR'
       description: 'TSO MAVIR'
       parents:
         - 10Y1001C--00059P
@@ -537,7 +537,7 @@ operatorfabric.users.default:
         - RSC-TSCNET-AND-TSOS
 
     - id: 21X000000001333E
-      name: 'TSO Creos'
+      name: 'Creos'
       description: 'TSO Creos'
       parents:
         - 10Y1001C--00059P
@@ -546,7 +546,7 @@ operatorfabric.users.default:
         - RSC-TSCNET-AND-TSOS
 
     - id: 10X1001A1001A361
-      name: 'TSO TenneT NL'
+      name: 'TenneT NL'
       description: 'TSO TenneT NL'
       parents:
         - 10Y1001C--000239
@@ -556,7 +556,7 @@ operatorfabric.users.default:
         - RSC-TSCNET-AND-TSOS
 
     - id: 10XPL-TSO------P
-      name: 'TSO PSE'
+      name: 'PSE'
       description: 'TSO PSE'
       parents:
         - 10Y1001C--00120B
@@ -567,7 +567,7 @@ operatorfabric.users.default:
         - RSC-TSCNET-AND-TSOS
 
     - id: 10XSI-ELES-----1
-      name: 'TSO ELES'
+      name: 'ELES'
       description: 'TSO ELES'
       parents:
         - 10Y1001C--00059P
@@ -577,7 +577,7 @@ operatorfabric.users.default:
         - RSC-TSCNET-AND-TSOS
 
     - id: 10XSK-SEPS-GRIDB
-      name: 'TSO SEPS'
+      name: 'SEPS'
       description: 'TSO SEPS'
       parents:
         - 10Y1001C--00059P
@@ -586,7 +586,7 @@ operatorfabric.users.default:
         - RSC-TSCNET-AND-TSOS
 
     - id: 10XAT-VKW-UNG—-Y
-      name: 'TSO Vuen'
+      name: 'Vuen'
       description: 'TSO Vuen'
       parents:
         - EICCODE-ALL-TSOS
