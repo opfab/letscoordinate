@@ -15,8 +15,3 @@ spring:
 operatorfabric.businessconfig:
   storage:
     path: "/businessconfig-storage"
-
-#here we put urls for all feign clients
-users:
-  ribbon:
-    listOfServers: users:8080

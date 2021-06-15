@@ -37,4 +37,4 @@ operatorfabric:
       login-claim: preferred_username
       expire-claim: exp
   servicesUrls:
-    users: "http://172.21.0.1:2103"
+    users: "http://${DOCKER_IP}:2103"

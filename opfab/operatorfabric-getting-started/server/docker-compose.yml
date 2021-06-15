@@ -57,6 +57,7 @@ services:
       - "../certificates:/certificates_to_add"
       - "./docker-configurations/users.yml:/config/application.yml"
       - "./docker-configurations/common.yml:/config/common-docker.yml"
+      - "./:/external-config"
   businessconfig:
     container_name: businessconfig
     image: lfeoperatorfabric/of-businessconfig-business-service:${OF_VERSION}
@@ -75,6 +76,7 @@ services:
       - "./businessconfig-storage:/businessconfig-storage"
       - "./docker-configurations/common.yml:/config/common-docker.yml"
       - "./docker-configurations/businessconfig.yml:/config/application-docker.yml"
+      - "./:/external-config"
   cards-publication:
     container_name: cards-publication
     image: lfeoperatorfabric/of-cards-publication-business-service:${OF_VERSION}
@@ -92,6 +94,7 @@ services:
       - "../certificates:/certificates_to_add"
       - "./docker-configurations/common.yml:/config/common-docker.yml"
       - "./docker-configurations/cards-publication.yml:/config/application-docker.yml"
+      - "./:/external-config"
   cards-consultation:
     container_name: cards-consultation
     image: lfeoperatorfabric/of-cards-consultation-business-service:${OF_VERSION}
@@ -107,6 +110,7 @@ services:
       - "../certificates:/certificates_to_add"
       - "./docker-configurations/common.yml:/config/common-docker.yml"
       - "./docker-configurations/cards-consultation.yml:/config/application-docker.yml"
+      - "./:/external-config"
   web-ui:
     container_name: web-ui
     image: lfeoperatorfabric/of-web-ui:${OF_VERSION}

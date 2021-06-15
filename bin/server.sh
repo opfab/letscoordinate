@@ -71,10 +71,6 @@ function commandNotImplemented() {
 
 function buildSnapshotDockerImagesIfAsked() {
   if [ ${build} = true ] || [ ${firstInit} = true ]; then
-      echo -e "\033[0;32mINSTALLING OPERATORFABRIC DEPENDENCIES...\033[0m"
-      echo
-      mvn install:install-file -Dfile=cards-client-data-${OF_VERSION}.jar -DgroupId=org.lfenergy.operatorfabric -DartifactId=cards-client -Dversion=${OF_VERSION} -Dpackaging=jar
-      echo
       echo -e "\033[0;32mBUILDING LETSCO SNAPSHOT DOCKER IMAGES...\033[0m"
       echo
       ./build_snapshot_docker_images.sh
