@@ -31,6 +31,7 @@ import org.lfenergy.letscoordinate.backend.exception.IgnoreProcessException;
 import org.lfenergy.letscoordinate.backend.exception.PositiveTechnicalQualityCheckException;
 import org.lfenergy.letscoordinate.backend.mapper.EventMessageMapper;
 import org.lfenergy.letscoordinate.backend.model.EventMessage;
+import org.lfenergy.letscoordinate.backend.model.EventMessageFile;
 import org.lfenergy.letscoordinate.backend.processor.JsonDataProcessor;
 import org.lfenergy.letscoordinate.backend.repository.EventMessageRepository;
 import org.lfenergy.letscoordinate.backend.util.HttpUtil;
@@ -47,6 +48,7 @@ import java.io.ByteArrayInputStream;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -98,7 +100,14 @@ public class LetscoKafkaListener {
             log.info("Received data type: \"{}\"", eventMessageDto.getHeader().getNoun());
             eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getCaseId()
                     .ifPresent(eventMessageRepository::deleteByCaseId);
-            EventMessage eventMessage = eventMessageRepository.save(EventMessageMapper.fromDto(eventMessageDto));
+            EventMessage eventMessage = EventMessageMapper.fromDto(eventMessageDto);
+            eventMessage.setEventMessageFiles(Arrays.asList(
+                    EventMessageFile.builder()
+                            .file(data.getBytes())
+                            .eventMessage(eventMessage)
+                            .build()
+            ));
+            eventMessage = eventMessageRepository.save(eventMessage);
             log.info("New \"{}\" data successfully saved! (id={})", eventMessage.getNoun(), eventMessage.getId());
             log.debug("Saved data >>> {}", eventMessage.toString());
 
