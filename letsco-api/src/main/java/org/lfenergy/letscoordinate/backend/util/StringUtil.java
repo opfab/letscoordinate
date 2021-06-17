@@ -18,11 +18,13 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
+import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
+import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.HeaderDto;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import javax.validation.constraints.NotNull;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -101,6 +103,33 @@ public final class StringUtil {
 
     public static String getFilenameWithoutExtension(String filename) {
         return filename.contains(".") ? filename.substring(0, filename.lastIndexOf(".")) : filename;
+    }
+
+    public static String generateUniqueFileIdentifier(EventMessageDto eventMessageDto) {
+        HeaderDto headerDto = eventMessageDto.getHeader();
+        BusinessDataIdentifierDto bdi = headerDto.getProperties().getBusinessDataIdentifier();
+        String eventMessageDtoStr = new StringBuilder()
+                .append("verb").append( headerDto.getVerb())
+                .append("noun").append( headerDto.getNoun())
+                .append("timestamp").append( headerDto.getTimestamp())
+                .append("source").append( headerDto.getSource())
+                .append("messageId").append( headerDto.getMessageId())
+                .append("format").append( headerDto.getProperties().getFormat())
+                .append("messageType").append( bdi.getMessageType())
+                .append("messageTypeName").append( bdi.getMessageTypeName())
+                .append("businessDayFrom").append( bdi.getBusinessDayFrom())
+                .append("businessDayTo").append( bdi.getBusinessDayTo())
+                .append("processStep").append( bdi.getProcessStepSimple())
+                .append("timeframe").append( bdi.getTimeframeSimple())
+                .append("businessApplication").append( bdi.getBusinessApplicationSimple())
+                .append("timeframeNumber").append( bdi.getTimeframeNumberSimple())
+                .append("sendingUser").append( bdi.getSendingUserSimple())
+                .append("caseId").append( bdi.getCaseIdSimple())
+                .append("fileName").append( bdi.getFileNameSimple())
+                .append("tso").append( bdi.getTsoSimple())
+                .append("biddingZone").append( bdi.getBiddingZoneSimple())
+                .toString();
+        return UUID.nameUUIDFromBytes(eventMessageDtoStr.getBytes()).toString();
     }
 
 }

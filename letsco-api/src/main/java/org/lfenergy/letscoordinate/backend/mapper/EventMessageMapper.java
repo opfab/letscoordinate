@@ -20,6 +20,7 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.HeaderDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.PropertiesDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.*;
 import org.lfenergy.letscoordinate.backend.model.*;
+import org.lfenergy.letscoordinate.backend.util.StringUtil;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -69,6 +70,7 @@ public final class EventMessageMapper {
                                     .collect(Collectors.toList()))
                             .orElse(null));
                     eventMessage.setCaseId(businessDataIdentifierDto.getCaseId().orElse(null));
+                    eventMessage.setUniqueFileIdentifier(StringUtil.generateUniqueFileIdentifier(eventMessageDto));
                     eventMessage.setCoordinationStatus(businessDataIdentifierDto.getCoordinationStatus().orElse(null));
                     eventMessage.setEventMessageCoordinationComments(businessDataIdentifierDto.getCoordinationComments()
                             .map(coordinationCommentDtos -> coordinationCommentDtos.stream()
