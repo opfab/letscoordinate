@@ -11,27 +11,29 @@
 
 package org.lfenergy.letscoordinate.backend.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.control.Validation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
+import org.lfenergy.letscoordinate.backend.dto.KafkaFileWrapperDto;
 import org.lfenergy.letscoordinate.backend.dto.ProcessedFileDto;
 import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
 import org.lfenergy.letscoordinate.backend.dto.ResponseErrorMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
+import org.lfenergy.letscoordinate.backend.enums.FileTypeEnum;
 import org.lfenergy.letscoordinate.backend.enums.ResponseErrorSeverityEnum;
 import org.lfenergy.letscoordinate.backend.exception.InvalidInputFileException;
+import org.lfenergy.letscoordinate.backend.kafka.LetscoKafkaProducer;
 import org.lfenergy.letscoordinate.backend.mapper.EventMessageMapper;
-import org.lfenergy.letscoordinate.backend.model.EventMessage;
 import org.lfenergy.letscoordinate.backend.processor.ExcelDataProcessor;
 import org.lfenergy.letscoordinate.backend.processor.JsonDataProcessor;
 import org.lfenergy.letscoordinate.backend.repository.EventMessageRepository;
+import org.lfenergy.letscoordinate.backend.util.StringUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,8 +44,9 @@ public class InputFileToPojoService {
 
     private final JsonDataProcessor jsonDataProcessor;
     private final ExcelDataProcessor excelDataProcessor;
-
     private final EventMessageRepository eventMessageRepository;
+    private final LetscoKafkaProducer letscoKafkaProducer;
+    private final LetscoProperties letscoProperties;
 
     private List<String> acceptedFileExtensions = Arrays.asList("json", "xlsx");
 
@@ -56,7 +59,7 @@ public class InputFileToPojoService {
      */
     public Validation<ResponseErrorDto, EventMessageDto> uploadedFileToPojo(MultipartFile multipartFile) {
         try {
-            String fileExtension = getFileExtension(Optional.ofNullable(multipartFile.getOriginalFilename())
+            String fileExtension = StringUtil.getFileExtension(Optional.ofNullable(multipartFile.getOriginalFilename())
                     .map(String::toLowerCase)
                     .orElseThrow(() -> new InvalidInputFileException("Original file name could not be null!")));
             if (fileExtension == null || !acceptedFileExtensions.contains(fileExtension))
@@ -107,10 +110,25 @@ public class InputFileToPojoService {
         return Validation.valid(eventMessageDtoMap);
     }
 
-    public Validation<ResponseErrorDto, EventMessage> uploadExcelFileAndSaveGeneratedData(MultipartFile multipartFile) {
+    public Validation<ResponseErrorDto, EventMessageDto> uploadFileAndSaveGeneratedData(MultipartFile multipartFile) {
         Validation<ResponseErrorDto, EventMessageDto> validation = uploadedFileToPojo(multipartFile);
-        // the .map transformation is applied when the validation is valid, otherwise the invalid validation is returned as is
-        return validation.map(valid -> eventMessageRepository.save(EventMessageMapper.fromDto(valid)));
+        try {
+            String fileExtension = StringUtil.getFileExtension(Optional.ofNullable(multipartFile.getOriginalFilename())
+                    .map(String::toLowerCase)
+                    .orElseThrow(() -> new InvalidInputFileException("Original file name could not be null!")));
+            FileTypeEnum fileTypeEnum = FileTypeEnum.getByExtensionIgnoreCase(fileExtension);
+            if (fileTypeEnum == FileTypeEnum.UNKNOWN)
+                throw new InvalidInputFileException("Invalid file extension! => " + fileExtension);
+
+            letscoKafkaProducer.sendFileToKafka(KafkaFileWrapperDto.builder()
+                    .fileName(multipartFile.getOriginalFilename())
+                    .fileType(fileTypeEnum)
+                    .fileContent(multipartFile.getBytes()).build(),
+                    letscoProperties.getKafka().getDefaultInputTopic());
+        } catch (Exception e) {
+            log.error("Error while sending data to kafka!", e);
+        }
+        return validation;
     }
 
     public Validation<ResponseErrorDto, List<ProcessedFileDto>> uploadExcelFilesAndSaveGeneratedData(MultipartFile[] multipartFiles) {
@@ -164,12 +182,6 @@ public class InputFileToPojoService {
                             .build()))
                     .build());
         }
-    }
-
-    private String getFileExtension(String fileName) {
-        if (fileName == null) return null;
-        String[] tokens = fileName.split("[.]");
-        return tokens[tokens.length - 1];
     }
 
 }

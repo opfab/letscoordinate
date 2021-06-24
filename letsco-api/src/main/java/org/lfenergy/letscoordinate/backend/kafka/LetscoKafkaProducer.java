@@ -9,51 +9,46 @@
  * This file is part of the Let’s Coordinate project.
  */
 
-package org.lfenergy.letscoordinate.dataprovider.controller;
+package org.lfenergy.letscoordinate.backend.kafka;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.text.StringSubstitutor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.lfenergy.letscoordinate.dataprovider.config.LetscoKafkaProperties;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.lfenergy.letscoordinate.backend.dto.KafkaFileWrapperDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
-@RestController
-@RequestMapping(value = "/letsco/data-provider/v1/kafka")
+@Component
 @RequiredArgsConstructor
-public class KafkaProducerController {
+@Slf4j
+public class LetscoKafkaProducer {
 
-    private final LetscoKafkaProperties letscoKafkaProperties;
+    @Value("${spring.kafka.bootstrap-servers}")
+    protected String bootstrapServers;
 
-    private void sendMessageToKafka(String topic, String data) {
+    private final ObjectMapper objectMapper;
 
+    private void sendFileToKafka(String data, String topic) {
         Properties properties = new Properties();
-        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, letscoKafkaProperties.getBootstrapServers());
+        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-
         KafkaProducer<String, String> producer = new KafkaProducer(properties);
-
-        ProducerRecord<String, String> record = new ProducerRecord<>(topic, data);
+        ProducerRecord<String, String> record = new ProducerRecord<>(topic , data);
         producer.send(record);
-
         producer.close();
     }
 
-    @PostMapping(value = "/json/raw-msg")
-    public ResponseEntity sendRawMessage(@RequestBody String data, @RequestParam(required = false) String topic) {
-        sendMessageToKafka(topic == null ? letscoKafkaProperties.getTopicNamePrefix() + "_raw" : topic, data);
-        return ResponseEntity.ok(data);
+    public void sendFileToKafka(KafkaFileWrapperDto kafkaFileWrapperDto, String topic) throws JsonProcessingException {
+        sendFileToKafka(objectMapper.writeValueAsString(kafkaFileWrapperDto), topic);
     }
 
 }

@@ -18,13 +18,14 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.HeaderDto;
 
-import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -103,6 +104,12 @@ public final class StringUtil {
 
     public static String getFilenameWithoutExtension(String filename) {
         return filename.contains(".") ? filename.substring(0, filename.lastIndexOf(".")) : filename;
+    }
+
+    public static String getFileExtension(String fileName) {
+        if (fileName == null) return null;
+        String[] tokens = fileName.split("[.]");
+        return tokens[tokens.length - 1];
     }
 
     public static String generateUniqueFileIdentifier(EventMessageDto eventMessageDto) {

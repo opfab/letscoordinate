@@ -11,6 +11,6 @@
 
 package org.lfenergy.letscoordinate.backend.enums;
 
-public enum CoordinationStatusEnum {
-    CON, REJ, MIX , CAN, NOT;
+public enum CoordinationStatusStrategyEnum {
+    BEST_CASE, WORST_CASE, MAJORITY
 }

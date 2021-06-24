@@ -175,7 +175,7 @@ public class ExcelDataProcessorTest {
         assertAll(
                 () -> assertNotNull(map),
                 () -> assertTrue(!map.isEmpty()),
-                () -> assertEquals(8, map.keySet().size())
+                () -> assertEquals(9, map.keySet().size())
         );
     }
 

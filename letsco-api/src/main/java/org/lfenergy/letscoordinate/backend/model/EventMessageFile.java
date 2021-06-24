@@ -12,8 +12,11 @@
 package org.lfenergy.letscoordinate.backend.model;
 
 import lombok.*;
+import org.lfenergy.letscoordinate.backend.enums.FileDirectionEnum;
+import org.lfenergy.letscoordinate.backend.enums.FileTypeEnum;
 
 import javax.persistence.*;
+import java.time.Instant;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -36,8 +39,22 @@ public class EventMessageFile implements java.io.Serializable {
     @JoinColumn(name = "id_event_message", nullable = false)
     private EventMessage eventMessage;
 
+    @Column(name = "file_name", nullable = false, length = 1000)
+    private String fileName;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "file_type", nullable = false, length = 20)
+    private FileTypeEnum fileType;
+
     @Lob
-    @Column(name = "file", nullable = false)
-    private byte[] file;
+    @Column(name = "file_content", nullable = false)
+    private byte[] fileContent;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "file_direction", nullable = false, length = 20)
+    private FileDirectionEnum fileDirection;
+
+    @Column(name = "creation_date", nullable = false)
+    private Instant creationDate;
 
 }

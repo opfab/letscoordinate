@@ -35,6 +35,9 @@ public class EventMessage implements java.io.Serializable {
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
 
+    @Column(name = "xmlns", length = 250)
+    private String xmlns;
+
     @Column(name = "message_id", nullable = false, length = 100)
     private String messageId;
 

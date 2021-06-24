@@ -21,20 +21,20 @@
     },
     "logging": {
       "initial": {
-        "name": "Coordination request",
-        "description": "Coordination request"
+        "name": "Coordination request: In progress",
+        "description": "Coordination request: In progress"
       },
       "answerProposalConfirmed": {
-        "name": "Proposal confirmed",
-        "description": "Proposal confirmed"
+        "name": "Coordination answer: Proposal confirmed",
+        "description": "Coordination answer: Proposal confirmed"
       },
       "answerProposalRejected": {
-        "name": "Proposal rejected",
-        "description": "Proposal rejected"
+        "name": "Coordination answer: Proposal rejected",
+        "description": "Coordination answer: Proposal rejected"
       },
       "answerDifferentChoices": {
-        "name": "Different choices",
-        "description": "Different choices"
+        "name": "Coordination answer: Different choices",
+        "description": "Coordination answer: Different choices"
       },
       "proposalConfirmed": {
         "name": "Coordination results: Proposal confirmed",
