@@ -30,7 +30,7 @@ import java.util.Optional;
 public class BusinessDataIdentifierDto {
 
     @Getter(AccessLevel.NONE)
-    private List<String> recipients;
+    private String businessApplication;
     private String messageType;
     @NotNull
     private String messageTypeName;
@@ -42,8 +42,6 @@ public class BusinessDataIdentifierDto {
     @Getter(AccessLevel.NONE)
     private String timeframe;
     @Getter(AccessLevel.NONE)
-    private String businessApplication;
-    @Getter(AccessLevel.NONE)
     private Integer timeframeNumber;
     @Getter(AccessLevel.NONE)
     private String sendingUser;
@@ -51,6 +49,8 @@ public class BusinessDataIdentifierDto {
     private String caseId;
     @Getter(AccessLevel.NONE)
     private String fileName;
+    @Getter(AccessLevel.NONE)
+    private List<String> recipients;
     @Getter(AccessLevel.NONE)
     private String tso;
     @Getter(AccessLevel.NONE)
@@ -159,7 +159,7 @@ public class BusinessDataIdentifierDto {
         return Optional.ofNullable(coordinationComments);
     }
 
-    @JsonProperty("coordinationComment")
+    @JsonProperty("coordinationComments")
     public List<CoordinationCommentDto> getCoordinationCommentsSimple() {
         return coordinationComments;
     }

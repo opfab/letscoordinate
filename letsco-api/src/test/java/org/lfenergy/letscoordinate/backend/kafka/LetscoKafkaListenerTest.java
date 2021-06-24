@@ -11,11 +11,14 @@
 
 package org.lfenergy.letscoordinate.backend.kafka;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.vavr.control.Validation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lfenergy.letscoordinate.backend.component.OpfabPublisherComponent;
+import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
 import org.lfenergy.letscoordinate.backend.config.OpfabConfig;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
@@ -32,8 +35,12 @@ import org.lfenergy.letscoordinate.backend.exception.JsonDataMandatoryFieldNullE
 import org.lfenergy.letscoordinate.backend.exception.PositiveTechnicalQualityCheckException;
 import org.lfenergy.letscoordinate.backend.mapper.EventMessageMapper;
 import org.lfenergy.letscoordinate.backend.model.EventMessage;
+import org.lfenergy.letscoordinate.backend.processor.ExcelDataProcessor;
 import org.lfenergy.letscoordinate.backend.processor.JsonDataProcessor;
 import org.lfenergy.letscoordinate.backend.repository.EventMessageRepository;
+import org.lfenergy.letscoordinate.backend.service.EventMessageService;
+import org.lfenergy.letscoordinate.backend.util.ApplicationContextUtil;
+import org.lfenergy.letscoordinate.backend.util.CoordinationFactory;
 import org.lfenergy.letscoordinate.backend.util.OpfabUtil;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -56,27 +63,40 @@ public class LetscoKafkaListenerTest {
 
     private LetscoKafkaListener letscoKafkaListener;
     private OpfabConfig opfabConfig;
+    LetscoProperties letscoProperties;
+    EventMessageDto eventMessageDto;
+    Instant timestamp;
+    ObjectMapper objectMapper;
 
-    @Mock
+    CoordinationConfig coordinationConfig;
+    EventMessageService eventMessageService;
     JsonDataProcessor jsonDataProcessor;
+    ExcelDataProcessor excelDataProcessor;
+
     @Mock
     EventMessageRepository eventMessageRepository;
     @Mock
     OpfabPublisherComponent opfabPublisherComponent;
-    LetscoProperties letscoProperties;
-    EventMessageDto eventMessageDto;
-    Instant timestamp;
 
     @BeforeEach
     public void beforeEach() {
-        letscoProperties = new LetscoProperties();
+        objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         opfabConfig = new OpfabConfig();
+
+        letscoProperties = new LetscoProperties();
         LetscoProperties.InputFile inputFile = new LetscoProperties.InputFile();
         LetscoProperties.InputFile.Validation validation = new LetscoProperties.InputFile.Validation();
         inputFile.setValidation(validation);
         letscoProperties.setInputFile(inputFile);
-        letscoKafkaListener = new LetscoKafkaListener(jsonDataProcessor, eventMessageRepository,
-                opfabPublisherComponent, letscoProperties, opfabConfig);
+
+        coordinationConfig = ApplicationContextUtil.initCoordinationConfig();
+        eventMessageService = new EventMessageService(coordinationConfig, letscoProperties);
+        excelDataProcessor = new ExcelDataProcessor(letscoProperties, coordinationConfig, eventMessageService);
+        jsonDataProcessor = new JsonDataProcessor(objectMapper, eventMessageService);
+
+        letscoKafkaListener = new LetscoKafkaListener(jsonDataProcessor, excelDataProcessor, eventMessageRepository,
+                opfabPublisherComponent, letscoProperties, opfabConfig, objectMapper);
+
         timestamp = Instant.parse("2021-03-17T10:15:30.00Z");
         eventMessageDto = EventMessageDto.builder()
                 .header(HeaderDto.builder()
@@ -94,12 +114,13 @@ public class LetscoKafkaListenerTest {
 
     @Test
     public void handleLetscoData() throws Exception {
-        EventMessage eventMessage = EventMessageMapper.fromDto(eventMessageDto);
-        eventMessage.setId(1L);
-        when(eventMessageRepository.save(any())).thenReturn(eventMessage);
-        doNothing().when(opfabPublisherComponent).publishOpfabCard(eventMessageDto, eventMessage.getId());
-        when(jsonDataProcessor.inputStreamToPojo(any())).thenReturn(Validation.valid(eventMessageDto));
-        letscoKafkaListener.handleLetscoEventMessages("", 0, "", 0L);
+
+        when(eventMessageRepository.save(any(EventMessage.class))).then(i -> {
+            EventMessage savedEventMessage = i.getArgument(0, EventMessage.class);
+            savedEventMessage.setId(1L);
+            return savedEventMessage;
+        });
+        letscoKafkaListener.handleLetscoEventMessages(CoordinationFactory.KAFKA_JSON_DATA, 0, "letsco_eventmessage_input", 0L);
     }
 
     @Test

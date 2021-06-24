@@ -16,7 +16,7 @@
   "locales": ["en"],
   "states": {
     "initial": {
-      "name": "coordination.status.inprogress",
+      "name": "coordination.logging.initial.name",
       "description": "coordination.logging.initial.description",
       "response": {
         "lock": false,

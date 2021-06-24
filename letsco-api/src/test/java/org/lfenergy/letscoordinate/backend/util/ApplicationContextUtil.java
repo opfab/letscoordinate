@@ -13,9 +13,10 @@ package org.lfenergy.letscoordinate.backend.util;
 
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
+import org.lfenergy.letscoordinate.backend.enums.CoordinationStatusEnum;
+import org.lfenergy.letscoordinate.backend.enums.CoordinationStatusStrategyEnum;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.Collections;
@@ -24,6 +25,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.lfenergy.letscoordinate.backend.enums.CoordinationStatusEnum.*;
+import static org.lfenergy.letscoordinate.backend.enums.CoordinationStatusStrategyEnum.*;
 
 public class ApplicationContextUtil {
 
@@ -39,6 +43,61 @@ public class ApplicationContextUtil {
         inputFile.setValidation(validation);
 
         letscoProperties.setInputFile(inputFile);
+
+        LetscoProperties.Coordination coordination = new LetscoProperties.Coordination();
+        coordination.setCoordinationStatusCalculationStrategy(MAJORITY);
+        Map<CoordinationStatusStrategyEnum, LetscoProperties.Coordination.CoordinationStatusCalculationRule> coordinationStatusCalculationRules = new HashMap<>();
+        coordinationStatusCalculationRules.put(WORST_CASE,
+                LetscoProperties.Coordination.CoordinationStatusCalculationRule.builder()
+                        .conConCon(CON)
+                        .rejRejRej(REJ)
+                        .notNotNot(REJ)
+                        .mixMixMix(MIX)
+                        .conConRej(REJ)
+                        .conRejRej(REJ)
+                        .conConMix(MIX)
+                        .conRejMix(REJ)
+                        .conConNot(REJ)
+                        .build());
+        coordinationStatusCalculationRules.put(BEST_CASE,
+                LetscoProperties.Coordination.CoordinationStatusCalculationRule.builder()
+                        .conConCon(CON)
+                        .rejRejRej(REJ)
+                        .notNotNot(CON)
+                        .mixMixMix(MIX)
+                        .conConRej(CON)
+                        .conRejRej(CON)
+                        .conConMix(CON)
+                        .conRejMix(CON)
+                        .conConNot(CON)
+                        .build());
+        coordinationStatusCalculationRules.put(MAJORITY,
+                LetscoProperties.Coordination.CoordinationStatusCalculationRule.builder()
+                        .conConCon(CON)
+                        .rejRejRej(REJ)
+                        .notNotNot(NOT)
+                        .mixMixMix(MIX)
+                        .conConRej(CON)
+                        .conRejRej(REJ)
+                        .conConMix(CON)
+                        .conRejMix(MIX)
+                        .conConNot(CON)
+                        .build());
+        coordination.setCoordinationStatusCalculationRules(coordinationStatusCalculationRules);
+        coordination.setNotAnsweredDefaultCase(true);
+        Map<CoordinationStatusStrategyEnum, CoordinationStatusEnum> notAnsweredDefaultCaseRules = new HashMap<>();
+        notAnsweredDefaultCaseRules.put(WORST_CASE, REJ);
+        notAnsweredDefaultCaseRules.put(BEST_CASE, CON);
+        notAnsweredDefaultCaseRules.put(MAJORITY, MIX);
+        coordination.setNotAnsweredDefaultCaseRules(notAnsweredDefaultCaseRules);
+        letscoProperties.setCoordination(coordination);
+
+        LetscoProperties.Kafka kafka = new LetscoProperties.Kafka();
+        kafka.setInputTopicPattern("letsco_eventmessage_input.*");
+        kafka.setDefaultInputTopic("letsco_eventmessage_input");
+        kafka.setDefaultOutputTopic("letsco_eventmessage_output");
+        letscoProperties.setKafka(kafka);
+
         return letscoProperties;
     }
 
