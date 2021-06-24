@@ -423,7 +423,7 @@ public class OpfabPublisherComponent {
     private void coordinationTreatment(Card card, EventMessageDto eventMessageDto, Long cardId) {
         BasicGenericNounEnum basicGenericNounEnum = BasicGenericNounEnum.getByNoun(eventMessageDto.getHeader().getNoun());
         if (basicGenericNounEnum == COORDINATION) {
-            Coordination coordination = coordinationService.initAndSavaCoordination(card, eventMessageDto, cardId);
+            Coordination coordination = coordinationService.initAndSaveCoordination(card, eventMessageDto, cardId);
             card.setSeverity(SeverityEnum.ACTION);
             card.setState("initial");
 

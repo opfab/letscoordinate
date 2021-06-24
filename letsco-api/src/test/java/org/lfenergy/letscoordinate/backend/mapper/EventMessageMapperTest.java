@@ -20,7 +20,11 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.TimeserieDat
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.TimeserieOutputResultDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.TimeserieTemporalDataDto;
 import org.lfenergy.letscoordinate.backend.enums.CoordinationStatusEnum;
+import org.lfenergy.letscoordinate.backend.enums.DataGranularityEnum;
+import org.lfenergy.letscoordinate.backend.enums.FileTypeEnum;
 import org.lfenergy.letscoordinate.backend.enums.OutputResultAnswerEnum;
+import org.lfenergy.letscoordinate.backend.model.*;
+import org.lfenergy.letscoordinate.backend.util.CoordinationFactory;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
@@ -90,6 +94,54 @@ public class EventMessageMapperTest {
     @Test
     public void fromDto_notNullDtoParamWithValidOutputValues(){
         assertNotNull(EventMessageMapper.fromDto(initEventMessageDto()));
+    }
+
+    @Test
+    public void toDto_nullParam(){
+        assertNull(EventMessageMapper.toDto(null));
+
+        EventMessage eventMessage = new EventMessage();
+        Text text = null;
+        eventMessage.setTexts(Arrays.asList(text));
+        Link link = null;
+        eventMessage.setLinks(Arrays.asList(link));
+        RscKpi rscKpi = null;
+        eventMessage.setRscKpis(Arrays.asList(rscKpi));
+        Timeserie timeserie = null;
+        eventMessage.setTimeseries(Arrays.asList(timeserie));
+
+        assertNotNull(EventMessageMapper.toDto(eventMessage));
+    }
+
+    @Test
+    public void toDto_notNullParam(){
+        assertNotNull(EventMessageMapper.toDto(EventMessage.builder().build()));
+    }
+
+    @Test
+    public void toDto_notNullParamWithValidOutputValues(){
+        EventMessage eventMessage = CoordinationFactory.initEventMessage(FileTypeEnum.JSON);
+
+        eventMessage.setTexts(Arrays.asList(Text.builder().name("textName").value("textValue").build()));
+
+        eventMessage.setLinks(Arrays.asList(Link.builder().linkEicCodes(Arrays.asList(LinkEicCode.builder().eicCode("EIC_CODE_1").build())).build()));
+
+        eventMessage.setRscKpis(Arrays.asList(RscKpi.builder()
+                .name("name")
+                .joinGraph(true)
+                .rscKpiDatas(Arrays.asList(RscKpiData.builder()
+                        .timestamp(OffsetDateTime.of(2021, 7, 9, 0, 0, 0, 0, ZoneOffset.UTC))
+                        .label("label")
+                        .granularity(DataGranularityEnum.DAILY)
+                        .rscKpiDataDetails(Arrays.asList(RscKpiDataDetails.builder()
+                                .value(1L)
+                                .eicCode("EIC_CODE_1")
+                                .id(1L)
+                                .build()))
+                        .build()))
+                .build()));
+
+        assertNotNull(EventMessageMapper.toDto(eventMessage));
     }
 
 }

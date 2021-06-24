@@ -66,7 +66,7 @@ public class InputFileToPojoServiceTest {
         eventMessageService = new EventMessageService(coordinationConfig, letscoProperties);
         jsonDataProcessor = new JsonDataProcessor(objectMapper, eventMessageService);
         excelDataProcessor = new ExcelDataProcessor(letscoProperties, coordinationConfig, eventMessageService);
-        inputFileToPojoService = new InputFileToPojoService(jsonDataProcessor, excelDataProcessor, eventMessageRepository);
+        inputFileToPojoService = new InputFileToPojoService(jsonDataProcessor, excelDataProcessor, eventMessageRepository, null, letscoProperties);
     }
 
     @Test
@@ -163,15 +163,12 @@ public class InputFileToPojoServiceTest {
 
     @Test
     public void uploadExcelFileAndSaveGeneratedData_validFile_shouldReturnSavedEventMessage() throws IOException {
-        when(eventMessageRepository.save(any(EventMessage.class))).thenReturn(EventMessage.builder().id(7L).build());
-
         File file = new File("src/test/resources/validTestFile_1.xlsx");
         MockMultipartFile multipartFile = new MockMultipartFile("file", file.getName(), null, new FileInputStream(file));
-        Validation<ResponseErrorDto, EventMessage> validation = inputFileToPojoService.uploadExcelFileAndSaveGeneratedData(multipartFile);
+        Validation<ResponseErrorDto, EventMessageDto> validation = inputFileToPojoService.uploadFileAndSaveGeneratedData(multipartFile);
         assertAll(
                 () -> assertNotNull(validation),
-                () -> assertTrue(validation.isValid()),
-                () -> assertEquals(7L, validation.get().getId())
+                () -> assertTrue(validation.isValid())
         );
     }
 
@@ -179,7 +176,7 @@ public class InputFileToPojoServiceTest {
     public void uploadExcelFileAndSaveGeneratedData_invalidFile_shouldReturnResponseErrorDto() throws IOException {
         File file = new File("src/test/resources/invalidTestFile_1.xlsx");
         MockMultipartFile multipartFile = new MockMultipartFile("file", file.getName(), null, new FileInputStream(file));
-        Validation<ResponseErrorDto, EventMessage> validation = inputFileToPojoService.uploadExcelFileAndSaveGeneratedData(multipartFile);
+        Validation<ResponseErrorDto, EventMessageDto> validation = inputFileToPojoService.uploadFileAndSaveGeneratedData(multipartFile);
         assertAll(
                 () -> assertNotNull(validation),
                 () -> assertTrue(validation.isInvalid()),

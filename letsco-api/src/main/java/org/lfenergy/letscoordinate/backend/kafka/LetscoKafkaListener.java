@@ -18,20 +18,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.lfenergy.letscoordinate.backend.component.OpfabPublisherComponent;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
 import org.lfenergy.letscoordinate.backend.config.OpfabConfig;
+import org.lfenergy.letscoordinate.backend.dto.KafkaFileWrapperDto;
 import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.HeaderDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationDto;
-import org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum;
-import org.lfenergy.letscoordinate.backend.enums.ChangeJsonDataFromWhichEnum;
-import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
-import org.lfenergy.letscoordinate.backend.enums.ValidationTypeEnum;
+import org.lfenergy.letscoordinate.backend.enums.*;
 import org.lfenergy.letscoordinate.backend.exception.IgnoreProcessException;
 import org.lfenergy.letscoordinate.backend.exception.PositiveTechnicalQualityCheckException;
 import org.lfenergy.letscoordinate.backend.mapper.EventMessageMapper;
 import org.lfenergy.letscoordinate.backend.model.EventMessage;
 import org.lfenergy.letscoordinate.backend.model.EventMessageFile;
+import org.lfenergy.letscoordinate.backend.processor.ExcelDataProcessor;
 import org.lfenergy.letscoordinate.backend.processor.JsonDataProcessor;
 import org.lfenergy.letscoordinate.backend.repository.EventMessageRepository;
 import org.lfenergy.letscoordinate.backend.util.HttpUtil;
@@ -64,23 +63,47 @@ public class LetscoKafkaListener {
     private String thirdAppUrl;
 
     private final JsonDataProcessor jsonDataProcessor;
+    private final ExcelDataProcessor excelDataProcessor;
     private final EventMessageRepository eventMessageRepository;
     private final OpfabPublisherComponent opfabPublisherComponent;
     private final LetscoProperties letscoProperties;
     private final OpfabConfig opfabConfig;
+    private final ObjectMapper objectMapper;
 
-    @KafkaListener(topicPattern = "#{@kafkaTopicPattern}")
+    @KafkaListener(topicPattern = "#{@kafkaInputTopicPattern}")
     @Transactional
     public void handleLetscoEventMessages(@Payload String data,
                                           @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition,
                                           @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
                                           @Header(KafkaHeaders.RECEIVED_TIMESTAMP) long ts) throws Exception {
 
-        log.info("Data receiced from topic \"{}\" (kafka_receivedTimestamp = {}, kafka_receivedPartitionId = {})", topic,
+        log.info("[TOPIC: {}] (kafka_receivedTimestamp = {}, kafka_receivedPartitionId = {})", topic,
                 DateTimeFormatter.ISO_INSTANT.format(Instant.ofEpochMilli(ts)), partition);
-        log.info("Received data: {}", data);
+        log.debug("[TOPIC: {}] Received data: {}", topic, data);
 
-        Validation<ResponseErrorDto, EventMessageDto> validation = jsonDataProcessor.inputStreamToPojo(new ByteArrayInputStream(data.getBytes()));
+        KafkaFileWrapperDto kafkaFileWrapperDto;
+        try {
+            kafkaFileWrapperDto = objectMapper.readValue(data, KafkaFileWrapperDto.class);
+        } catch (Exception e) {
+            log.error("Unable to convert the data value to a KafkaFileWrapperDto object: {}", data);
+            return;
+        }
+
+        Validation<ResponseErrorDto, EventMessageDto> validation = null;
+        switch(kafkaFileWrapperDto.getFileType()) {
+            case JSON:
+                validation = jsonDataProcessor.inputStreamToPojo(new ByteArrayInputStream(kafkaFileWrapperDto.getFileContent()));
+                break;
+            case EXCEL:
+                validation = excelDataProcessor.inputStreamToPojo(kafkaFileWrapperDto.getFileName(),
+                        new ByteArrayInputStream(kafkaFileWrapperDto.getFileContent()));
+                break;
+            case UNKNOWN:
+            default:
+                log.error("Unknown file type! => {}", kafkaFileWrapperDto.getFileType());
+                return;
+        }
+
         if (validation.isInvalid()) {
             log.error(validation.getError().toString());
             return;
@@ -103,7 +126,11 @@ public class LetscoKafkaListener {
             EventMessage eventMessage = EventMessageMapper.fromDto(eventMessageDto);
             eventMessage.setEventMessageFiles(Arrays.asList(
                     EventMessageFile.builder()
-                            .file(data.getBytes())
+                            .fileName(kafkaFileWrapperDto.getFileName())
+                            .fileType(kafkaFileWrapperDto.getFileType())
+                            .fileContent(kafkaFileWrapperDto.getFileContent())
+                            .fileDirection(FileDirectionEnum.INPUT)
+                            .creationDate(Instant.now())
                             .eventMessage(eventMessage)
                             .build()
             ));

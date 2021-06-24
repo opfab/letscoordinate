@@ -16,4 +16,4 @@ spring:
 letsco:
   kafka:
     bootstrap-servers: http://kafka:9092
-    topic-name-prefix: letsco_eventmessage_
+    topic-name-prefix: letsco_eventmessage_input

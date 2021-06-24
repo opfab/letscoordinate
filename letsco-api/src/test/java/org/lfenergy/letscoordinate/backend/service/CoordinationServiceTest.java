@@ -11,32 +11,44 @@
 
 package org.lfenergy.letscoordinate.backend.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.vavr.control.Validation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
+import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
 import org.lfenergy.letscoordinate.backend.config.OpfabConfig;
 import org.lfenergy.letscoordinate.backend.dto.coordination.CoordinationResponseDataDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
+import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageWrapperDto;
 import org.lfenergy.letscoordinate.backend.enums.CoordinationAnswerEnum;
+import org.lfenergy.letscoordinate.backend.enums.FileTypeEnum;
+import org.lfenergy.letscoordinate.backend.kafka.LetscoKafkaProducer;
 import org.lfenergy.letscoordinate.backend.model.Coordination;
 import org.lfenergy.letscoordinate.backend.model.EventMessage;
+import org.lfenergy.letscoordinate.backend.processor.ExcelDataProcessor;
 import org.lfenergy.letscoordinate.backend.repository.CoordinationGeneralCommentRepository;
 import org.lfenergy.letscoordinate.backend.repository.CoordinationRaAnswerRepository;
 import org.lfenergy.letscoordinate.backend.repository.CoordinationRepository;
 import org.lfenergy.letscoordinate.backend.repository.EventMessageRepository;
 import org.lfenergy.letscoordinate.backend.util.ApplicationContextUtil;
 import org.lfenergy.letscoordinate.backend.util.CoordinationFactory;
+import org.mockito.Spy;
 import org.opfab.cards.model.Card;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.io.IOException;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,6 +59,10 @@ import static org.mockito.Mockito.when;
 public class CoordinationServiceTest {
     CoordinationService coordinationService;
     OpfabConfig opfabConfig;
+    LetscoProperties letscoProperties;
+    ExcelDataProcessor excelDataProcessor;
+    CoordinationConfig coordinationConfig;
+    EventMessageService eventMessageService;
     @MockBean
     CoordinationRepository coordinationRepository;
     @MockBean
@@ -57,6 +73,8 @@ public class CoordinationServiceTest {
     CoordinationGeneralCommentRepository coordinationGeneralCommentRepository;
     @MockBean
     CoordinationRaAnswerRepository coordinationRaAnswerRepository;
+    @MockBean
+    LetscoKafkaProducer letscoKafkaProducer;
 
     @BeforeEach
     public void before() {
@@ -68,14 +86,21 @@ public class CoordinationServiceTest {
         opfabConfig = OpfabConfig.builder()
                 .entityRecipients(entityRecipientsMap)
                 .build();
-        coordinationService = new CoordinationService(
+        eventMessageService = new EventMessageService(coordinationConfig, letscoProperties);
+        letscoProperties = ApplicationContextUtil.initLetscoProperties();
+        coordinationConfig = ApplicationContextUtil.initCoordinationConfig();
+        excelDataProcessor = new ExcelDataProcessor(letscoProperties, coordinationConfig, eventMessageService);
+        coordinationService = new CoordinationService (
                 coordinationRepository,
                 coordinationRaAnswerRepository,
                 coordinationGeneralCommentRepository,
                 objectMapper,
                 eventMessageRepository,
                 opfabConfig,
-                ApplicationContextUtil.initCoordinationConfig()
+                ApplicationContextUtil.initCoordinationConfig(),
+                letscoKafkaProducer,
+                excelDataProcessor,
+                letscoProperties
         );
     }
 
@@ -95,7 +120,7 @@ public class CoordinationServiceTest {
                         ))
                         .build()
         );
-        when(coordinationRepository.findByEventMessage_Id(anyLong())).thenReturn(Optional.of(CoordinationFactory.initCoordination()));
+        when(coordinationRepository.findByEventMessage_Id(anyLong())).thenReturn(Optional.of(CoordinationFactory.initCoordination(FileTypeEnum.EXCEL)));
         Validation<Boolean, Coordination> validation = coordinationService.saveAnswersAndCheckIfAllTsosHaveAnswered(new Card());
         assertAll(
                 () -> assertNotNull(validation),
@@ -106,11 +131,11 @@ public class CoordinationServiceTest {
                 () -> assertEquals(Instant.parse("2021-05-31T05:13:00Z"), validation.get().getPublishDate()),
                 () -> assertEquals(Instant.parse("2021-05-31T00:00:00Z"), validation.get().getStartDate()),
                 () -> assertEquals(Instant.parse("2021-05-31T23:59:59Z"), validation.get().getEndDate()),
-                () -> assertEquals(1, validation.get().getCoordinationRas().size()),
+                () -> assertEquals(2, validation.get().getCoordinationRas().size()),
                 () -> assertEquals("Event A", validation.get().getCoordinationRas().get(0).getEvent()),
                 () -> assertEquals("Constraint A", validation.get().getCoordinationRas().get(0).getConstraintt()),
                 () -> assertEquals("RemedialActions A", validation.get().getCoordinationRas().get(0).getRemedialAction()),
-                () -> assertEquals(1, validation.get().getCoordinationRas().get(0).getCoordinationRaAnswers().size()),
+                () -> assertEquals(2, validation.get().getCoordinationRas().get(0).getCoordinationRaAnswers().size()),
                 () -> assertEquals(3L, validation.get().getCoordinationRas().get(0).getCoordinationRaAnswers().get(0).getId()),
                 () -> assertEquals("10XFR-RTE------Q", validation.get().getCoordinationRas().get(0).getCoordinationRaAnswers().get(0).getEicCode()),
                 () -> assertEquals(CoordinationAnswerEnum.NOK, validation.get().getCoordinationRas().get(0).getCoordinationRaAnswers().get(0).getAnswer()),
@@ -126,13 +151,13 @@ public class CoordinationServiceTest {
             c.setId(1L);
             return c;
         });
-        when(eventMessageRepository.findById(anyLong())).thenReturn(Optional.of(EventMessage.builder().id(99L).build()));
+        when(eventMessageRepository.findById(anyLong())).thenReturn(Optional.of(CoordinationFactory.initEventMessage(99L, FileTypeEnum.EXCEL)));
 
         Card card = new Card();
         card.setProcess("process");
         EventMessageDto eventMessageDto = CoordinationFactory.initEventMessageDto();
 
-        Coordination coordination = coordinationService.initAndSavaCoordination(card, eventMessageDto, 1L);
+        Coordination coordination = coordinationService.initAndSaveCoordination(card, eventMessageDto, 1L);
 
         assertAll(
                 () -> assertNotNull(coordination),
@@ -141,11 +166,24 @@ public class CoordinationServiceTest {
                 () -> assertEquals(Instant.parse("2021-05-31T05:13:00Z"), coordination.getPublishDate()),
                 () -> assertEquals(Instant.parse("2021-05-31T00:00:00Z"), coordination.getStartDate()),
                 () -> assertEquals(Instant.parse("2021-05-31T23:59:59Z"), coordination.getEndDate()),
-                () -> assertEquals(1, coordination.getCoordinationRas().size()),
+                () -> assertEquals(2, coordination.getCoordinationRas().size()),
                 () -> assertEquals("Event A", coordination.getCoordinationRas().get(0).getEvent()),
                 () -> assertEquals("Constraint A", coordination.getCoordinationRas().get(0).getConstraintt()),
                 () -> assertEquals("RemedialActions A", coordination.getCoordinationRas().get(0).getRemedialAction())
         );
+    }
+
+    @Test
+    public void generateExcelOutputFile() throws IOException {
+        coordinationService.generateOutputFile(CoordinationFactory.initCoordination(FileTypeEnum.EXCEL));
+    }
+
+    @Test
+    public void generateJsonOutputFile() throws IOException {
+        when(objectMapper.readValue((byte[])any(), any(Class.class))).then(i ->
+                new ObjectMapper().registerModule(new JavaTimeModule()).readValue((byte[]) i.getArgument(0), EventMessageWrapperDto.class)
+        );
+        coordinationService.generateOutputFile(CoordinationFactory.initCoordination(FileTypeEnum.JSON));
     }
 
 }
