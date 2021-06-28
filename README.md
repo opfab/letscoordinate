@@ -23,7 +23,7 @@ To use Let's Coordinate, you need a linux OS with the following:
 
 **Please note**: 
 * It is highly recommended to use [sdkman](https://sdkman.io/) (v5.11.0 or grater) and [nvm](https://github.com/nvm-sh/nvm) (v14.11.0 or grater) to manage *Maven*, *Java*, *NPM* and *Node JS* tools versions (with sdkman and nvm, the previously mentioned tools will be automatically installed later).
-* The required OperatorFabric version is **2.6.0.RELEASE** (configured by default to be used with the current version of Let's Coordinate 1.2.0.RELEASE)
+* The required OperatorFabric version is **SNAPSHOT** (configured by default to be used with the current version of Let's Coordinate 1.2.0.RELEASE)
 
 ## 2. Setup and run Let's Coordinate
 

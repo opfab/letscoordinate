@@ -17,7 +17,6 @@
   "states": {
     "initial": {
       "name": "coordination.status.inprogress",
-      "color": "orange",
       "description": "coordination.logging.initial.description",
       "response": {
         "lock": false,
@@ -36,7 +35,6 @@
     },
     "answer": {
       "name": "coordination.status.inprogress",
-      "color": "orange",
       "description": "coordination.logging.answer.description",
       "type" : "INPROGRESS"
     },
@@ -56,7 +54,7 @@
     },
     "proposalRejected": {
       "name": "coordination.status.finished",
-      "color": "green",
+      "color": "red",
       "description": "coordination.logging.proposalRejected.description",
       "detailTitle": {
         "key": "coordination.cardDetails.title"
@@ -70,7 +68,6 @@
     },
     "noAnswerProvided": {
       "name": "coordination.status.finished",
-      "color": "green",
       "description": "coordination.logging.noAnswerProvided.description",
       "detailTitle": {
         "key": "coordination.cardDetails.title"
@@ -84,7 +81,7 @@
     },
     "differentChoices": {
       "name": "coordination.status.finished",
-      "color": "green",
+      "color": "orange",
       "description": "coordination.logging.differentChoices.description",
       "detailTitle": {
         "key": "coordination.cardDetails.title"
