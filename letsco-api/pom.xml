@@ -156,7 +156,7 @@
 		<dependency>
 			<groupId>org.opfab</groupId>
 			<artifactId>cards-client-data</artifactId>
-			<version>2.6.0.RELEASE</version>
+			<version>2.7.0.RELEASE</version>
 		</dependency>
 
 		<!-- Keycloak -->
