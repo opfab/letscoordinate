@@ -6,7 +6,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of the Let’s Coordinate project.
-
 management:
   endpoints:
     web:
@@ -36,5 +35,6 @@ operatorfabric:
     jwt:
       login-claim: preferred_username
       expire-claim: exp
+  businessLogActivated: true
   servicesUrls:
-    users: "http://172.23.0.1:2103"
+    users: "http://172.28.0.1:2103"
