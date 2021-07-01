@@ -8,7 +8,7 @@
     "summary": "{{summary}}"
   },
   "process": {
-    "name": "Smart notifications"
+    "name": "Coordination notification"
   },
   "coordination": {
     "name": "Coordination A",
@@ -21,22 +21,36 @@
     },
     "logging": {
       "initial": {
+        "name": "Coordination request",
         "description": "Coordination request"
       },
-      "answer": {
-        "description": "Answer provided"
-      },
-      "proposalConfirmed": {
+      "answerProposalConfirmed": {
+        "name": "Proposal confirmed",
         "description": "Proposal confirmed"
       },
-      "proposalRejected": {
+      "answerProposalRejected": {
+        "name": "Proposal rejected",
         "description": "Proposal rejected"
       },
+      "answerDifferentChoices": {
+        "name": "Different choices",
+        "description": "Different choices"
+      },
+      "proposalConfirmed": {
+        "name": "Coordination results: Proposal confirmed",
+        "description": "Coordination results: Proposal confirmed"
+      },
+      "proposalRejected": {
+        "name": "Coordination results: Proposal rejected",
+        "description": "Coordination results: Proposal rejected"
+      },
       "noAnswerProvided": {
-        "description": "No answer provided"
+        "name": "Coordination results: No answer provided",
+        "description": "Coordination results: No answer provided"
       },
       "differentChoices": {
-        "description": "Different choices"
+        "name": "Coordination results: Different choices",
+        "description": "Coordination results: Different choices"
       }
     }
   }

@@ -1,10 +1,10 @@
 {
   "eventMessage": {
-    "xmlns": ",http://iec.ch/TC57/2011/schema/message",
+    "xmlns": "http://iec.ch/TC57/2011/schema/message",
     "header": {
       "verb": "created",
       "noun": "Coordination",
-      "timestamp": "2021-07-22T14:25:24Z",
+      "timestamp": "2021-07-22T14:25:28Z",
       "source": "Service A",
       "messageId": "3f5d0a7a6e9242b23893dd51034431855",
       "properties": {
@@ -13,9 +13,8 @@
           "businessApplication": "PanEuropeanServiceATool",
           "messageTypeName": "Coordination A",
           "businessDayFrom": "2021-07-18T22:00:00Z",
-          "businessDayTo": "2021-07-23T22:00:00Z",
+          "businessDayTo": "2021-07-24T22:00:00Z",
           "sendingUser": "22XCORESO------S",
-          "filename": "FileA.json",
           "recipients": ["10XFR-RTE------Q", "10X1001A1001A345", "10XDE-RWENET---W"]
         }
       }
