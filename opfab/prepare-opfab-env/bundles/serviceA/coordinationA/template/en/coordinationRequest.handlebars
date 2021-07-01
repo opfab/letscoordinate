@@ -390,12 +390,22 @@
                 'comment': document.getElementById('idComment_' + c.id + '_' + currentUserTso).value
             });
         };
-        return {
-            valid: true, responseCardData: {
+
+        const result = {
+            valid: true,
+            responseCardData: {
                 validationDataId,
                 generalComment,
                 formData
             }
         };
+
+        // find responseState
+        var answers = formData.map(data => data.response);
+        result['responseState'] = answers.includes('OK') && answers.includes('NOK')
+                ? 'answerDifferentChoices'
+                : (answers.includes('OK') ? 'answerProposalConfirmed' : 'answerProposalRejected');
+
+        return result;
     }
 </script>

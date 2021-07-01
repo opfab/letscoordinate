@@ -114,7 +114,15 @@ Feature: Prepare OpFab env. for Let's Co open source
       "right" : "ReceiveAndWrite"
     },
     {
-      "state" : "answer",
+      "state" : "answerProposalConfirmed",
+      "right" : "ReceiveAndWrite"
+    },
+    {
+      "state" : "answerProposalRejected",
+      "right" : "ReceiveAndWrite"
+    },
+    {
+      "state" : "answerDifferentChoices",
       "right" : "ReceiveAndWrite"
     }
   ]
@@ -680,7 +688,7 @@ Feature: Prepare OpFab env. for Let's Co open source
     When method get
     Then status 200
     And match response.userData.login == 'user.test2'
-    And assert response.computedPerimeters.length == 3
+    And assert response.computedPerimeters.length == 5
 
   Scenario: Get current user (user.test) with perimeters
 
@@ -691,4 +699,4 @@ Feature: Prepare OpFab env. for Let's Co open source
     When method get
     Then status 200
     And match response.userData.login == 'user.test'
-    And assert response.computedPerimeters.length == 4
+    And assert response.computedPerimeters.length == 6

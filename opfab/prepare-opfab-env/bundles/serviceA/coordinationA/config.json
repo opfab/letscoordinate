@@ -20,7 +20,7 @@
       "description": "coordination.logging.initial.description",
       "response": {
         "lock": false,
-        "state": "answer",
+        "state": "answerProposalConfirmed",
         "externalRecipients": [ "letsco_opensource" ]
       },
       "detailTitle": {
@@ -33,13 +33,28 @@
       "acknowledgmentAllowed": "Always",
       "type" : "INPROGRESS"
     },
-    "answer": {
-      "name": "coordination.status.inprogress",
-      "description": "coordination.logging.answer.description",
+
+    "answerProposalConfirmed": {
+      "name": "coordination.logging.answerProposalConfirmed.name",
+      "color": "green",
+      "description": "coordination.logging.answerProposalConfirmed.description",
       "type" : "INPROGRESS"
     },
+    "answerProposalRejected": {
+      "name": "coordination.logging.answerProposalRejected.name",
+      "color": "red",
+      "description": "coordination.logging.answerProposalRejected.description",
+      "type" : "INPROGRESS"
+    },
+    "answerDifferentChoices": {
+      "name": "coordination.logging.answerDifferentChoices.name",
+      "color": "orange",
+      "description": "coordination.logging.answerDifferentChoices.description",
+      "type" : "INPROGRESS"
+    },
+
     "proposalConfirmed": {
-      "name": "coordination.status.finished",
+      "name": "coordination.logging.proposalConfirmed.name",
       "color": "green",
       "description": "coordination.logging.proposalConfirmed.description",
       "detailTitle": {
@@ -53,7 +68,7 @@
       "type" : "FINISHED"
     },
     "proposalRejected": {
-      "name": "coordination.status.finished",
+      "name": "coordination.logging.proposalRejected.name",
       "color": "red",
       "description": "coordination.logging.proposalRejected.description",
       "detailTitle": {
@@ -67,7 +82,7 @@
       "type" : "FINISHED"
     },
     "noAnswerProvided": {
-      "name": "coordination.status.finished",
+      "name": "coordination.logging.noAnswerProvided.name",
       "description": "coordination.logging.noAnswerProvided.description",
       "detailTitle": {
         "key": "coordination.cardDetails.title"
@@ -80,7 +95,7 @@
       "type" : "FINISHED"
     },
     "differentChoices": {
-      "name": "coordination.status.finished",
+      "name": "coordination.logging.differentChoices.name",
       "color": "orange",
       "description": "coordination.logging.differentChoices.description",
       "detailTitle": {
