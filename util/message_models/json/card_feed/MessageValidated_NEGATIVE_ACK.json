@@ -1,6 +1,6 @@
 {
   "eventMessage": {
-    "xmlns": ",http://iec.ch/TC57/2011/schema/message",
+    "xmlns": "http://iec.ch/TC57/2011/schema/message",
     "header": {
       "verb": "created",
       "noun": "DfgMessageValidated",

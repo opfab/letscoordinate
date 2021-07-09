@@ -38,6 +38,9 @@ public class CoordinationRa implements java.io.Serializable {
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
 
+    @Column(name = "id_timeserie_data", nullable = false)
+    private Long idTimeserieData;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_coordination", nullable = false)
     @JsonBackReference

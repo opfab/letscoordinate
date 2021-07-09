@@ -13,6 +13,7 @@ package org.lfenergy.letscoordinate.backend.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.CoordinationCommentDto;
@@ -20,6 +21,7 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.HeaderDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.PropertiesDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.*;
 import org.lfenergy.letscoordinate.backend.model.*;
+import org.lfenergy.letscoordinate.backend.util.StringUtil;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,7 +29,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EventMessageMapper {
 
-    // EventMessage
+    // EventMessage from DTO
 
     public static EventMessage fromDto(EventMessageDto eventMessageDto) {
         if (eventMessageDto == null)
@@ -35,6 +37,7 @@ public final class EventMessageMapper {
 
         EventMessage eventMessage = new EventMessage();
         eventMessage.setId(null);
+        eventMessage.setXmlns(eventMessageDto.getXmlns());
 
         if(eventMessageDto.getHeader() != null) {
             final HeaderDto headerDto = eventMessageDto.getHeader();
@@ -69,6 +72,7 @@ public final class EventMessageMapper {
                                     .collect(Collectors.toList()))
                             .orElse(null));
                     eventMessage.setCaseId(businessDataIdentifierDto.getCaseId().orElse(null));
+                    eventMessage.setUniqueFileIdentifier(StringUtil.generateUniqueFileIdentifier(eventMessageDto));
                     eventMessage.setCoordinationStatus(businessDataIdentifierDto.getCoordinationStatus().orElse(null));
                     eventMessage.setEventMessageCoordinationComments(businessDataIdentifierDto.getCoordinationComments()
                             .map(coordinationCommentDtos -> coordinationCommentDtos.stream()
@@ -262,6 +266,188 @@ public final class EventMessageMapper {
                                 .build())
                         .build())
                 .build();
+    }
+
+    // EventMessage to DTO
+
+    public static EventMessageDto toDto(EventMessage eventMessage) {
+        if (eventMessage == null)
+            return null;
+
+        EventMessageDto eventMessageDto = new EventMessageDto();
+        eventMessageDto.setXmlns(eventMessage.getXmlns());
+
+        HeaderDto headerDto = eventMessageDto.getHeader();
+        headerDto.setMessageId(eventMessage.getMessageId());
+        headerDto.setNoun(eventMessage.getNoun());
+        headerDto.setVerb(eventMessage.getVerb());
+        headerDto.setTimestamp(eventMessage.getTimestamp());
+        headerDto.setSource(eventMessage.getSource());
+
+        PropertiesDto propertiesDto = headerDto.getProperties();
+        propertiesDto.setFormat(eventMessage.getFormat());
+
+        BusinessDataIdentifierDto businessDataIdentifierDto = propertiesDto.getBusinessDataIdentifier();
+        businessDataIdentifierDto.setBusinessApplication(eventMessage.getBusinessApplication());
+        businessDataIdentifierDto.setMessageType(eventMessage.getMessageType());
+        businessDataIdentifierDto.setMessageTypeName(eventMessage.getMessageTypeName());
+        businessDataIdentifierDto.setBusinessDayFrom(eventMessage.getBusinessDayFrom());
+        businessDataIdentifierDto.setBusinessDayTo(eventMessage.getBusinessDayTo());
+        businessDataIdentifierDto.setProcessStep(eventMessage.getProcessStep());
+        businessDataIdentifierDto.setTimeframe(eventMessage.getTimeframe());
+        businessDataIdentifierDto.setTimeframeNumber(eventMessage.getTimeframeNumber());
+        businessDataIdentifierDto.setSendingUser(eventMessage.getSendingUser());
+        businessDataIdentifierDto.setFileName(eventMessage.getFileName());
+        businessDataIdentifierDto.setTso(eventMessage.getTso());
+        businessDataIdentifierDto.setBiddingZone(eventMessage.getBiddingZone());
+        businessDataIdentifierDto.setRecipients(
+                CollectionUtils.isNotEmpty(eventMessage.getEventMessageRecipients())
+                        ? eventMessage.getEventMessageRecipients().stream()
+                        .map(EventMessageRecipient::getEicCode)
+                        .collect(Collectors.toList())
+                        : null
+        );
+        businessDataIdentifierDto.setCaseId(eventMessage.getCaseId());
+        businessDataIdentifierDto.setCoordinationStatus(eventMessage.getCoordinationStatus());
+        businessDataIdentifierDto.setCoordinationComments(
+                CollectionUtils.isNotEmpty(eventMessage.getEventMessageCoordinationComments())
+                        ? eventMessage.getEventMessageCoordinationComments().stream()
+                        .map(cc -> CoordinationCommentDto.builder().eicCode(cc.getEicCode()).generalComment(cc.getGeneralComment()).build())
+                        .collect(Collectors.toList())
+                        : null
+        );
+
+        PayloadDto payloadDto = eventMessageDto.getPayload();
+        payloadDto.setText(CollectionUtils.isNotEmpty(eventMessage.getTexts())
+                ? eventMessage.getTexts().stream().map(EventMessageMapper::toDto).collect(Collectors.toList())
+                : null);
+        payloadDto.setLinks(CollectionUtils.isNotEmpty(eventMessage.getLinks())
+                ? eventMessage.getLinks().stream().map(EventMessageMapper::toDto).collect(Collectors.toList())
+                : null);
+        payloadDto.setRscKpi(CollectionUtils.isNotEmpty(eventMessage.getRscKpis())
+                ? eventMessage.getRscKpis().stream().map(EventMessageMapper::toDto).collect(Collectors.toList())
+                : null);
+        payloadDto.setTimeserie(CollectionUtils.isNotEmpty(eventMessage.getTimeseries())
+                ? eventMessage.getTimeseries().stream().map(EventMessageMapper::toDto).collect(Collectors.toList())
+                : null);
+
+        return eventMessageDto;
+    }
+
+    // Text
+
+    private static TextDataDto toDto(Text text) {
+        if(text == null)
+            return null;
+        TextDataDto textDataDto = new TextDataDto();
+        textDataDto.setName(text.getName());
+        textDataDto.setValue(text.getValue());
+        return textDataDto;
+    }
+
+    // Link
+
+    private static LinkDataDto toDto(Link link) {
+        if(link == null)
+            return null;
+        LinkDataDto linkDataDto = new LinkDataDto();
+        linkDataDto.setName(link.getName());
+        linkDataDto.setValue(link.getValue());
+        linkDataDto.setEicCode(CollectionUtils.isNotEmpty(link.getLinkEicCodes())
+                ? link.getLinkEicCodes().stream().map(LinkEicCode::getEicCode).collect(Collectors.toList())
+                : null);
+        return linkDataDto;
+    }
+
+    // RscKpi
+
+    private static RscKpiDataDto toDto(RscKpi rscKpi) {
+        if (rscKpi == null)
+            return null;
+        RscKpiDataDto rscKpiDataDto = new RscKpiDataDto();
+        rscKpiDataDto.setName(rscKpi.getName());
+        rscKpiDataDto.setJoinGraph(rscKpi.getJoinGraph());
+        rscKpiDataDto.setData(CollectionUtils.isNotEmpty(rscKpi.getRscKpiDatas())
+                ? rscKpi.getRscKpiDatas().stream().map(EventMessageMapper::toDto).collect(Collectors.toList())
+                : null);
+        return rscKpiDataDto;
+    }
+
+    private static RscKpiDataDetailsDto toDto(RscKpiData rscKpiData) {
+        if (rscKpiData == null)
+            return null;
+        RscKpiDataDetailsDto rscKpiDataDetailsDto = new RscKpiDataDetailsDto();
+        rscKpiDataDetailsDto.setTimestamp(rscKpiData.getTimestamp());
+        rscKpiDataDetailsDto.setGranularity(rscKpiData.getGranularity());
+        rscKpiDataDetailsDto.setLabel(rscKpiData.getLabel());
+        rscKpiDataDetailsDto.setDetail(CollectionUtils.isNotEmpty(rscKpiData.getRscKpiDataDetails())
+                ? rscKpiData.getRscKpiDataDetails().stream().map(EventMessageMapper::toDto).collect(Collectors.toList())
+                : null);
+        return rscKpiDataDetailsDto;
+    }
+
+    private static RscKpiTemporalDataDto toDto(RscKpiDataDetails rscKpiDataDetails) {
+        if (rscKpiDataDetails == null)
+            return null;
+        RscKpiTemporalDataDto rscKpiTemporalDataDto = new RscKpiTemporalDataDto();
+        rscKpiTemporalDataDto.setValue(Optional.ofNullable(rscKpiDataDetails.getValue()).map(Long::intValue).orElse(null));
+        rscKpiTemporalDataDto.setEicCode(rscKpiDataDetails.getEicCode());
+        return rscKpiTemporalDataDto;
+    }
+
+    // Timeserie
+
+    private static TimeserieDataDto toDto(Timeserie timeserie) {
+        if (timeserie == null)
+            return null;
+        TimeserieDataDto timeserieDataDto = new TimeserieDataDto();
+        timeserieDataDto.setName(timeserie.getName());
+        timeserieDataDto.setData(CollectionUtils.isNotEmpty(timeserie.getTimeserieDatas())
+                ? timeserie.getTimeserieDatas().stream()
+                .map(EventMessageMapper::toDto)
+                .collect(Collectors.toList())
+                : null);
+        return timeserieDataDto;
+    }
+
+    private static TimeserieDataDetailsDto toDto(TimeserieData timeserieData) {
+        if (timeserieData == null)
+            return null;
+        TimeserieDataDetailsDto timeserieDataDetailsDto = new TimeserieDataDetailsDto();
+        timeserieDataDetailsDto.setTimestamp(timeserieData.getTimestamp());
+        timeserieDataDetailsDto.setDetail(CollectionUtils.isNotEmpty(timeserieData.getTimeserieDataDetailses())
+                ? timeserieData.getTimeserieDataDetailses().stream()
+                .map(EventMessageMapper::toDto)
+                .collect(Collectors.toList())
+                : null);
+        return timeserieDataDetailsDto;
+    }
+
+    private static TimeserieTemporalDataDto toDto(TimeserieDataDetails timeserieDataDetails) {
+        if (timeserieDataDetails == null)
+            return null;
+        TimeserieTemporalDataDto timeserieTemporalDataDto = new TimeserieTemporalDataDto();
+        timeserieTemporalDataDto.setId(timeserieDataDetails.getIdentifier());
+        timeserieTemporalDataDto.setLabel(timeserieDataDetails.getLabel());
+        timeserieTemporalDataDto.setValue(timeserieDataDetails.getValue());
+        timeserieTemporalDataDto.setEicCode(CollectionUtils.isNotEmpty(timeserieDataDetails.getTimeserieDataDetailsEicCodes())
+                ? timeserieDataDetails.getTimeserieDataDetailsEicCodes().stream()
+                .map(TimeserieDataDetailsEicCode::getEicCode)
+                .collect(Collectors.toList())
+                : null
+        );
+        timeserieTemporalDataDto.setResults(CollectionUtils.isNotEmpty(timeserieDataDetails.getTimeserieDataDetailsResults())
+                ? timeserieDataDetails.getTimeserieDataDetailsResults().stream()
+                .map(result -> TimeserieOutputResultDto.builder()
+                        .eicCode(result.getEicCode())
+                        .answer(result.getAnswer())
+                        .explanation(result.getExplanation())
+                        .comment(result.getComment())
+                        .build())
+                .collect(Collectors.toList())
+                : null
+        );
+        return timeserieTemporalDataDto;
     }
 
 }

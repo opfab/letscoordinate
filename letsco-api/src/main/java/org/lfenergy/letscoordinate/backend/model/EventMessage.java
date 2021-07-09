@@ -35,6 +35,9 @@ public class EventMessage implements java.io.Serializable {
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
 
+    @Column(name = "xmlns", length = 250)
+    private String xmlns;
+
     @Column(name = "message_id", nullable = false, length = 100)
     private String messageId;
 
@@ -96,11 +99,17 @@ public class EventMessage implements java.io.Serializable {
     @Column(name = "case_id", length = 1000)
     private String caseId;
 
+    @Column(name = "unique_file_identifier", length = 36)
+    private String uniqueFileIdentifier;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "eventMessage", cascade = CascadeType.ALL)
     private List<EventMessageRecipient> eventMessageRecipients = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "eventMessage", cascade = CascadeType.ALL)
     private List<EventMessageCoordinationComment> eventMessageCoordinationComments = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "eventMessage", cascade = CascadeType.ALL)
+    private List<EventMessageFile> eventMessageFiles = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "eventMessage", cascade = CascadeType.ALL)
     private List<Text> texts = new ArrayList<>();

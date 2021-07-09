@@ -9,8 +9,19 @@
  * This file is part of the Let’s Coordinate project.
  */
 
-package org.lfenergy.letscoordinate.backend.enums;
+package org.lfenergy.letscoordinate.backend.dto;
 
-public enum CoordinationStatusEnum {
-    CON, REJ, MIX , CAN, NOT;
+import lombok.*;
+import org.lfenergy.letscoordinate.backend.enums.FileTypeEnum;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+public class KafkaFileWrapperDto {
+    private String fileName;
+    private FileTypeEnum fileType;
+    private byte[] fileContent;
 }

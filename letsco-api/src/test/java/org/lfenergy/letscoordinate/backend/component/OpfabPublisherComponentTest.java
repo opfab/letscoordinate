@@ -24,6 +24,7 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.PropertiesDto
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.PayloadDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationMessageDto;
+import org.lfenergy.letscoordinate.backend.enums.FileTypeEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 import org.lfenergy.letscoordinate.backend.model.opfab.ValidationData;
 import org.lfenergy.letscoordinate.backend.service.CoordinationService;
@@ -875,7 +876,7 @@ public class OpfabPublisherComponentTest {
 
     @Test
     public void publishOpfabCoordinationResultCard_feedConfigNotSet() {
-        opfabPublisherComponent.publishOpfabCoordinationResultCard(CoordinationFactory.initCoordination());
+        opfabPublisherComponent.publishOpfabCoordinationResultCard(CoordinationFactory.initCoordination(FileTypeEnum.EXCEL));
     }
 
     @Test
@@ -883,7 +884,7 @@ public class OpfabPublisherComponentTest {
         Map<String, OpfabConfig.OpfabFeed> feedConfigMap = new HashMap();
         feedConfigMap.put("coordinationProcessKey", new OpfabConfig.OpfabFeed("title", "summary"));
         opfabConfig.setFeed(feedConfigMap);
-        opfabPublisherComponent.publishOpfabCoordinationResultCard(CoordinationFactory.initCoordination());
+        opfabPublisherComponent.publishOpfabCoordinationResultCard(CoordinationFactory.initCoordination(FileTypeEnum.EXCEL));
     }
 
 }
