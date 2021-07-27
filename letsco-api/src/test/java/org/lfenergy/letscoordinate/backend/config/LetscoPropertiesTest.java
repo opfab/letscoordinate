@@ -15,6 +15,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum;
+import org.lfenergy.letscoordinate.backend.enums.CoordinationStatusEnum;
+import org.lfenergy.letscoordinate.backend.util.ApplicationContextUtil;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
@@ -44,5 +46,41 @@ public class LetscoPropertiesTest {
                 List.of("Coordination", "ProcessSuccessful", "ProcessFailed", "otherPS_1", "otherPS_2", "otherPF_1",
                         "ProcessAction", "ProcessInformation", "DfgMessageValidated").stream().sorted().collect(toList()),
                 letscoProperties.getInputFile().allGenericNouns().stream().sorted().collect(toList()));
+    }
+
+    @Test
+    public void applyNotAnsweredDefaultValueIfNeeded_coordinationStatusEnum_NOT_notAnsweredDefaultCase_true () {
+        LetscoProperties.Coordination coordination = ApplicationContextUtil.initLetscoProperties().getCoordination();
+        coordination.setNotAnsweredDefaultCase(true);
+
+        CoordinationStatusEnum result = coordination.applyNotAnsweredDefaultValueIfNeeded(CoordinationStatusEnum.NOT);
+        assertEquals(CoordinationStatusEnum.MIX, result);
+    }
+
+    @Test
+    public void applyNotAnsweredDefaultValueIfNeeded_coordinationStatusEnum_NOT_notAnsweredDefaultCase_false () {
+        LetscoProperties.Coordination coordination = ApplicationContextUtil.initLetscoProperties().getCoordination();
+        coordination.setNotAnsweredDefaultCase(false);
+
+        CoordinationStatusEnum result = coordination.applyNotAnsweredDefaultValueIfNeeded(CoordinationStatusEnum.NOT);
+        assertEquals(CoordinationStatusEnum.NOT, result);
+    }
+
+    @Test
+    public void applyNotAnsweredDefaultValueIfNeeded_coordinationStatusEnum_otherThanNOT_notAnsweredDefaultCase_true () {
+        LetscoProperties.Coordination coordination = ApplicationContextUtil.initLetscoProperties().getCoordination();
+        coordination.setNotAnsweredDefaultCase(true);
+
+        CoordinationStatusEnum result = coordination.applyNotAnsweredDefaultValueIfNeeded(CoordinationStatusEnum.CON);
+        assertEquals(CoordinationStatusEnum.CON, result);
+    }
+
+    @Test
+    public void applyNotAnsweredDefaultValueIfNeeded_coordinationStatusEnum_otherThanNOT_notAnsweredDefaultCase_false () {
+        LetscoProperties.Coordination coordination = ApplicationContextUtil.initLetscoProperties().getCoordination();
+        coordination.setNotAnsweredDefaultCase(false);
+
+        CoordinationStatusEnum result = coordination.applyNotAnsweredDefaultValueIfNeeded(CoordinationStatusEnum.REJ);
+        assertEquals(CoordinationStatusEnum.REJ, result);
     }
 }

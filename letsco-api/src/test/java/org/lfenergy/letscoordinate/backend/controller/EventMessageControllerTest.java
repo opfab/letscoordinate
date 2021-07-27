@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lfenergy.letscoordinate.backend.component.OpfabPublisherComponent;
+import org.lfenergy.letscoordinate.backend.enums.FileDirectionEnum;
 import org.lfenergy.letscoordinate.backend.model.Coordination;
 import org.lfenergy.letscoordinate.backend.model.EventMessage;
 import org.lfenergy.letscoordinate.backend.model.EventMessageFile;
@@ -214,8 +215,9 @@ public class EventMessageControllerTest {
     @Test
     @WithMockCustomUser
     public void getOutputFile_fileExists_shouldReturn200() throws Exception {
-        when(coordinationService.getEventMessageOutputFileIfExists(anyLong())).thenReturn(Optional.of(EventMessageFile.builder().build()));
-        mockMvc.perform(get("/letsco/api/v1/eventmessages/{id}/output-file", 1)
+        when(coordinationService.getEventMessageFileIfExists(anyLong(), eq(FileDirectionEnum.OUTPUT)))
+                .thenReturn(Optional.of(EventMessageFile.builder().build()));
+        mockMvc.perform(get("/letsco/api/v1/eventmessages/{id}/files/output", 1)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -224,8 +226,31 @@ public class EventMessageControllerTest {
     @Test
     @WithMockCustomUser
     public void getOutputFile_fileNotExists_shouldReturn404() throws Exception {
-        when(coordinationService.getEventMessageOutputFileIfExists(anyLong())).thenReturn(Optional.empty());
-        mockMvc.perform(get("/letsco/api/v1/eventmessages/{id}/output-file", 1)
+        when(coordinationService.getEventMessageFileIfExists(anyLong(), eq(FileDirectionEnum.OUTPUT)))
+                .thenReturn(Optional.empty());
+        mockMvc.perform(get("/letsco/api/v1/eventmessages/{id}/files/output", 1)
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockCustomUser
+    public void getInputFile_fileExists_shouldReturn200() throws Exception {
+        when(coordinationService.getEventMessageFileIfExists(anyLong(), eq(FileDirectionEnum.INPUT)))
+                .thenReturn(Optional.of(EventMessageFile.builder().build()));
+        mockMvc.perform(get("/letsco/api/v1/eventmessages/{id}/files/input", 1)
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockCustomUser
+    public void getInputFile_fileNotExists_shouldReturn404() throws Exception {
+        when(coordinationService.getEventMessageFileIfExists(anyLong(), eq(FileDirectionEnum.INPUT)))
+                .thenReturn(Optional.empty());
+        mockMvc.perform(get("/letsco/api/v1/eventmessages/{id}/files/input", 1)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print())
                 .andExpect(status().isNotFound());
@@ -234,10 +259,8 @@ public class EventMessageControllerTest {
     @Test
     @WithMockCustomUser
     public void downloadOutputFile_fileExists_shouldReturn200() throws Exception {
-        when(coordinationService.getEventMessageOutputFileIfExists(anyLong())).thenReturn(Optional.of(EventMessageFile.builder()
-                .fileName("test")
-                .fileContent(new byte[] {})
-                .build()));
+        when(coordinationService.getEventMessageFileIfExists(anyLong(), eq(FileDirectionEnum.OUTPUT)))
+                .thenReturn(Optional.of(EventMessageFile.builder().fileName("test").fileContent(new byte[] {}).build()));
         mockMvc.perform(get("/letsco/api/v1/eventmessages/{id}/download-output-file", 1)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print())
@@ -247,7 +270,8 @@ public class EventMessageControllerTest {
     @Test
     @WithMockCustomUser
     public void downloadOutputFile_fileNotExists_shouldReturn404() throws Exception {
-        when(coordinationService.getEventMessageOutputFileIfExists(anyLong())).thenReturn(Optional.empty());
+        when(coordinationService.getEventMessageFileIfExists(anyLong(), eq(FileDirectionEnum.OUTPUT)))
+                .thenReturn(Optional.empty());
         mockMvc.perform(get("/letsco/api/v1/eventmessages/{id}/download-output-file", 1)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print())
