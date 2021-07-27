@@ -35,6 +35,38 @@ public final class EventMessageMapper {
         if (eventMessageDto == null)
             return null;
 
+        EventMessage eventMessage = headerFromDto(eventMessageDto);
+
+        if(eventMessageDto.getPayload() != null) {
+            final PayloadDto payloadDto = eventMessageDto.getPayload();
+            eventMessage.setTexts(Optional.ofNullable(payloadDto.getText())
+                    .map(texts -> texts.stream()
+                            .map(text -> EventMessageMapper.fromDto(text, eventMessage))
+                            .collect(Collectors.toList()))
+                    .orElse(null));
+            eventMessage.setLinks(Optional.ofNullable(payloadDto.getLinks())
+                    .map(links -> links.stream()
+                            .map(link -> EventMessageMapper.fromDto(link, eventMessage))
+                            .collect(Collectors.toList()))
+                    .orElse(null));
+            eventMessage.setRscKpis(Optional.ofNullable(payloadDto.getRscKpi())
+                    .map(rscKpis -> rscKpis.stream()
+                            .map(rscKpi -> EventMessageMapper.fromDto(rscKpi, eventMessage))
+                            .collect(Collectors.toList()))
+                    .orElse(null));
+            eventMessage.setTimeseries(Optional.ofNullable(payloadDto.getTimeserie())
+                    .map(timeseries -> timeseries.stream()
+                            .map(timeserie -> EventMessageMapper.fromDto(timeserie, eventMessage))
+                            .collect(Collectors.toList()))
+                    .orElse(null));
+        }
+        return eventMessage;
+    }
+
+    public static EventMessage headerFromDto(EventMessageDto eventMessageDto) {
+        if (eventMessageDto == null)
+            return null;
+
         EventMessage eventMessage = new EventMessage();
         eventMessage.setId(null);
         eventMessage.setXmlns(eventMessageDto.getXmlns());
@@ -81,29 +113,6 @@ public final class EventMessageMapper {
                             .orElse(null));
                 }
             }
-        }
-        if(eventMessageDto.getPayload() != null) {
-            final PayloadDto payloadDto = eventMessageDto.getPayload();
-            eventMessage.setTexts(Optional.ofNullable(payloadDto.getText())
-                    .map(texts -> texts.stream()
-                            .map(text -> EventMessageMapper.fromDto(text, eventMessage))
-                            .collect(Collectors.toList()))
-                    .orElse(null));
-            eventMessage.setLinks(Optional.ofNullable(payloadDto.getLinks())
-                    .map(links -> links.stream()
-                            .map(link -> EventMessageMapper.fromDto(link, eventMessage))
-                            .collect(Collectors.toList()))
-                    .orElse(null));
-            eventMessage.setRscKpis(Optional.ofNullable(payloadDto.getRscKpi())
-                    .map(rscKpis -> rscKpis.stream()
-                            .map(rscKpi -> EventMessageMapper.fromDto(rscKpi, eventMessage))
-                            .collect(Collectors.toList()))
-                    .orElse(null));
-            eventMessage.setTimeseries(Optional.ofNullable(payloadDto.getTimeserie())
-                    .map(timeseries -> timeseries.stream()
-                            .map(timeserie -> EventMessageMapper.fromDto(timeserie, eventMessage))
-                            .collect(Collectors.toList()))
-                    .orElse(null));
         }
         return eventMessage;
     }

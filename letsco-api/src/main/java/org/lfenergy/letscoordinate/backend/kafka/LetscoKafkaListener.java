@@ -20,7 +20,9 @@ import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
 import org.lfenergy.letscoordinate.backend.config.OpfabConfig;
 import org.lfenergy.letscoordinate.backend.dto.KafkaFileWrapperDto;
 import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
+import org.lfenergy.letscoordinate.backend.dto.ThirdAppDataWrapperDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
+import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageWrapperDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.HeaderDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationDto;
@@ -110,20 +112,17 @@ public class LetscoKafkaListener {
         }
         EventMessageDto eventMessageDto = validation.get();
 
-        String noun = eventMessageDto.getHeader().getNoun();
-        if (!isGenericNoun(noun)) {
-            String url = String.format("%s/api/json", thirdAppUrl);
-            HttpUtil.post(url, data);
-            return;
-        }
-
         try {
             verifyData(eventMessageDto);
 
             log.info("Received data type: \"{}\"", eventMessageDto.getHeader().getNoun());
             eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().getCaseId()
                     .ifPresent(eventMessageRepository::deleteByCaseId);
-            EventMessage eventMessage = EventMessageMapper.fromDto(eventMessageDto);
+
+            String noun = eventMessageDto.getHeader().getNoun();
+            EventMessage eventMessage = isGenericNoun(noun)
+                    ? EventMessageMapper.fromDto(eventMessageDto)
+                    : EventMessageMapper.headerFromDto(eventMessageDto);
             eventMessage.setEventMessageFiles(Arrays.asList(
                     EventMessageFile.builder()
                             .fileName(kafkaFileWrapperDto.getFileName())
@@ -137,6 +136,17 @@ public class LetscoKafkaListener {
             eventMessage = eventMessageRepository.save(eventMessage);
             log.info("New \"{}\" data successfully saved! (id={})", eventMessage.getNoun(), eventMessage.getId());
             log.debug("Saved data >>> {}", eventMessage.toString());
+
+            if (!isGenericNoun(noun)) {
+                String url = String.format("%s/api/json", thirdAppUrl);
+                HttpUtil.post(url, ThirdAppDataWrapperDto.builder()
+                        .id(eventMessage.getId())
+                        .data(EventMessageWrapperDto.builder()
+                                .eventMessage(eventMessageDto)
+                                .build())
+                        .build());
+                return;
+            }
 
             opfabPublisherComponent.publishOpfabCard(eventMessageDto, eventMessage.getId());
 
