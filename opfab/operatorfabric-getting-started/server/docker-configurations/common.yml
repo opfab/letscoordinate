@@ -26,8 +26,7 @@ spring:
   data:
     mongodb:
       database: operator-fabric
-      uris:
-        - mongodb://root:password@mongodb:27017/operator-fabric?authSource=admin&authMode=scram-sha1
+      uri: mongodb://root:password@mongodb:27017/operator-fabric?authSource=admin&authMode=scram-sha1
 
 operatorfabric:
   security:
@@ -38,4 +37,4 @@ operatorfabric:
       expire-claim: exp
   businessLogActivated: true
   servicesUrls:
-    users: "http://172.22.0.1:2103"
+    users: "http://172.19.0.1:2103"
