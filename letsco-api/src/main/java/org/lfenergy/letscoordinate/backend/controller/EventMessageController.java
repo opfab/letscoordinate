@@ -35,6 +35,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+import static org.lfenergy.letscoordinate.backend.enums.FileDirectionEnum.INPUT;
+import static org.lfenergy.letscoordinate.backend.enums.FileDirectionEnum.OUTPUT;
+
 @RestController
 @RequestMapping("/letsco/api/v1")
 @RequiredArgsConstructor
@@ -130,22 +133,11 @@ public class EventMessageController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/eventmessages/{id}/generate-output-file")
-    @ApiOperation(
-            value = "Manual generation of output file for event_message by its id",
-            notes = "For test purposes only!",
-            hidden = true)
+    @GetMapping("/eventmessages/{id}/files/input")
+    @ApiOperation(value = "Get input file by event_message id")
     @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
-    public ResponseEntity generateOutputFile(@PathVariable Long id) throws IOException {
-        coordinationService.applyCoordinationAnswersToEventMessage(id);
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/eventmessages/{id}/output-file")
-    @ApiOperation(value = "Get output file by event_message id")
-    @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
-    public ResponseEntity getOutputFile(@PathVariable Long id) {
-        return coordinationService.getEventMessageOutputFileIfExists(id)
+    public ResponseEntity getInputFile(@PathVariable Long id) {
+        return coordinationService.getEventMessageFileIfExists(id, INPUT)
                 .map(eventMessageFile -> ResponseEntity.ok(KafkaFileWrapperDto.builder()
                         .fileName(eventMessageFile.getFileName())
                         .fileType(eventMessageFile.getFileType())
@@ -154,15 +146,44 @@ public class EventMessageController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/eventmessages/{id}/files/output")
+    @ApiOperation(value = "Get output file by event_message id")
+    @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
+    public ResponseEntity getOutputFile(@PathVariable Long id) {
+        return coordinationService.getEventMessageFileIfExists(id, OUTPUT)
+                .map(eventMessageFile -> ResponseEntity.ok(KafkaFileWrapperDto.builder()
+                        .fileName(eventMessageFile.getFileName())
+                        .fileType(eventMessageFile.getFileType())
+                        .fileContent(eventMessageFile.getFileContent())
+                        .build()))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/eventmessages/{id}/generate-output-file")
+    @ApiOperation(
+            value = "Manual generation of output file for event_message by its id",
+            notes = "For test purposes only!",
+            hidden = true
+    )
+    @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
+    public ResponseEntity generateOutputFile(@PathVariable Long id) throws IOException {
+        coordinationService.applyCoordinationAnswersToEventMessage(id);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/eventmessages/{id}/download-output-file")
-    @ApiOperation(value = "Generate download link to download output file by event_message id")
+    @ApiOperation(
+            value = "Generate download link to download output file by event_message id",
+            notes = "For test purposes only!",
+            hidden = true
+    )
     @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
     public ResponseEntity downloadOutputFile(@PathVariable Long id) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
         headers.add("Pragma", "no-cache");
         headers.add("Expires", "0");
-        return coordinationService.getEventMessageOutputFileIfExists(id)
+        return coordinationService.getEventMessageFileIfExists(id, OUTPUT)
                 .map(eventMessageFile -> {
                     headers.setContentDisposition(ContentDisposition.builder("inline")
                             .filename(eventMessageFile.getFileName())

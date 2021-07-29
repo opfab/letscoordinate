@@ -318,10 +318,10 @@ public class CoordinationService {
         return null;
     }
 
-    public Optional<EventMessageFile> getEventMessageOutputFileIfExists(Long idEventMessage) {
+    public Optional<EventMessageFile> getEventMessageFileIfExists(Long idEventMessage, FileDirectionEnum fileDirectionEnum) {
         return eventMessageRepository.findById(idEventMessage)
                 .map(eventMessage -> eventMessage.getEventMessageFiles().stream()
-                        .filter(f -> f.getFileDirection() == FileDirectionEnum.OUTPUT)
+                        .filter(f -> f.getFileDirection() == fileDirectionEnum)
                         .sorted(Comparator.comparing(EventMessageFile::getCreationDate).reversed())
                         .findFirst())
                 .orElse(Optional.empty());
