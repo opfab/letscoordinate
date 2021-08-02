@@ -57,6 +57,92 @@ Feature: Prepare OpFab env. for Let's Co open source
     And match response.name == group.name
     And match response.id == group.id
 
+  Scenario: Create perimeter for Service A Process Monitoring
+
+    * def serviceAProcessMonitoringPerimeter =
+"""
+{
+  "id" : "serviceAProcessMonitoringPerimeter",
+  "process" : "servicea_processmonitoring",
+  "stateRights" : [
+    {
+      "state" : "processsuccessful",
+      "right" : "ReceiveAndWrite"
+    },
+    {
+      "state" : "processfailed",
+      "right" : "ReceiveAndWrite"
+    }
+  ]
+}
+"""
+
+    Given url opfabUrl + 'users/perimeters'
+    And header Authorization = 'Bearer ' + authToken
+    And request serviceAProcessMonitoringPerimeter
+    When method post
+    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceAProcessMonitoringPerimeter")
+
+  Scenario: Create perimeter for Service A Validation File A
+
+    * def serviceAValidationFileAPerimeter =
+"""
+{
+  "id" : "serviceAValidationFileAPerimeter",
+  "process" : "servicea_validation_filea",
+  "stateRights" : [
+    {
+      "state" : "ok",
+      "right" : "ReceiveAndWrite"
+    },
+    {
+      "state" : "warning",
+      "right" : "ReceiveAndWrite"
+    },
+    {
+      "state" : "error",
+      "right" : "ReceiveAndWrite"
+    }
+  ]
+}
+"""
+
+    Given url opfabUrl + 'users/perimeters'
+    And header Authorization = 'Bearer ' + authToken
+    And request serviceAValidationFileAPerimeter
+    When method post
+    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceAValidationFileAPerimeter")
+
+  Scenario: Create perimeter for Service A Validation File B
+
+    * def serviceAValidationFileBPerimeter =
+"""
+{
+  "id" : "serviceAValidationFileBPerimeter",
+  "process" : "servicea_validation_fileb",
+  "stateRights" : [
+    {
+      "state" : "ok",
+      "right" : "ReceiveAndWrite"
+    },
+    {
+      "state" : "warning",
+      "right" : "ReceiveAndWrite"
+    },
+    {
+      "state" : "error",
+      "right" : "ReceiveAndWrite"
+    }
+  ]
+}
+"""
+
+    Given url opfabUrl + 'users/perimeters'
+    And header Authorization = 'Bearer ' + authToken
+    And request serviceAValidationFileBPerimeter
+    When method post
+    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceAValidationFileBPerimeter")
+
   Scenario: Create perimeter for Service A Card Creation
 
     * def serviceACardCreationPerimeter =
@@ -78,6 +164,92 @@ Feature: Prepare OpFab env. for Let's Co open source
     And request serviceACardCreationPerimeter
     When method post
     Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceACardCreationPerimeter")
+
+  Scenario: Create perimeter for Service B Process Monitoring
+
+    * def serviceBProcessMonitoringPerimeter =
+"""
+{
+  "id" : "serviceBProcessMonitoringPerimeter",
+  "process" : "serviceb_processmonitoring",
+  "stateRights" : [
+    {
+      "state" : "processsuccessful",
+      "right" : "ReceiveAndWrite"
+    },
+    {
+      "state" : "processfailed",
+      "right" : "ReceiveAndWrite"
+    }
+  ]
+}
+"""
+
+    Given url opfabUrl + 'users/perimeters'
+    And header Authorization = 'Bearer ' + authToken
+    And request serviceBProcessMonitoringPerimeter
+    When method post
+    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceBProcessMonitoringPerimeter")
+
+  Scenario: Create perimeter for Service B Validation File A
+
+    * def serviceBValidationFileAPerimeter =
+"""
+{
+  "id" : "serviceBValidationFileAPerimeter",
+  "process" : "serviceb_validation_filea",
+  "stateRights" : [
+    {
+      "state" : "ok",
+      "right" : "ReceiveAndWrite"
+    },
+    {
+      "state" : "warning",
+      "right" : "ReceiveAndWrite"
+    },
+    {
+      "state" : "error",
+      "right" : "ReceiveAndWrite"
+    }
+  ]
+}
+"""
+
+    Given url opfabUrl + 'users/perimeters'
+    And header Authorization = 'Bearer ' + authToken
+    And request serviceBValidationFileAPerimeter
+    When method post
+    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceBValidationFileAPerimeter")
+
+  Scenario: Create perimeter for Service B Validation File B
+
+    * def serviceBValidationFileBPerimeter =
+"""
+{
+  "id" : "serviceBValidationFileBPerimeter",
+  "process" : "serviceb_validation_fileb",
+  "stateRights" : [
+    {
+      "state" : "ok",
+      "right" : "ReceiveAndWrite"
+    },
+    {
+      "state" : "warning",
+      "right" : "ReceiveAndWrite"
+    },
+    {
+      "state" : "error",
+      "right" : "ReceiveAndWrite"
+    }
+  ]
+}
+"""
+
+    Given url opfabUrl + 'users/perimeters'
+    And header Authorization = 'Bearer ' + authToken
+    And request serviceBValidationFileBPerimeter
+    When method post
+    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceBValidationFileBPerimeter")
 
   Scenario: Create perimeter for Service B Card Creation
 
@@ -124,6 +296,22 @@ Feature: Prepare OpFab env. for Let's Co open source
     {
       "state" : "answerDifferentChoices",
       "right" : "ReceiveAndWrite"
+    },
+    {
+      "state" : "proposalConfirmed",
+      "right" : "Receive"
+    },
+    {
+      "state" : "proposalRejected",
+      "right" : "Receive"
+    },
+    {
+      "state" : "noAnswerProvided",
+      "right" : "Receive"
+    },
+    {
+      "state" : "differentChoices",
+      "right" : "Receive"
     }
   ]
 }
@@ -141,7 +329,7 @@ Feature: Prepare OpFab env. for Let's Co open source
 
     Given url opfabUrl + 'users/groups/' + group + '/perimeters'
     And header Authorization = 'Bearer ' + authToken
-    And request ["serviceACardCreationPerimeter", "serviceACoordinationAPerimeter"]
+    And request ["serviceAProcessMonitoringPerimeter", "serviceAValidationFileAPerimeter", "serviceAValidationFileBPerimeter", "serviceACardCreationPerimeter", "serviceACoordinationAPerimeter"]
     When method patch
     Then status 200
 
@@ -151,7 +339,7 @@ Feature: Prepare OpFab env. for Let's Co open source
 
     Given url opfabUrl + 'users/groups/' + group + '/perimeters'
     And header Authorization = 'Bearer ' + authToken
-    And request ["serviceBCardCreationPerimeter"]
+    And request ["serviceBProcessMonitoringPerimeter", "serviceBValidationFileAPerimeter", "serviceBValidationFileBPerimeter", "serviceBCardCreationPerimeter"]
     When method patch
     Then status 200
 
@@ -688,7 +876,7 @@ Feature: Prepare OpFab env. for Let's Co open source
     When method get
     Then status 200
     And match response.userData.login == 'user.test2'
-    And assert response.computedPerimeters.length == 5
+    And assert response.computedPerimeters.length == 17
 
   Scenario: Get current user (user.test) with perimeters
 
@@ -699,4 +887,4 @@ Feature: Prepare OpFab env. for Let's Co open source
     When method get
     Then status 200
     And match response.userData.login == 'user.test'
-    And assert response.computedPerimeters.length == 6
+    And assert response.computedPerimeters.length == 26
