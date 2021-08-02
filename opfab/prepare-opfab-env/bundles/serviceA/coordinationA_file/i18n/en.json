@@ -1,0 +1,27 @@
+{
+  "license": "MPL-2.0",
+  "cardDetails":{
+    "title":"{{title}}"
+  },
+  "cardFeed": {
+    "title": "{{title}}",
+    "summary": "{{summary}}"
+  },
+  "process": {
+    "name": "Coordination file"
+  },
+  "inputFile": {
+    "name": "Input file",
+    "description": "Input file received",
+    "cardDetails":{
+      "title":"Service A Coordination A"
+    }
+  },
+  "outputFile": {
+    "name": "Output file",
+    "description": "Output file sent",
+    "cardDetails":{
+      "title":"Service A Coordination A"
+    }
+  }
+}

@@ -85,7 +85,7 @@ public final class HttpUtil {
             in.close();
 
             response = responseSb.toString();
-            log.info(response);
+            log.info("Response : " + response);
             //print result
         } catch (MalformedURLException e) {
             log.error(e.getMessage());

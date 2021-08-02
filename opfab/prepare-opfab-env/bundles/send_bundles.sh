@@ -27,6 +27,8 @@ if [ $1 = 'serviceA' ] || [ $1 = 'serviceB' ]; then
     cd $1/cardCreation
   elif [ $2 = 'co' ]; then
     cd $1/coordinationA
+  elif [ $2 = 'cof' ]; then
+    cd $1/coordinationA_file
   else
     echo "Incorrect arg: $2"
     exit 1

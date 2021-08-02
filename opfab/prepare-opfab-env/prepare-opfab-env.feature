@@ -323,13 +323,39 @@ Feature: Prepare OpFab env. for Let's Co open source
     When method post
     Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceACoordinationAPerimeter")
 
+  Scenario: Create perimeter for Service A Coordination A File
+
+    * def serviceACoordinationAFilePerimeter =
+"""
+{
+  "id" : "serviceACoordinationAFilePerimeter",
+  "process" : "servicea_coordinationa_file",
+  "stateRights" : [
+    {
+      "state" : "inputFile",
+      "right" : "Receive"
+    },
+    {
+      "state" : "outputFile",
+      "right" : "Receive"
+    }
+  ]
+}
+"""
+
+    Given url opfabUrl + 'users/perimeters'
+    And header Authorization = 'Bearer ' + authToken
+    And request serviceACoordinationAFilePerimeter
+    When method post
+    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceACoordinationAFilePerimeter")
+
   Scenario: Add perimeters to group 'servicea'
 
     * def group = 'servicea'
 
     Given url opfabUrl + 'users/groups/' + group + '/perimeters'
     And header Authorization = 'Bearer ' + authToken
-    And request ["serviceAProcessMonitoringPerimeter", "serviceAValidationFileAPerimeter", "serviceAValidationFileBPerimeter", "serviceACardCreationPerimeter", "serviceACoordinationAPerimeter"]
+    And request ["serviceAProcessMonitoringPerimeter", "serviceAValidationFileAPerimeter", "serviceAValidationFileBPerimeter", "serviceACardCreationPerimeter", "serviceACoordinationAPerimeter", "serviceACoordinationAFilePerimeter"]
     When method patch
     Then status 200
 
@@ -417,7 +443,8 @@ Feature: Prepare OpFab env. for Let's Co open source
   "login" : "user.test",
   "description" : "RTE",
   "timeZone" : "Europe/Paris",
-  "locale" : "en"
+  "locale" : "en",
+  "defaultTags": [ "visible_card" ]
 }
 """
 
@@ -495,7 +522,8 @@ Feature: Prepare OpFab env. for Let's Co open source
   "login" : "user.test2",
   "description" : "Terna",
   "timeZone" : "Europe/Paris",
-  "locale" : "en"
+  "locale" : "en",
+  "defaultTags": [ "visible_card" ]
 }
 """
 
@@ -583,7 +611,8 @@ Feature: Prepare OpFab env. for Let's Co open source
 {
   "login" : "user.rte",
   "timeZone" : "Europe/Paris",
-  "locale" : "en"
+  "locale" : "en",
+  "defaultTags": [ "visible_card" ]
 }
 """
 
@@ -670,7 +699,8 @@ Feature: Prepare OpFab env. for Let's Co open source
 {
   "login" : "user.terna",
   "timeZone" : "Europe/Paris",
-  "locale" : "en"
+  "locale" : "en",
+  "defaultTags": [ "visible_card" ]
 }
 """
 
@@ -757,7 +787,8 @@ Feature: Prepare OpFab env. for Let's Co open source
 {
   "login" : "user.amprion",
   "timeZone" : "Europe/Paris",
-  "locale" : "en"
+  "locale" : "en",
+  "defaultTags": [ "visible_card" ]
 }
 """
 
@@ -844,7 +875,8 @@ Feature: Prepare OpFab env. for Let's Co open source
 {
   "login" : "user.coreso",
   "timeZone" : "Europe/Paris",
-  "locale" : "en"
+  "locale" : "en",
+  "defaultTags": [ "visible_card" ]
 }
 """
 
@@ -876,7 +908,7 @@ Feature: Prepare OpFab env. for Let's Co open source
     When method get
     Then status 200
     And match response.userData.login == 'user.test2'
-    And assert response.computedPerimeters.length == 17
+    And assert response.computedPerimeters.length == 19
 
   Scenario: Get current user (user.test) with perimeters
 
@@ -887,4 +919,4 @@ Feature: Prepare OpFab env. for Let's Co open source
     When method get
     Then status 200
     And match response.userData.login == 'user.test'
-    And assert response.computedPerimeters.length == 26
+    And assert response.computedPerimeters.length == 28

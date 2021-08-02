@@ -49,6 +49,7 @@ import java.util.stream.Stream;
 import static org.lfenergy.letscoordinate.backend.config.OpfabConfig.ChangeTimeserieDataDetailValueTypeEnum.INSTANT;
 import static org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum.COORDINATION;
 import static org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum.MESSAGE_VALIDATED;
+import static org.lfenergy.letscoordinate.backend.enums.FileDirectionEnum.INPUT;
 import static org.lfenergy.letscoordinate.backend.util.Constants.*;
 
 @Component
@@ -135,7 +136,7 @@ public class OpfabPublisherComponent {
         String source = eventMessageDto.getHeader().getSource();
         BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
         String messageTypeName = bdi.getMessageTypeName();
-        List<String> tags = Stream.of(source, messageTypeName, processKey, source + "_" + noun)
+        List<String> tags = Stream.of(source, messageTypeName, processKey, source + "_" + noun, VISIBLE_CARD_TAG)
                 .map(String::toLowerCase).distinct().collect(Collectors.toList());
         if (MESSAGE_VALIDATED.getNoun().equals(noun)) {
             Optional<String> filenameOpt = bdi.getFileName();
@@ -440,6 +441,8 @@ public class OpfabPublisherComponent {
             card.setSummary(new I18n().key("cardFeed.summary").parameters(summaryParams));
 
             card.setData(generateCoordinationCardData(coordination, cardId));
+
+            coordinationService.sendCoordinationFileCard(card, INPUT);
         }
     }
 
@@ -621,7 +624,7 @@ public class OpfabPublisherComponent {
 
     /*------------------------------------------------ Coordination --------------------------------------------------*/
 
-    public void publishOpfabCoordinationResultCard(Coordination coordination) {
+    public Card publishOpfabCoordinationResultCard(Coordination coordination) {
         EventMessage eventMessage = coordination.getEventMessage();
         Map<String, List<String>> concernedEntitiesMap = getConcernedEntitiesMap(eventMessage);
         OutputResultAnswerEnum coordinationStatus = OpfabUtil.getCoordinationStatus(coordination, concernedEntitiesMap.get(ENTITIES_REQUIRED_TO_RESPOND));
@@ -658,7 +661,10 @@ public class OpfabPublisherComponent {
 
         card.setData(generateCoordinationCardData(coordination, coordination.getEventMessage().getId()));
 
+        log.info("Result card:\n{}", card.toString());
         HttpUtil.post(opfabConfig.getUrl().getCardsPub(), card);
+
+        return card;
     }
 
     private Map<String, List<String>> getConcernedEntitiesMap(EventMessage eventMessage) {
@@ -716,7 +722,8 @@ public class OpfabPublisherComponent {
 
     private List<String> createCoordinationCardTags(EventMessage eventMessage, String processKey) {
         List<String> tags = Stream.of(eventMessage.getSource(), eventMessage.getMessageTypeName(), processKey,
-                eventMessage.getSource() + "_" + eventMessage.getNoun()).map(String::toLowerCase).distinct().collect(Collectors.toList());
+                eventMessage.getSource() + "_" + eventMessage.getNoun(), VISIBLE_CARD_TAG)
+                .map(String::toLowerCase).distinct().collect(Collectors.toList());
         opfabConfig.getTags().ifPresent(t -> {
             if (t.containsKey(processKey)) {
                 tags.add(t.get(processKey).getTag());
