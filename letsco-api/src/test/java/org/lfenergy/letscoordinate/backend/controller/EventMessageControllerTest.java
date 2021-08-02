@@ -17,7 +17,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lfenergy.letscoordinate.backend.component.OpfabPublisherComponent;
+import org.lfenergy.letscoordinate.backend.dto.KafkaFileWrapperDto;
 import org.lfenergy.letscoordinate.backend.enums.FileDirectionEnum;
+import org.lfenergy.letscoordinate.backend.kafka.LetscoKafkaProducer;
 import org.lfenergy.letscoordinate.backend.model.Coordination;
 import org.lfenergy.letscoordinate.backend.model.EventMessage;
 import org.lfenergy.letscoordinate.backend.model.EventMessageFile;
@@ -64,6 +66,8 @@ public class EventMessageControllerTest {
     CoordinationService coordinationService;
     @MockBean
     OpfabPublisherComponent opfabPublisherComponent;
+    @MockBean
+    LetscoKafkaProducer letscoKafkaProducer;
 
     MockMultipartFile validMultipartFile;
     MockMultipartFile validMultipartFileWithLowercaseTitles;
@@ -182,7 +186,8 @@ public class EventMessageControllerTest {
     @WithMockCustomUser
     public void coordinationCallback_entitiesTotallyRespond_shouldReturn200() throws Exception {
         when(coordinationService.saveAnswersAndCheckIfAllTsosHaveAnswered(any(Card.class))).thenReturn(Validation.valid(Coordination.builder().build()));
-        doNothing().when(opfabPublisherComponent).publishOpfabCoordinationResultCard(any(Coordination.class));
+        when(coordinationService.generateOutputFile(any(Coordination.class))).thenReturn(true);
+        when(opfabPublisherComponent.publishOpfabCoordinationResultCard(any(Coordination.class))).thenReturn(new Card());
         mockMvc.perform(post("/letsco/api/v1/coordination")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
