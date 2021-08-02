@@ -36,7 +36,11 @@ import org.lfenergy.letscoordinate.backend.repository.CoordinationRaAnswerReposi
 import org.lfenergy.letscoordinate.backend.repository.CoordinationRepository;
 import org.lfenergy.letscoordinate.backend.repository.EventMessageRepository;
 import org.lfenergy.letscoordinate.backend.util.Constants;
+import org.lfenergy.letscoordinate.backend.util.HttpUtil;
 import org.opfab.cards.model.Card;
+import org.opfab.cards.model.PublisherTypeEnum;
+import org.opfab.cards.model.SeverityEnum;
+import org.opfab.cards.model.TimeSpan;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -64,7 +68,6 @@ public class CoordinationService {
     private final LetscoProperties letscoProperties;
 
     public Validation<Boolean, Coordination> saveAnswersAndCheckIfAllTsosHaveAnswered(Card card) {
-        log.info("Card received:\n" + card.toString());
         saveAnswers(card);
         return checkIfAllTsosHaveAnswered(card);
     }
@@ -168,10 +171,16 @@ public class CoordinationService {
         return new CoordinationRa();
     }
 
-    public void generateOutputFile(Coordination coordination) throws IOException {
+    public boolean generateOutputFile(Coordination coordination) throws IOException {
         EventMessage updatedEventMessage = applyCoordinationAnswersToEventMessage(coordination);
-        letscoKafkaProducer.sendFileToKafka(eventMessageOutputFileToKafkaFileWrapperDto(updatedEventMessage),
-                letscoProperties.getKafka().getDefaultOutputTopic());
+        try {
+            letscoKafkaProducer.sendFileToKafka(eventMessageOutputFileToKafkaFileWrapperDto(updatedEventMessage),
+                    letscoProperties.getKafka().getDefaultOutputTopic());
+        } catch (Exception e) {
+            log.error("Error while sending data to kafka!", e);
+            return Boolean.FALSE;
+        }
+        return Boolean.TRUE;
     }
 
     public EventMessage applyCoordinationAnswersToEventMessage(Coordination coordination) throws IOException {
@@ -392,6 +401,38 @@ public class CoordinationService {
             }
         }
         return result;
+    }
+
+    // COORDINATION FILE
+    public void sendCoordinationFileCard(Card coordinationCard, FileDirectionEnum fileDirectionEnum) {
+        try {
+            Card card = new Card();
+            card.setProcessVersion("1");
+            card.setPublisher(opfabConfig.getPublisher());
+            card.setTitle(coordinationCard.getTitle());
+            card.setSummary(coordinationCard.getSummary());
+            String stateId = fileDirectionEnum == FileDirectionEnum.INPUT ? "inputFile" : "outputFile";
+            card.setProcess(coordinationCard.getProcess() + "_file");
+            card.setProcessInstanceId(coordinationCard.getProcessInstanceId() + "_" + stateId);
+            card.setSeverity(SeverityEnum.ACTION);
+            card.setState(stateId);
+            card.setKeepChildCards(false);
+            card.setPublisherType(PublisherTypeEnum.EXTERNAL);
+            card.setGroupRecipients(coordinationCard.getGroupRecipients());
+            card.setEntityRecipients(coordinationCard.getEntityRecipients());
+            card.setTimeSpans(null);
+            card.setStartDate(coordinationCard.getStartDate());
+            card.setEndDate(coordinationCard.getEndDate());
+            Map<String, Object> data = new HashMap<>();
+            data.put("businessDayFrom", coordinationCard.getStartDate());
+            data.put("businessDayTo", coordinationCard.getEndDate());
+            data.put("isInputFile", fileDirectionEnum == FileDirectionEnum.INPUT);
+            card.setData(data);
+            log.info("Opfab {} file notification generated", fileDirectionEnum);
+            HttpUtil.post(opfabConfig.getUrl().getCardsPub(), card);
+        } catch (Exception e) {
+            log.error("Unable to send coordination file notification!", e);
+        }
     }
 
 }

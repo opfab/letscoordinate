@@ -145,7 +145,7 @@ public class OpfabPublisherComponentTest {
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
         String process = OpfabUtil.generateProcessKey(eventMessageDto, true);
         List<String> expectedTags = Stream.of(source, messageTypeName, process,
-                source + "_" + eventMessageDto.getHeader().getNoun())
+                source + "_" + eventMessageDto.getHeader().getNoun(), VISIBLE_CARD_TAG)
                 .map(String::toLowerCase).collect(toList());
         assertAll(
                 () -> assertEquals(expectedTags, card.getTags()),
@@ -166,7 +166,7 @@ public class OpfabPublisherComponentTest {
         Long id = 1L;
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
         List<String> expectedTags = Stream.of(source, messageTypeName, process,
-                source + "_" + eventMessageDto.getHeader().getNoun())
+                source + "_" + eventMessageDto.getHeader().getNoun(), VISIBLE_CARD_TAG)
                 .map(String::toLowerCase).collect(toList());
         expectedTags.add("tag");
         assertAll(
@@ -208,19 +208,19 @@ public class OpfabPublisherComponentTest {
         Long id = 1L;
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
         List<String> expectedTags = Stream.of(source, messageTypeName, process,
-                source + "_" + eventMessageDto.getHeader().getNoun())
+                source + "_" + eventMessageDto.getHeader().getNoun(), VISIBLE_CARD_TAG)
                 .map(String::toLowerCase).collect(toList());
         expectedTags.add(process + "_ok");
         assertEquals(expectedTags, card.getTags());
 
         eventMessageDto.getPayload().getValidation().get().setResult(WARNING);
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
-        expectedTags.set(4, source.toLowerCase() + "_" + messageTypeName.toLowerCase() + "_warning");
+        expectedTags.set(5, source.toLowerCase() + "_" + messageTypeName.toLowerCase() + "_warning");
         assertEquals(expectedTags, card.getTags());
 
         eventMessageDto.getPayload().getValidation().get().setResult(ERROR);
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
-        expectedTags.set(4, source.toLowerCase() + "_" + messageTypeName.toLowerCase() + "_error");
+        expectedTags.set(5, source.toLowerCase() + "_" + messageTypeName.toLowerCase() + "_error");
         assertEquals(expectedTags, card.getTags());
     }
 
@@ -236,7 +236,7 @@ public class OpfabPublisherComponentTest {
         Long id = 1L;
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
         List<String> expectedTags = Stream.of(source, messageTypeName, process,
-                source + "_" + eventMessageDto.getHeader().getNoun())
+                source + "_" + eventMessageDto.getHeader().getNoun(), VISIBLE_CARD_TAG)
                 .map(String::toLowerCase).collect(toList());
         expectedTags.add(process + "_ok");
         expectedTags.add("tag_qcTagOk");
@@ -244,14 +244,14 @@ public class OpfabPublisherComponentTest {
 
         eventMessageDto.getPayload().getValidation().get().setResult(WARNING);
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
-        expectedTags.set(4, process + "_warning");
-        expectedTags.set(5, "tag_qcTagWarning");
+        expectedTags.set(5, process + "_warning");
+        expectedTags.set(6, "tag_qcTagWarning");
         assertEquals(expectedTags.stream().sorted().collect(toList()), card.getTags().stream().sorted().collect(toList()));
 
         eventMessageDto.getPayload().getValidation().get().setResult(ERROR);
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
-        expectedTags.set(4, process + "_error");
-        expectedTags.set(5, "tag_qcTagError");
+        expectedTags.set(5, process + "_error");
+        expectedTags.set(6, "tag_qcTagError");
         assertEquals(expectedTags, card.getTags());
     }
 

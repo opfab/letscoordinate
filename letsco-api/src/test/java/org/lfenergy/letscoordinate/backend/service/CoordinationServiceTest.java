@@ -28,6 +28,7 @@ import org.lfenergy.letscoordinate.backend.dto.coordination.CoordinationResponse
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageWrapperDto;
 import org.lfenergy.letscoordinate.backend.enums.CoordinationAnswerEnum;
+import org.lfenergy.letscoordinate.backend.enums.FileDirectionEnum;
 import org.lfenergy.letscoordinate.backend.enums.FileTypeEnum;
 import org.lfenergy.letscoordinate.backend.kafka.LetscoKafkaProducer;
 import org.lfenergy.letscoordinate.backend.model.Coordination;
@@ -184,6 +185,16 @@ public class CoordinationServiceTest {
                 new ObjectMapper().registerModule(new JavaTimeModule()).readValue((byte[]) i.getArgument(0), EventMessageWrapperDto.class)
         );
         coordinationService.generateOutputFile(CoordinationFactory.initCoordination(FileTypeEnum.JSON));
+    }
+
+    @Test
+    public void sendCoordinationFileCard_INPUT() {
+        coordinationService.sendCoordinationFileCard(new Card(), FileDirectionEnum.INPUT);
+    }
+
+    @Test
+    public void sendCoordinationFileCard_OUTPUT() {
+        coordinationService.sendCoordinationFileCard(new Card(), FileDirectionEnum.OUTPUT);
     }
 
 }
