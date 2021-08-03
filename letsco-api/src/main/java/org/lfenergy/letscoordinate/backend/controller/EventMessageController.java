@@ -123,12 +123,19 @@ public class EventMessageController {
     @PostMapping("/coordination")
     @ApiOperation(value = "Coordination callback", hidden = true)
     public ResponseEntity coordinationCallback(@RequestBody Card card) throws IOException {
+        log.info("Callback card received:\n" + card.toString());
         Validation<Boolean, Coordination> validation = coordinationService.saveAnswersAndCheckIfAllTsosHaveAnswered(card);
         if (validation.isValid()) {
-            opfabPublisherComponent.publishOpfabCoordinationResultCard(validation.get());
-            coordinationService.generateOutputFile(validation.get());
+            log.info("All required entities have been answered! => Publishing result card...");
+            Card resultCard = opfabPublisherComponent.publishOpfabCoordinationResultCard(validation.get());
+            log.info("Generating output file...");
+            boolean outputFileGenerated = coordinationService.generateOutputFile(validation.get());
+            log.info("Output file generated!");
+            if (outputFileGenerated) {
+                coordinationService.sendCoordinationFileCard(resultCard, OUTPUT);
+            }
         } else {
-            log.debug("Some entities did not respond yet!");
+            log.info("Some entities did not respond yet!");
         }
         return ResponseEntity.ok().build();
     }

@@ -1,0 +1,45 @@
+{
+  "license": "MPL-2.0",
+  "id": "servicea_coordinationa_file",
+  "name": "process.name",
+  "version": "1",
+  "defaultLocale": "en",
+  "uiVisibility": {
+    "monitoring": false,
+    "logging": true,
+    "calendar": false
+  },
+  "templates": [
+    "process"
+  ],
+  "csses": [
+    "main"
+  ],
+  "menuEntries": [],
+  "states": {
+    "inputFile": {
+      "name": "inputFile.name",
+      "description": "inputFile.description",
+      "detailTitle": {
+        "key": "inputFile.cardDetails.title"
+      },
+      "templateName": "coordinationfile",
+      "styles": [
+        "main"
+      ],
+      "acknowledgmentAllowed": "Always"
+    },
+    "outputFile": {
+      "name": "outputFile.name",
+      "description": "outputFile.description",
+      "detailTitle": {
+        "key": "inputFile.cardDetails.title"
+      },
+      "templateName": "coordinationfile",
+      "styles": [
+        "main"
+      ],
+      "acknowledgmentAllowed": "Always"
+    }
+  }
+}

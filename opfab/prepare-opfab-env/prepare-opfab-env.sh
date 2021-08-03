@@ -16,6 +16,7 @@ cd ${LC_HOME}/opfab/prepare-opfab-env/bundles
 ./send_bundles.sh serviceA vfa
 ./send_bundles.sh serviceA vfb
 ./send_bundles.sh serviceA co
+./send_bundles.sh serviceA cof
 
 ./send_bundles.sh serviceB cc
 ./send_bundles.sh serviceB pm
