@@ -631,7 +631,9 @@ public class OpfabPublisherComponent {
         card.setPublisherType(PublisherTypeEnum.EXTERNAL);
         card.setTags(createCoordinationCardTags(eventMessage, coordination.getProcessKey()));
         card.setProcess(coordination.getProcessKey());
-        card.setProcessInstanceId(eventMessage.getCaseId());
+        if (eventMessage.getCaseId() != null) {
+            card.setProcessInstanceId(eventMessage.getCaseId());
+        }
         card.setPublisher(opfabConfig.getPublisher());
         card.setProcessVersion("1");
         card.setSeverity(OpfabUtil.isAgreementFound(coordination, concernedEntitiesMap.get(ENTITIES_REQUIRED_TO_RESPOND))

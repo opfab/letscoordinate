@@ -57,6 +57,9 @@ letsco:
     default-output-topic: 'letsco_eventmessage_output'
   timezone: "Europe/Paris"  # e.g: "Europe/London", "Europe/Paris", "Europe/Rome", "UTC", "UTC+1", "UTC-04:00", "GMT-5"
   input-file:
+    genericNouns:
+      PROCESS_INFORMATION:
+        - CCC_OMM_IntradayMarket
     dir: D:\_RTE_\tmp\input
     validation:
       accept-properties-ignore-case: true
@@ -67,6 +70,7 @@ letsco:
       - http://letsco-front:4200
     clientId: opfab-client
   coordination:
+    enable-case-id-auto-generation: true
     coordination-status-calculation-strategy: MAJORITY
     coordination-status-calculation-rules:
       WORST_CASE:

@@ -38,6 +38,6 @@ opfab:
 
 # WARNING - You shoud replace localhost with the real IP , as locahost related to IP internal to docker
 externalRecipients-url: "{\
-           letsco_opensource: \"http://172.19.0.1/letsco/api/v1/coordination\" \
+           letsco_opensource: \"http://172.23.0.1/letsco/api/v1/coordination\" \
            }"
 checkAuthenticationForCardSending: false

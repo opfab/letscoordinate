@@ -70,6 +70,10 @@ public class BusinessDataIdentifierDto {
         return processStep;
     }
 
+    @JsonProperty("recipients")
+    public List<String> getRecipientsSimple() {
+        return recipients;
+    }
     public Optional<List<String>> getRecipients() {
         return Optional.ofNullable(recipients);
     }

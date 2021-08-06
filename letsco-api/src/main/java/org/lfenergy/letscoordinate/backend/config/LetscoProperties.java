@@ -118,6 +118,7 @@ public class LetscoProperties {
         private Map<CoordinationStatusStrategyEnum, CoordinationStatusCalculationRule> coordinationStatusCalculationRules;
         private boolean notAnsweredDefaultCase;
         private Map<CoordinationStatusStrategyEnum, CoordinationStatusEnum> notAnsweredDefaultCaseRules;
+        private boolean enableCaseIdAutoGeneration;
 
         @Getter
         @Setter

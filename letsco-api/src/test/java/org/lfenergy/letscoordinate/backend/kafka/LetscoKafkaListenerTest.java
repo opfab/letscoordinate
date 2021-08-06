@@ -45,6 +45,7 @@ import org.lfenergy.letscoordinate.backend.util.OpfabUtil;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +87,7 @@ public class LetscoKafkaListenerTest {
         letscoProperties = new LetscoProperties();
         LetscoProperties.InputFile inputFile = new LetscoProperties.InputFile();
         LetscoProperties.InputFile.Validation validation = new LetscoProperties.InputFile.Validation();
+        letscoProperties.setCoordination(new LetscoProperties.Coordination());
         inputFile.setValidation(validation);
         letscoProperties.setInputFile(inputFile);
 
@@ -126,6 +128,70 @@ public class LetscoKafkaListenerTest {
     @Test
     public void verifyData() {
         letscoKafkaListener.verifyData(eventMessageDto);
+    }
+
+    @Test
+    public void verifyData_businessDayToNull() {
+        BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        bdi.setBusinessDayFrom(Instant.parse("2021-08-05T10:00:00.00Z"));
+        bdi.setBusinessDayTo(bdi.getBusinessDayFrom().plus(Duration.ofHours(24)).minus(Duration.ofSeconds(1)));
+        assertEquals(Instant.parse("2021-08-06T09:59:59.00Z"),bdi.getBusinessDayTo());
+    }
+
+    @Test
+    public void verifyData_businessDayToNotNull() {
+        BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        bdi.setBusinessDayTo(Instant.parse("2021-08-06T10:00:00.00Z"));
+        bdi.setBusinessDayTo(bdi.getBusinessDayTo().minus(Duration.ofSeconds(1)));
+        assertEquals(Instant.parse("2021-08-06T09:59:59.00Z"),bdi.getBusinessDayTo());
+    }
+
+    @Test
+    public void verifyData_CaseIdPresentAndAutoGenerationEnabled() {
+        letscoProperties.getCoordination().setEnableCaseIdAutoGeneration(true);
+        BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        bdi.setCaseId("caseId");
+        if (letscoProperties.getCoordination().isEnableCaseIdAutoGeneration()) {
+            bdi.setCaseId(bdi.getCaseId().orElse(OpfabUtil.generateCaseId(eventMessageDto)));
+        }
+        assertEquals("caseId",bdi.getCaseId().get());
+    }
+
+    @Test
+    public void verifyData_CaseIdPresentAndAutoGenerationDisabled() {
+        letscoProperties.getCoordination().setEnableCaseIdAutoGeneration(false);
+        BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        bdi.setCaseId("caseId");
+        bdi.setBusinessDayFrom(Instant.parse("2021-08-05T10:00:00.00Z"));
+        bdi.setBusinessDayTo(Instant.parse("2021-08-06T09:59:59.00Z"));
+        if (letscoProperties.getCoordination().isEnableCaseIdAutoGeneration()) {
+            bdi.setCaseId(bdi.getCaseId().orElse(OpfabUtil.generateCaseId(eventMessageDto)));
+        }
+        assertEquals("caseId",bdi.getCaseId().get());
+    }
+
+    @Test
+    public void verifyData_CaseIdNotPresentAndAutoGenerationEnabled() {
+        letscoProperties.getCoordination().setEnableCaseIdAutoGeneration(true);
+        BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        bdi.setBusinessDayFrom(Instant.parse("2021-08-05T10:00:00.00Z"));
+        bdi.setBusinessDayTo(Instant.parse("2021-08-06T09:59:59.00Z"));
+        if (letscoProperties.getCoordination().isEnableCaseIdAutoGeneration()) {
+            bdi.setCaseId(bdi.getCaseId().orElse(OpfabUtil.generateCaseId(eventMessageDto)));
+        }
+        assertEquals("source_businessApplication_messageTypeName_2021-08-05T10:00:00Z_2021-08-06T09:59:59Z",bdi.getCaseId().get());
+    }
+
+    @Test
+    public void verifyData_CaseIdNotPresentAndAutoGenerationDisabled() {
+        letscoProperties.getCoordination().setEnableCaseIdAutoGeneration(false);
+        BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        bdi.setBusinessDayFrom(Instant.parse("2021-08-05T10:00:00.00Z"));
+        bdi.setBusinessDayTo(Instant.parse("2021-08-06T09:59:59.00Z"));
+        if (letscoProperties.getCoordination().isEnableCaseIdAutoGeneration()) {
+            bdi.setCaseId(bdi.getCaseId().orElse(OpfabUtil.generateCaseId(eventMessageDto)));
+        }
+        assertTrue(bdi.getCaseId().isEmpty());
     }
 
     @Test
