@@ -104,6 +104,7 @@ letsco:
       WORST_CASE: REJ
       BEST_CASE: CON
       MAJORITY: MIX
+  enable-case-id-auto-generation: true
 
 opfab:
   publisher: letsco_opensource
