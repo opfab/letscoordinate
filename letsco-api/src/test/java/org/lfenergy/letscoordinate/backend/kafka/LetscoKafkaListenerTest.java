@@ -45,6 +45,7 @@ import org.lfenergy.letscoordinate.backend.util.OpfabUtil;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -108,7 +109,7 @@ public class LetscoKafkaListenerTest {
                                 .businessDataIdentifier(BusinessDataIdentifierDto.builder()
                                         .businessApplication("businessApplication")
                                         .messageTypeName("messageTypeName")
-                                        .businessDayFrom(Instant.now())
+                                        .businessDayFrom(Instant.parse("2021-08-05T10:00:00Z"))
                                         .build()).build()).build()).build();
     }
 
@@ -124,8 +125,64 @@ public class LetscoKafkaListenerTest {
     }
 
     @Test
-    public void verifyData() {
+    public void verifyData_businessDayToNull() {
+        BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        bdi.setBusinessDayTo(null);
         letscoKafkaListener.verifyData(eventMessageDto);
+        assertEquals(Instant.parse("2021-08-06T09:59:59Z"), bdi.getBusinessDayTo());
+    }
+
+    @Test
+    public void verifyData_businessDayToNotNull() {
+        BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        bdi.setBusinessDayTo(Instant.parse("2021-08-06T10:00:00Z"));
+        letscoKafkaListener.verifyData(eventMessageDto);
+        assertEquals(Instant.parse("2021-08-06T09:59:59Z"), bdi.getBusinessDayTo());
+    }
+
+    @Test
+    public void verifyData_CaseIdPresentAndAutoGenerationEnabled() {
+        letscoProperties.setEnableCaseIdAutoGeneration(true);
+        BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        bdi.setCaseId("caseId");
+        letscoKafkaListener.verifyData(eventMessageDto);
+        assertAll(
+                () -> assertTrue(bdi.getCaseId().isPresent()),
+                () -> assertEquals("caseId", bdi.getCaseId().get())
+        );
+    }
+
+    @Test
+    public void verifyData_CaseIdPresentAndAutoGenerationDisabled() {
+        letscoProperties.setEnableCaseIdAutoGeneration(false);
+        BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        bdi.setCaseId("caseId");
+        letscoKafkaListener.verifyData(eventMessageDto);
+        assertAll(
+                () -> assertTrue(bdi.getCaseId().isPresent()),
+                () -> assertEquals("caseId", bdi.getCaseId().get())
+        );
+    }
+
+    @Test
+    public void verifyData_CaseIdNotPresentAndAutoGenerationEnabled() {
+        letscoProperties.setEnableCaseIdAutoGeneration(true);
+        BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        bdi.setCaseId(null);
+        letscoKafkaListener.verifyData(eventMessageDto);
+        assertAll(
+                () -> assertTrue(bdi.getCaseId().isPresent()),
+                () -> assertEquals("source_businessApplication_messageTypeName_2021-08-05T10:00:00Z_2021-08-06T09:59:59Z", bdi.getCaseId().get())
+        );
+    }
+
+    @Test
+    public void verifyData_CaseIdNotPresentAndAutoGenerationDisabled() {
+        letscoProperties.setEnableCaseIdAutoGeneration(false);
+        BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
+        bdi.setCaseId(null);
+        letscoKafkaListener.verifyData(eventMessageDto);
+        assertTrue(bdi.getCaseId().isEmpty());
     }
 
     @Test

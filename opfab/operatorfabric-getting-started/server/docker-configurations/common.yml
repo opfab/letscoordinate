@@ -37,4 +37,4 @@ operatorfabric:
       expire-claim: exp
   businessLogActivated: true
   servicesUrls:
-    users: "http://172.22.0.1:2103"
+    users: "http://172.30.0.1:2103"

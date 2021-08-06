@@ -170,7 +170,7 @@ public class LetscoKafkaListener {
         bdi.setBusinessDayTo(bdi.getBusinessDayTo() == null ?
                 bdi.getBusinessDayFrom().plus(Duration.ofHours(24)).minus(Duration.ofSeconds(1)) :
                 bdi.getBusinessDayTo().minus(Duration.ofSeconds(1)));
-        bdi.setCaseId(bdi.getCaseId().orElse(OpfabUtil.generateCaseId(eventMessageDto)));
+        bdi.setCaseId(bdi.getCaseId().orElse(letscoProperties.isEnableCaseIdAutoGeneration() ? OpfabUtil.generateCaseId(eventMessageDto) : null));
     }
 
     void ignoreMessageTypeNameIfNeeded(String messageTypeName) {
