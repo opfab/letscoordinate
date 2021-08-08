@@ -155,9 +155,13 @@ public class OpfabPublisherComponent {
         }
         card.setTags(tags);
         setOpfabCardProcess(card, eventMessageDto);
-        card.setProcessInstanceId(bdi.getCaseId().orElse(processKey + "_" + id));
+        card.setProcessInstanceId(generateProcessInstanceId(bdi.getCaseId(), processKey, id));
         card.setPublisher(opfabConfig.getPublisher());
         card.setProcessVersion("1");
+    }
+
+    private String generateProcessInstanceId (Optional<String> caseId, String processKey, Long eventMessageId) {
+        return caseId.orElse(processKey + "_" + eventMessageId);
     }
 
     void setOpfabCardProcess(Card card, EventMessageDto eventMessageDto) {
@@ -634,7 +638,7 @@ public class OpfabPublisherComponent {
         card.setPublisherType(PublisherTypeEnum.EXTERNAL);
         card.setTags(createCoordinationCardTags(eventMessage, coordination.getProcessKey()));
         card.setProcess(coordination.getProcessKey());
-        card.setProcessInstanceId(eventMessage.getCaseId());
+        card.setProcessInstanceId(generateProcessInstanceId(Optional.ofNullable(eventMessage.getCaseId()), coordination.getProcessKey(), eventMessage.getId()));
         card.setPublisher(opfabConfig.getPublisher());
         card.setProcessVersion("1");
         card.setSeverity(OpfabUtil.isAgreementFound(coordination, concernedEntitiesMap.get(ENTITIES_REQUIRED_TO_RESPOND))

@@ -30,6 +30,7 @@ public class LetscoProperties {
     private InputFile inputFile;
     private Security security;
     private Coordination coordination;
+    private boolean enableCaseIdAutoGeneration = true;
 
     @Getter
     @Setter
