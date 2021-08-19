@@ -14,12 +14,14 @@ package org.lfenergy.letscoordinate.backend.config;
 import lombok.*;
 import org.lfenergy.letscoordinate.backend.enums.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 import java.time.ZoneId;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
+@Configuration
 @ConfigurationProperties(prefix = "letsco")
 @Getter
 @Setter
@@ -115,6 +117,7 @@ public class LetscoProperties {
     @Getter
     @Setter
     public static class Coordination {
+        private Lttd lttd;
         private CoordinationStatusStrategyEnum coordinationStatusCalculationStrategy;
         private Map<CoordinationStatusStrategyEnum, CoordinationStatusCalculationRule> coordinationStatusCalculationRules;
         private boolean notAnsweredDefaultCase;
@@ -135,6 +138,18 @@ public class LetscoProperties {
             private CoordinationStatusEnum conConMix;
             private CoordinationStatusEnum conRejMix;
             private CoordinationStatusEnum conConNot;
+        }
+
+        @Getter
+        @Setter
+        @Builder
+        @AllArgsConstructor
+        @NoArgsConstructor
+        public static class Lttd {
+            private Long schedulerFixedDelay = 5000L;
+            private boolean applyDefaultLttdIfNoSpecificLttdFound = false;
+            private LttdEnum defaultLttd = LttdEnum.AT_8_PM;
+            private Map<String, LttdEnum> specificLttd = new HashMap<>();
         }
 
         public CoordinationStatusCalculationRule getCoordinationStatusCalculationRule() {

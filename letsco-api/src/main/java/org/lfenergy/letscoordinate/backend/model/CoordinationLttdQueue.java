@@ -13,44 +13,34 @@ package org.lfenergy.letscoordinate.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
-import org.lfenergy.letscoordinate.backend.enums.CoordinationEntityRaResponseEnum;
 
 import javax.persistence.*;
+import java.time.Instant;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
-@Table(name = "coordination_ra_answer", catalog = "letsco")
+@Table(name = "coordination_lttd_queue", catalog = "letsco")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Builder
-@ToString(exclude = {"coordinationRa"})
+@ToString(exclude = {"coordination"})
 @EqualsAndHashCode
-public class CoordinationRaAnswer implements java.io.Serializable {
+public class CoordinationLttdQueue implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_coordination_ra", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_coordination", nullable = false)
     @JsonBackReference
-    private CoordinationRa coordinationRa;
+    private Coordination coordination;
 
-    @Column(name = "eic_code", nullable = false, length = 20)
-    private String eicCode;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "answer", nullable = false)
-    private CoordinationEntityRaResponseEnum answer;
-
-    @Column(name = "explanation", length = 500)
-    private String explanation;
-
-    @Column(name = "comment", length = 500)
-    private String comment;
+    @Column(name = "lttd", nullable = false)
+    private Instant lttd;
 
 }

@@ -9,8 +9,14 @@
  * This file is part of the Let’s Coordinate project.
  */
 
-package org.lfenergy.letscoordinate.backend.enums;
+package org.lfenergy.letscoordinate.backend.repository;
 
-public enum CoordinationAnswerEnum {
-    OK, NOK;
+import org.lfenergy.letscoordinate.backend.model.CoordinationLttdQueue;
+import org.springframework.data.repository.CrudRepository;
+
+import java.time.Instant;
+import java.util.List;
+
+public interface CoordinationLttdQueueRepository extends CrudRepository<CoordinationLttdQueue, Long> {
+    List<CoordinationLttdQueue> findByLttdLessThan(Instant lttd);
 }

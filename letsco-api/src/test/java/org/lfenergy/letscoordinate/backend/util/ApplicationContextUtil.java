@@ -15,6 +15,7 @@ import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
 import org.lfenergy.letscoordinate.backend.enums.CoordinationStatusEnum;
 import org.lfenergy.letscoordinate.backend.enums.CoordinationStatusStrategyEnum;
+import org.lfenergy.letscoordinate.backend.enums.LttdEnum;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -45,6 +46,7 @@ public class ApplicationContextUtil {
         letscoProperties.setInputFile(inputFile);
 
         LetscoProperties.Coordination coordination = new LetscoProperties.Coordination();
+        coordination.setLttd(new LetscoProperties.Coordination.Lttd());
         coordination.setCoordinationStatusCalculationStrategy(MAJORITY);
         Map<CoordinationStatusStrategyEnum, LetscoProperties.Coordination.CoordinationStatusCalculationRule> coordinationStatusCalculationRules = new HashMap<>();
         coordinationStatusCalculationRules.put(WORST_CASE,

@@ -14,17 +14,14 @@ package org.lfenergy.letscoordinate.backend.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.vavr.control.Validation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.lfenergy.letscoordinate.backend.component.OpfabPublisherComponent;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
 import org.lfenergy.letscoordinate.backend.dto.KafkaFileWrapperDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageWrapperDto;
-import org.lfenergy.letscoordinate.backend.model.Coordination;
 import org.lfenergy.letscoordinate.backend.service.CoordinationService;
 import org.lfenergy.letscoordinate.backend.service.InputFileToPojoService;
-import org.opfab.cards.model.Card;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -118,26 +115,6 @@ public class EventMessageController {
                 invalid -> ResponseEntity.status(invalid.getStatus()).body(invalid),
                 valid -> ResponseEntity.ok().build()
         );
-    }
-
-    @PostMapping("/coordination")
-    @ApiOperation(value = "Coordination callback", hidden = true)
-    public ResponseEntity coordinationCallback(@RequestBody Card card) throws IOException {
-        log.info("Callback card received:\n" + card.toString());
-        Validation<Boolean, Coordination> validation = coordinationService.saveAnswersAndCheckIfAllTsosHaveAnswered(card);
-        if (validation.isValid()) {
-            log.info("All required entities have been answered! => Publishing result card...");
-            Card resultCard = opfabPublisherComponent.publishOpfabCoordinationResultCard(validation.get());
-            log.info("Generating output file...");
-            boolean outputFileGenerated = coordinationService.generateOutputFile(validation.get());
-            log.info("Output file generated!");
-            if (outputFileGenerated) {
-                coordinationService.sendCoordinationFileCard(resultCard, OUTPUT);
-            }
-        } else {
-            log.info("Some entities did not respond yet!");
-        }
-        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/eventmessages/{id}/files/input")
