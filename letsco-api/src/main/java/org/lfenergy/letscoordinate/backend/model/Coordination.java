@@ -14,12 +14,10 @@ package org.lfenergy.letscoordinate.backend.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
-import org.lfenergy.letscoordinate.backend.enums.CoordinationStatusEnum;
+import org.lfenergy.letscoordinate.backend.enums.CoordinationProcessStatusEnum;
 
 import javax.persistence.*;
-
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +57,10 @@ public class Coordination implements java.io.Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)
-    private CoordinationStatusEnum status;
+    private CoordinationProcessStatusEnum status;
+
+    @Column(name = "lttd")
+    private Instant lttd;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "coordination", cascade = CascadeType.ALL)
     @JsonManagedReference

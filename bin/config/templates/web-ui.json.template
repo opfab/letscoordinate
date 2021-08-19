@@ -98,7 +98,8 @@
         "display": "PUBLICATION"
       },
       "hideAckFilter": false,
-      "hideAckAllCardsFeature": false
+      "hideAckAllCardsFeature": false,
+      "secondsBeforeLttdForClockDisplay": 1209600
     },
     "notify": false,
     "subscription": {

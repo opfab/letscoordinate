@@ -1,5 +1,5 @@
-# Copyright (c) 2018-2020, RTE (https://www.rte-france.com)
-# Copyright (c) 2019-2020 RTE international (https://www.rte-international.com)
+# Copyright (c) 2018-2021, RTE (https://www.rte-france.com)
+# Copyright (c) 2019-2021 RTE international (https://www.rte-international.com)
 # See AUTHORS.txt
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,6 +21,7 @@ spring:
       hibernate:
         jdbc:
           time_zone: UTC
+        enable_lazy_load_no_trans: true
     hibernate:
       ddl-auto: none
     database-platform: org.hibernate.dialect.MariaDB103Dialect
@@ -52,6 +53,8 @@ logging:
 letsco:
   kafka:
     input-topic-pattern: 'letsco_eventmessage_input.*'
+    default-input-topic: 'letsco_eventmessage_input'
+    default-output-topic: 'letsco_eventmessage_output'
   timezone: "Europe/Paris"  # e.g: "Europe/London", "Europe/Paris", "Europe/Rome", "UTC", "UTC+1", "UTC-04:00", "GMT-5"
   input-file:
     dir: D:\_RTE_\tmp\input
@@ -63,6 +66,51 @@ letsco:
       - http://localhost:4200
       - http://letsco-front:4200
     clientId: opfab-client
+  coordination:
+    lttd:
+      scheduler-fixed-delay: 10000
+      apply-default-lttd-if-no-specific-lttd-found: false
+      default-lttd: AFTER_2_HOURS
+      specific-lttd:
+        servicea_coordinationa: AT_8_PM
+    coordination-status-calculation-strategy: MAJORITY
+    coordination-status-calculation-rules:
+      WORST_CASE:
+        con-con-con: CON
+        rej-rej-rej: REJ
+        not-not-not: REJ
+        mix-mix-mix: MIX
+        con-con-rej: REJ
+        con-rej-rej: REJ
+        con-con-mix: MIX
+        con-rej-mix: REJ
+        con-con-not: REJ
+      BEST_CASE:
+        con-con-con: CON
+        rej-rej-rej: REJ
+        not-not-not: CON
+        mix-mix-mix: MIX
+        con-con-rej: CON
+        con-rej-rej: CON
+        con-con-mix: CON
+        con-rej-mix: CON
+        con-con-not: CON
+      MAJORITY:
+        con-con-con: CON
+        rej-rej-rej: REJ
+        not-not-not: NOT
+        mix-mix-mix: MIX
+        con-con-rej: CON
+        con-rej-rej: REJ
+        con-con-mix: CON
+        con-rej-mix: MIX
+        con-con-not: CON
+    not-answered-default-case: true
+    not-answered-default-case-rules:
+      WORST_CASE: REJ
+      BEST_CASE: CON
+      MAJORITY: MIX
+  enable-case-id-auto-generation: true
 
 opfab:
   publisher: letsco_opensource
@@ -94,6 +142,9 @@ opfab:
     servicea_validation_fileb_error:
       title: " Service A File B - negative validation"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
+    servicea_coordinationa:
+      title: " Service A Coordination A"
+#      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
     # SERVICE B
     serviceb_processmonitoring_processsuccessful:
       title: " Service B process successful - {{processStep}}"
@@ -120,10 +171,7 @@ opfab:
       title: " Service B File B - negative validation"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
   entityRecipients:
-    sourceA_messageTypeNameA:
-      notAllowed: sendingUser
-      addRscs: true
-    sourceA_messageTypeNameB:
+    servicea_coordinationa:
       notAllowed: sendingUser
       addRscs: true
   processWithFilename: true

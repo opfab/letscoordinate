@@ -11,18 +11,14 @@
 
 package org.lfenergy.letscoordinate.backend.enums;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.opfab.cards.model.SeverityEnum;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+import java.util.Arrays;
 
-public enum CoordinationStatusEnum {
-    CON ("proposalConfirmed"),
-    REJ ("proposalRejected"),
-    MIX ("differentChoices"),
-    NOT ("noAnswerProvided");
+import static org.opfab.cards.model.SeverityEnum.*;
 
-    @Getter
-    private String bundleStateName;
+@Getter
+public enum LttdEnum {
+    AT_8_PM, AFTER_2_HOURS
 }

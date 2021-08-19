@@ -24,7 +24,7 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.PayloadDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationMessageDto;
 import org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum;
-import org.lfenergy.letscoordinate.backend.enums.OutputResultAnswerEnum;
+import org.lfenergy.letscoordinate.backend.enums.CoordinationStatusEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 import org.lfenergy.letscoordinate.backend.mapper.EventMessageMapper;
 import org.lfenergy.letscoordinate.backend.model.Coordination;
@@ -428,7 +428,7 @@ public class OpfabPublisherComponent {
     private void coordinationTreatment(Card card, EventMessageDto eventMessageDto, Long cardId) {
         BasicGenericNounEnum basicGenericNounEnum = BasicGenericNounEnum.getByNoun(eventMessageDto.getHeader().getNoun());
         if (basicGenericNounEnum == COORDINATION) {
-            Coordination coordination = coordinationService.initAndSaveCoordination(card, eventMessageDto, cardId);
+            Coordination coordination = coordinationService.initAndSaveCoordination(card, cardId);
             card.setSeverity(SeverityEnum.ACTION);
             card.setState("initial");
 
@@ -445,6 +445,8 @@ public class OpfabPublisherComponent {
             card.setSummary(new I18n().key("cardFeed.summary").parameters(summaryParams));
 
             card.setData(generateCoordinationCardData(coordination, cardId));
+
+            card.setLttd(coordination.getLttd());
 
             coordinationService.sendCoordinationFileCard(card, INPUT);
         }
@@ -631,7 +633,6 @@ public class OpfabPublisherComponent {
     public Card publishOpfabCoordinationResultCard(Coordination coordination) {
         EventMessage eventMessage = coordination.getEventMessage();
         Map<String, List<String>> concernedEntitiesMap = getConcernedEntitiesMap(eventMessage);
-        OutputResultAnswerEnum coordinationStatus = OpfabUtil.getCoordinationStatus(coordination, concernedEntitiesMap.get(ENTITIES_REQUIRED_TO_RESPOND));
 
         Card card = new Card();
         card.setKeepChildCards(false);
@@ -641,9 +642,8 @@ public class OpfabPublisherComponent {
         card.setProcessInstanceId(generateProcessInstanceId(Optional.ofNullable(eventMessage.getCaseId()), coordination.getProcessKey(), eventMessage.getId()));
         card.setPublisher(opfabConfig.getPublisher());
         card.setProcessVersion("1");
-        card.setSeverity(OpfabUtil.isAgreementFound(coordination, concernedEntitiesMap.get(ENTITIES_REQUIRED_TO_RESPOND))
-                ? SeverityEnum.COMPLIANT : SeverityEnum.ALARM);
-        card.setState(coordinationStatus.getBundleStateName());
+        card.setSeverity(eventMessage.getCoordinationStatus() == CoordinationStatusEnum.CON ? SeverityEnum.COMPLIANT : SeverityEnum.ALARM);
+        card.setState(eventMessage.getCoordinationStatus().getBundleStateName());
         card.setTimeSpans(Arrays.asList(new TimeSpan().start(eventMessage.getTimestamp())));
         card.setPublishDate(coordination.getPublishDate());
         card.setStartDate(coordination.getStartDate());
@@ -750,7 +750,7 @@ public class OpfabPublisherComponent {
         Map<String, List<String>> concernedEntitiesMap = getConcernedEntitiesMap(eventMessage);
         data.put("coordination", coordination);
         data.put("tsos", concernedEntitiesMap.get(ENTITIES_REQUIRED_TO_RESPOND));
-        data.put("agreementFound", OpfabUtil.isAgreementFound(coordination, concernedEntitiesMap.get(ENTITIES_REQUIRED_TO_RESPOND)));
+        data.put("agreementFound", eventMessage.getCoordinationStatus() == CoordinationStatusEnum.CON);
         return data;
     }
 

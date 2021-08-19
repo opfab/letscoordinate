@@ -16,15 +16,9 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.BusinessDataIdentifierDto;
-import org.lfenergy.letscoordinate.backend.enums.CoordinationAnswerEnum;
-import org.lfenergy.letscoordinate.backend.enums.OutputResultAnswerEnum;
 import org.lfenergy.letscoordinate.backend.model.Coordination;
 import org.lfenergy.letscoordinate.backend.model.CoordinationRa;
-import org.lfenergy.letscoordinate.backend.model.CoordinationRaAnswer;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.lfenergy.letscoordinate.backend.util.Constants.NBR_EVENTS_TO_DISPLAY_IN_CARD_SUMMARY;
@@ -42,34 +36,6 @@ public final class OpfabUtil {
                     .toString();
         } else {
             return source + "_" + messageTypeName;
-        }
-    }
-
-    public static boolean isAgreementFound(Coordination coordination, List<String> concernedEntities) {
-        return getCoordinationStatus(coordination, concernedEntities) == OutputResultAnswerEnum.CON;
-    }
-
-    public static OutputResultAnswerEnum getCoordinationStatus(Coordination coordination, List<String> concernedEntities) {
-        if (coordination == null || CollectionUtils.isEmpty(coordination.getCoordinationRas()) || CollectionUtils.isEmpty(concernedEntities))
-            return OutputResultAnswerEnum.NOT;
-        int answersRequiredSize = coordination.getCoordinationRas().size() * concernedEntities.size();
-        List<CoordinationRaAnswer> answers = coordination.getCoordinationRas().stream()
-                .map(CoordinationRa::getCoordinationRaAnswers)
-                .filter(CollectionUtils::isNotEmpty)
-                .flatMap(Collection::stream)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-        if (answers.size() == answersRequiredSize) {
-            if (answers.stream().allMatch(answer -> answer.getAnswer() == CoordinationAnswerEnum.OK))
-                return OutputResultAnswerEnum.CON;
-            else if (answers.stream().allMatch(answer -> answer.getAnswer() == CoordinationAnswerEnum.NOK))
-                return OutputResultAnswerEnum.REJ;
-            else
-                return OutputResultAnswerEnum.MIX;
-        } else if (answers.isEmpty()) {
-            return OutputResultAnswerEnum.NOT;
-        } else {
-            return OutputResultAnswerEnum.MIX;
         }
     }
 
