@@ -74,6 +74,11 @@ public class BusinessDataIdentifierDto {
         return Optional.ofNullable(recipients);
     }
 
+    @JsonProperty("recipients")
+    public List<String> getRecipientsSimple() {
+        return recipients;
+    }
+
     public Optional<String> getTimeframe() {
         return Optional.ofNullable(timeframe);
     }

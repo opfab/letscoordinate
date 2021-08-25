@@ -40,6 +40,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opfab.cards.model.Card;
 import org.opfab.cards.model.SeverityEnum;
 import org.opfab.cards.model.TimeSpan;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -66,7 +68,10 @@ public class OpfabPublisherComponentTest {
     private OpfabPublisherComponent opfabPublisherComponent;
     private EventMessageDto eventMessageDto;
     private LetscoProperties letscoProperties;
+    @Mock
     private CoordinationService coordinationService;
+    @Mock
+    private RestTemplate restTemplateForOpfab;
 
     String process;
     String source = "source";
@@ -82,7 +87,6 @@ public class OpfabPublisherComponentTest {
 
         opfabConfig = new OpfabConfig();
         letscoProperties = new LetscoProperties();
-        coordinationService = Mockito.mock(CoordinationService.class);
 
         CoordinationConfig coordinationConfig = new CoordinationConfig();
         coordinationConfig.setTsos(Map.of(
@@ -113,7 +117,7 @@ public class OpfabPublisherComponentTest {
                 .payload(PayloadDto.builder().build()).build();
 
 
-        opfabPublisherComponent = new OpfabPublisherComponent(opfabConfig, coordinationConfig, letscoProperties, coordinationService);
+        opfabPublisherComponent = new OpfabPublisherComponent(opfabConfig, coordinationConfig, letscoProperties, coordinationService, restTemplateForOpfab);
         process = OpfabUtil.generateProcessKey(eventMessageDto, true);
         opfabPublisherComponent.setProcessKey(process);
     }

@@ -35,15 +35,17 @@ import org.lfenergy.letscoordinate.backend.model.EventMessageFile;
 import org.lfenergy.letscoordinate.backend.processor.ExcelDataProcessor;
 import org.lfenergy.letscoordinate.backend.processor.JsonDataProcessor;
 import org.lfenergy.letscoordinate.backend.repository.EventMessageRepository;
-import org.lfenergy.letscoordinate.backend.util.HttpUtil;
 import org.lfenergy.letscoordinate.backend.util.OpfabUtil;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.ByteArrayInputStream;
 import java.time.Duration;
@@ -71,6 +73,7 @@ public class LetscoKafkaListener {
     private final LetscoProperties letscoProperties;
     private final OpfabConfig opfabConfig;
     private final ObjectMapper objectMapper;
+    private final RestTemplate restTemplate;
 
     @KafkaListener(topicPattern = "#{@kafkaInputTopicPattern}")
     @Transactional
@@ -122,7 +125,7 @@ public class LetscoKafkaListener {
             String noun = eventMessageDto.getHeader().getNoun();
             EventMessage eventMessage = isGenericNoun(noun)
                     ? EventMessageMapper.fromDto(eventMessageDto)
-                    : EventMessageMapper.headerFromDto(eventMessageDto);
+                    : EventMessageMapper.fromDtoForThirdApps(eventMessageDto);
             eventMessage.setEventMessageFiles(Arrays.asList(
                     EventMessageFile.builder()
                             .fileName(kafkaFileWrapperDto.getFileName())
@@ -139,12 +142,13 @@ public class LetscoKafkaListener {
 
             if (!isGenericNoun(noun)) {
                 String url = String.format("%s/api/json", thirdAppUrl);
-                HttpUtil.post(url, ThirdAppDataWrapperDto.builder()
+                ThirdAppDataWrapperDto thirdAppDataWrapperDto = ThirdAppDataWrapperDto.builder()
                         .id(eventMessage.getId())
                         .data(EventMessageWrapperDto.builder()
                                 .eventMessage(eventMessageDto)
                                 .build())
-                        .build());
+                        .build();
+                restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(thirdAppDataWrapperDto), Object.class);
                 return;
             }
 
