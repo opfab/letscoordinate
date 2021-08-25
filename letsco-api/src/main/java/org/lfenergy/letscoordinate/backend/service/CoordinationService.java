@@ -33,11 +33,13 @@ import org.lfenergy.letscoordinate.backend.model.*;
 import org.lfenergy.letscoordinate.backend.processor.ExcelDataProcessor;
 import org.lfenergy.letscoordinate.backend.repository.*;
 import org.lfenergy.letscoordinate.backend.util.Constants;
-import org.lfenergy.letscoordinate.backend.util.HttpUtil;
 import org.opfab.cards.model.Card;
 import org.opfab.cards.model.PublisherTypeEnum;
 import org.opfab.cards.model.SeverityEnum;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -66,6 +68,7 @@ public class CoordinationService {
     private final LetscoKafkaProducer letscoKafkaProducer;
     private final ExcelDataProcessor excelDataProcessor;
     private final LetscoProperties letscoProperties;
+    private final RestTemplate restTemplateForOpfab;
 
     public Validation<Boolean, Coordination> saveAnswersAndCheckIfAllTsosHaveAnswered(Card card) {
         saveAnswers(card);
@@ -465,7 +468,7 @@ public class CoordinationService {
             data.put("isInputFile", fileDirectionEnum == FileDirectionEnum.INPUT);
             card.setData(data);
             log.debug("Opfab {} file notification generated", fileDirectionEnum);
-            HttpUtil.post(opfabConfig.getUrl().getCardsPub(), card);
+            restTemplateForOpfab.exchange(opfabConfig.getUrl().getCardsPub(), HttpMethod.POST, new HttpEntity<>(card), Object.class);
         } catch (Exception e) {
             log.error("Unable to send coordination file notification!", e);
         }

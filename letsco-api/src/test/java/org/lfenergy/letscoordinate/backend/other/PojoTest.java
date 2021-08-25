@@ -274,12 +274,12 @@ public class PojoTest {
 
     @Test
     public void kpiDataSubtypeEnum_BP() {
-        assertEquals(KpiDataTypeEnum.BP, KpiDataSubtypeEnum.BP1.getKpiDataType());
+        assertEquals(KpiDataTypeEnum.BP, KpiDataSubtypeEnum.BP01.getKpiDataType());
     }
 
     @Test
     public void kpiDataSubtypeEnum_GP() {
-        assertEquals(KpiDataTypeEnum.GP, KpiDataSubtypeEnum.GP1.getKpiDataType());
+        assertEquals(KpiDataTypeEnum.GP, KpiDataSubtypeEnum.GP01.getKpiDataType());
     }
 
     @Test

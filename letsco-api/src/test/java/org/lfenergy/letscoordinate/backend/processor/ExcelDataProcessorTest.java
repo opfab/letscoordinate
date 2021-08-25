@@ -31,19 +31,21 @@ import org.lfenergy.letscoordinate.backend.dto.reporting.RscKpiReportDataDto;
 import org.lfenergy.letscoordinate.backend.dto.reporting.RscKpiReportSubmittedFormDataDto;
 import org.lfenergy.letscoordinate.backend.enums.DataGranularityEnum;
 import org.lfenergy.letscoordinate.backend.enums.ExcelBlocEnum;
+import org.lfenergy.letscoordinate.backend.enums.FileTypeEnum;
 import org.lfenergy.letscoordinate.backend.enums.KpiDataTypeEnum;
 import org.lfenergy.letscoordinate.backend.exception.InvalidInputFileException;
+import org.lfenergy.letscoordinate.backend.model.EventMessage;
+import org.lfenergy.letscoordinate.backend.model.EventMessageCoordinationComment;
 import org.lfenergy.letscoordinate.backend.service.EventMessageService;
 import org.lfenergy.letscoordinate.backend.util.ApplicationContextUtil;
 import org.lfenergy.letscoordinate.backend.util.Constants;
+import org.lfenergy.letscoordinate.backend.util.CoordinationFactory;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -457,6 +459,20 @@ public class ExcelDataProcessorTest {
                 .build());
         Optional<RscKpiDto.DataDto.DetailsDto> details = excelDataProcessor.getDataDetailsByEicCode("eicCodeTest", KpiDataTypeEnum.GP, dataDtoList);
         assertTrue(details.isEmpty());
+    }
+
+    @Test
+    void generateEventMessageOutputFile() throws IOException {
+        File file = new File("src/test/resources/validCoordinationA.xlsx");
+        byte[] inputFile = Files.readAllBytes(file.toPath());
+
+        EventMessage eventMessage = CoordinationFactory.initEventMessage(1L, FileTypeEnum.EXCEL, true);
+
+        byte[] outputFile = excelDataProcessor.generateEventMessageOutputFile(inputFile, eventMessage);
+        assertAll(
+                () -> assertNotNull(outputFile),
+                () -> assertNotEquals(0, outputFile.length)
+        );
     }
 
 }

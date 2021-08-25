@@ -11,7 +11,6 @@
 
 package org.lfenergy.letscoordinate.backend.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.control.Validation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

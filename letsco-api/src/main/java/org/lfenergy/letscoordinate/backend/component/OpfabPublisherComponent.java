@@ -32,10 +32,16 @@ import org.lfenergy.letscoordinate.backend.model.EventMessage;
 import org.lfenergy.letscoordinate.backend.model.EventMessageRecipient;
 import org.lfenergy.letscoordinate.backend.model.opfab.ValidationData;
 import org.lfenergy.letscoordinate.backend.service.CoordinationService;
-import org.lfenergy.letscoordinate.backend.util.*;
+import org.lfenergy.letscoordinate.backend.util.DateUtil;
+import org.lfenergy.letscoordinate.backend.util.JacksonUtil;
+import org.lfenergy.letscoordinate.backend.util.OpfabUtil;
+import org.lfenergy.letscoordinate.backend.util.StringUtil;
 import org.opfab.cards.model.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -63,16 +69,19 @@ public class OpfabPublisherComponent {
     private Map<String, CoordinationConfig.Rsc> rscs;
     private LetscoProperties letscoProperties;
     private CoordinationService coordinationService;
+    private RestTemplate restTemplateForOpfab;
 
     public OpfabPublisherComponent(OpfabConfig opfabConfig,
                                    CoordinationConfig coordinationConfig,
                                    LetscoProperties letscoProperties,
-                                   CoordinationService coordinationService) {
+                                   CoordinationService coordinationService,
+                                   RestTemplate restTemplateForOpfab) {
         this.opfabConfig = opfabConfig;
         this.tsos = coordinationConfig.getTsos();
         this.rscs = coordinationConfig.getRscs();
         this.letscoProperties = letscoProperties;
         this.coordinationService = coordinationService;
+        this.restTemplateForOpfab = restTemplateForOpfab;
     }
 
     void setProcessKey(String processKey) {
@@ -85,7 +94,7 @@ public class OpfabPublisherComponent {
         cards.forEach(c -> {
             c.setKeepChildCards(false);
             c.setPublisherType(PublisherTypeEnum.EXTERNAL);
-            HttpUtil.post(opfabConfig.getUrl().getCardsPub(), c);
+            restTemplateForOpfab.exchange(opfabConfig.getUrl().getCardsPub(), HttpMethod.POST, new HttpEntity<>(c), Object.class);
         });
     }
 
@@ -666,7 +675,7 @@ public class OpfabPublisherComponent {
         card.setData(generateCoordinationCardData(coordination, coordination.getEventMessage().getId()));
 
         log.info("Result card:\n{}", card.toString());
-        HttpUtil.post(opfabConfig.getUrl().getCardsPub(), card);
+        restTemplateForOpfab.exchange(opfabConfig.getUrl().getCardsPub(), HttpMethod.POST, new HttpEntity<>(card), Object.class);
 
         return card;
     }

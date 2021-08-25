@@ -140,16 +140,16 @@ public class ApplicationContextUtil {
 
         Map<String, Map<String, CoordinationConfig.KpiDataSubtype>> kpiDataSubtypes = new HashMap<>();
         kpiDataSubtypes.put("SERVICE_A", Stream.of(
-                CoordinationConfig.KpiDataSubtype.builder().code("GP1").name("Global Perf 1").graphType("bar").build(),
-                CoordinationConfig.KpiDataSubtype.builder().code("GP2").name("Global Perf 2").graphType("line").build(),
-                CoordinationConfig.KpiDataSubtype.builder().code("BP1").name("Business Process 1").graphType("bar").build(),
-                CoordinationConfig.KpiDataSubtype.builder().code("BP2").name("Business Process 2").graphType("line").build(),
-                CoordinationConfig.KpiDataSubtype.builder().code("BP3").name("Business Process 3").graphType("bar").build()
+                CoordinationConfig.KpiDataSubtype.builder().code("GP01").name("Global Perf 1").graphType("bar").build(),
+                CoordinationConfig.KpiDataSubtype.builder().code("GP02").name("Global Perf 2").graphType("line").build(),
+                CoordinationConfig.KpiDataSubtype.builder().code("BP01").name("Business Process 1").graphType("bar").build(),
+                CoordinationConfig.KpiDataSubtype.builder().code("BP02").name("Business Process 2").graphType("line").build(),
+                CoordinationConfig.KpiDataSubtype.builder().code("BP03").name("Business Process 3").graphType("bar").build()
         ).collect(Collectors.toMap(CoordinationConfig.KpiDataSubtype::getCode, Function.identity())));
         kpiDataSubtypes.put("SERVICE_B", Stream.of(
-                CoordinationConfig.KpiDataSubtype.builder().code("GP1").name("Global Perf 1").graphType("bar").build(),
-                CoordinationConfig.KpiDataSubtype.builder().code("GP2").name("Global Perf 2").graphType("bar").build(),
-                CoordinationConfig.KpiDataSubtype.builder().code("GP3").name("Global Perf 3").graphType("line").build()
+                CoordinationConfig.KpiDataSubtype.builder().code("GP01").name("Global Perf 1").graphType("bar").build(),
+                CoordinationConfig.KpiDataSubtype.builder().code("GP02").name("Global Perf 2").graphType("bar").build(),
+                CoordinationConfig.KpiDataSubtype.builder().code("GP03").name("Global Perf 3").graphType("line").build()
         ).collect(Collectors.toMap(CoordinationConfig.KpiDataSubtype::getCode, Function.identity())));
         coordinationConfig.setKpiDataSubtypes(kpiDataSubtypes);
 

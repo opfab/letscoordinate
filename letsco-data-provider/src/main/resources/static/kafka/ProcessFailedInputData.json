@@ -34,7 +34,7 @@
       ],
       "rscKpi": [
         {
-          "name": "gp2",
+          "name": "gp02",
           "data": [
             {
               "timestamp": "${timestamp}",

@@ -88,7 +88,7 @@ export class RscKpiDataAdapter implements Adapter<RscKpiData>{
                 key,
                 "",
                 chartOptions,
-                extraParams[2], // kpiGraphId (e.g: BP1-graph0, GP1-graph1, ...)
+                extraParams[2], // kpiGraphId (e.g: BP01-graph0, GP01-graph1, ...)
                 rscKpiTemporalData
             );
         } else { // CASE: YEARLY GRANULARITY
@@ -153,7 +153,7 @@ export class RscKpiDataAdapter implements Adapter<RscKpiData>{
                 key,
                 "",
                 chartOptions,
-                extraParams[2], // kpiGraphId (e.g: BP1-graph0, GP1-graph1, ...)
+                extraParams[2], // kpiGraphId (e.g: BP01-graph0, GP01-graph1, ...)
                 null
             );
         }

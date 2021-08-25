@@ -39,6 +39,7 @@ import org.lfenergy.letscoordinate.backend.util.CoordinationFactory;
 import org.opfab.cards.model.Card;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -72,6 +73,8 @@ public class CoordinationServiceTest {
     LetscoKafkaProducer letscoKafkaProducer;
     @MockBean
     OpfabPublisherComponent opfabPublisherComponent;
+    @MockBean
+    RestTemplate restTemplate;
 
     @BeforeEach
     public void before() {
@@ -98,7 +101,8 @@ public class CoordinationServiceTest {
                 ApplicationContextUtil.initCoordinationConfig(),
                 letscoKafkaProducer,
                 excelDataProcessor,
-                letscoProperties
+                letscoProperties,
+                restTemplate
         );
     }
 

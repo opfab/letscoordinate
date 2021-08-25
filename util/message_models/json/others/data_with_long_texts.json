@@ -44,7 +44,7 @@
       ],
       "rscKpi": [
         {
-          "name": "GP1",
+          "name": "gp01",
           "data": [
             {
               "timestamp": "2020-03-18T01:00:00Z",

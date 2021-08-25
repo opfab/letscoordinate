@@ -34,6 +34,8 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.lfenergy.letscoordinate.backend.enums.CoordinationEntityGlobalResponseEnum.CON;
+import static org.lfenergy.letscoordinate.backend.enums.CoordinationEntityGlobalResponseEnum.REJ;
 import static org.lfenergy.letscoordinate.backend.util.Constants.*;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -85,6 +87,10 @@ public final class CoordinationFactory {
     }
 
     public static EventMessage initEventMessage(Long id, FileTypeEnum fileTypeEnum) {
+        return initEventMessage(id, fileTypeEnum, false);
+    }
+
+    public static EventMessage initEventMessage(Long id, FileTypeEnum fileTypeEnum, boolean withCoordinationAnswers) {
         return EventMessage.builder()
                 .id(id)
                 .source("Service A")
@@ -102,6 +108,9 @@ public final class CoordinationFactory {
                                 .eicCode("10X1001A1001A345")
                                 .build()
                 ))
+                .eventMessageCoordinationComments(withCoordinationAnswers ?
+                        Arrays.asList(EventMessageCoordinationComment.builder().eicCode("22XCORESO------S").generalComment("No comment").build())
+                        : null)
                 .timeseries(Arrays.asList(
                         Timeserie.builder()
                                 .id(2L)
@@ -114,7 +123,18 @@ public final class CoordinationFactory {
                                                         TimeserieDataDetails.builder().label(EVENT_KEY).value("Event A").build(),
                                                         TimeserieDataDetails.builder().label(CONSTRAINT_KEY).value("Constraint A").build(),
                                                         TimeserieDataDetails.builder().label(REMEDIAL_ACTIONS_KEY).value("RemedialActions A")
-                                                                .timeserieDataDetailsResults(new ArrayList<>()).build()
+                                                                .timeserieDataDetailsResults(withCoordinationAnswers
+                                                                        ? Arrays.asList(
+                                                                                TimeserieDataDetailsResult.builder()
+                                                                                        .eicCode("10XFR-RTE------Q")
+                                                                                        .answer(CON)
+                                                                                        .build(),
+                                                                                TimeserieDataDetailsResult.builder()
+                                                                                        .eicCode("10X1001A1001A345")
+                                                                                        .answer(CON)
+                                                                                        .build())
+                                                                        : new ArrayList<>()
+                                                                ).build()
                                                 ))
                                                 .build(),
                                         TimeserieData.builder()
@@ -124,7 +144,20 @@ public final class CoordinationFactory {
                                                         TimeserieDataDetails.builder().label(EVENT_KEY).value("Event B").build(),
                                                         TimeserieDataDetails.builder().label(CONSTRAINT_KEY).value("Constraint B").build(),
                                                         TimeserieDataDetails.builder().label(REMEDIAL_ACTIONS_KEY).value("RemedialActions B")
-                                                                .timeserieDataDetailsResults(new ArrayList<>()).build()
+                                                                .timeserieDataDetailsResults(withCoordinationAnswers
+                                                                        ? Arrays.asList(
+                                                                                TimeserieDataDetailsResult.builder()
+                                                                                        .eicCode("10XFR-RTE------Q")
+                                                                                        .answer(CON)
+                                                                                        .build(),
+                                                                                TimeserieDataDetailsResult.builder()
+                                                                                        .eicCode("10X1001A1001A345")
+                                                                                        .answer(REJ)
+                                                                                        .explanation("Explanation 1")
+                                                                                        .comment("Not OK!")
+                                                                                        .build())
+                                                                        : new ArrayList<>()
+                                                                ).build()
                                                 ))
                                                 .build()))
                                 .build()
