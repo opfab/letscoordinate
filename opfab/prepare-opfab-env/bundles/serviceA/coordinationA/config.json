@@ -37,27 +37,27 @@
 
     "answerProposalConfirmed": {
       "name": "coordination.logging.answerProposalConfirmed.name",
-      "color": "green",
       "description": "coordination.logging.answerProposalConfirmed.description",
+      "color": "green",
       "type" : "INPROGRESS"
     },
     "answerProposalRejected": {
       "name": "coordination.logging.answerProposalRejected.name",
-      "color": "red",
       "description": "coordination.logging.answerProposalRejected.description",
+      "color": "red",
       "type" : "INPROGRESS"
     },
     "answerDifferentChoices": {
       "name": "coordination.logging.answerDifferentChoices.name",
-      "color": "orange",
       "description": "coordination.logging.answerDifferentChoices.description",
+      "color": "orange",
       "type" : "INPROGRESS"
     },
 
     "proposalConfirmed": {
       "name": "coordination.logging.proposalConfirmed.name",
-      "color": "green",
       "description": "coordination.logging.proposalConfirmed.description",
+      "color": "green",
       "detailTitle": {
         "key": "coordination.cardDetails.title"
       },
@@ -70,8 +70,8 @@
     },
     "proposalRejected": {
       "name": "coordination.logging.proposalRejected.name",
-      "color": "red",
       "description": "coordination.logging.proposalRejected.description",
+      "color": "red",
       "detailTitle": {
         "key": "coordination.cardDetails.title"
       },
@@ -97,8 +97,8 @@
     },
     "differentChoices": {
       "name": "coordination.logging.differentChoices.name",
-      "color": "orange",
       "description": "coordination.logging.differentChoices.description",
+      "color": "orange",
       "detailTitle": {
         "key": "coordination.cardDetails.title"
       },

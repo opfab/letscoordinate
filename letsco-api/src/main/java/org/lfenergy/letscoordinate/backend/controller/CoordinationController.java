@@ -48,9 +48,13 @@ public class CoordinationController {
         log.info("Callback card received:\n" + card.toString());
         Validation<Boolean, Coordination> validation = coordinationService.saveAnswersAndCheckIfAllTsosHaveAnswered(card);
         if (validation.isValid()) {
-            log.info("All required entities have been answered! => Publishing result card... (coordinationId = {})", validation.get().getId());
-            publishResultAndOutputFileCards(validation.get());
-            log.info("Result card published with success! => (coordinationId = {})", validation.get().getId());
+            if (validation.get().getLttd() == null) {
+                log.info("All required entities have been answered! => Publishing result card... (coordinationId = {})", validation.get().getId());
+                publishResultAndOutputFileCards(validation.get());
+                log.info("Result card published with success! => (coordinationId = {})", validation.get().getId());
+            } else {
+                log.info("All entities have answered, but result card will be sent at LTTD = {} !", validation.get().getLttd().toString());
+            }
         } else {
             log.info("Some entities did not respond yet!");
         }

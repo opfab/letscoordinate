@@ -20,3 +20,4 @@ import java.util.List;
 public interface CoordinationLttdQueueRepository extends CrudRepository<CoordinationLttdQueue, Long> {
     List<CoordinationLttdQueue> findByLttdLessThan(Instant lttd);
 }
+
