@@ -68,7 +68,7 @@ letsco:
     clientId: opfab-client
   coordination:
     lttd:
-      scheduler-fixed-delay: 10000
+      scheduler-fixed-delay: 3000
       apply-default-lttd-if-no-specific-lttd-found: false
       default-lttd: AFTER_2_HOURS
       specific-lttd:
