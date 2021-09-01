@@ -24,18 +24,20 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.PropertiesDto
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.PayloadDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationMessageDto;
+import org.lfenergy.letscoordinate.backend.enums.FileTypeEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 import org.lfenergy.letscoordinate.backend.model.opfab.ValidationData;
+import org.lfenergy.letscoordinate.backend.service.CoordinationService;
+import org.lfenergy.letscoordinate.backend.util.CoordinationFactory;
 import org.lfenergy.letscoordinate.backend.util.DateUtil;
 import org.lfenergy.letscoordinate.backend.util.OpfabUtil;
 import org.lfenergy.letscoordinate.backend.util.StringUtil;
-import org.lfenergy.operatorfabric.cards.model.Card;
-import org.lfenergy.operatorfabric.cards.model.RecipientEnum;
-import org.lfenergy.operatorfabric.cards.model.SeverityEnum;
-import org.lfenergy.operatorfabric.cards.model.TimeSpan;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opfab.cards.model.Card;
+import org.opfab.cards.model.SeverityEnum;
+import org.opfab.cards.model.TimeSpan;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -50,9 +52,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum.*;
 import static org.lfenergy.letscoordinate.backend.util.Constants.*;
 import static org.lfenergy.letscoordinate.backend.util.DateUtilTest.getParisZoneId;
-import static org.lfenergy.operatorfabric.cards.model.SeverityEnum.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.opfab.cards.model.SeverityEnum.*;
 
 @ExtendWith(MockitoExtension.class)
 public class OpfabPublisherComponentTest {
@@ -61,7 +63,8 @@ public class OpfabPublisherComponentTest {
     private CoordinationConfig coordinationConfig;
     private OpfabPublisherComponent opfabPublisherComponent;
     private EventMessageDto eventMessageDto;
-    LetscoProperties letscoProperties;
+    private LetscoProperties letscoProperties;
+    private CoordinationService coordinationService;
 
     String process;
     String source = "source";
@@ -77,6 +80,7 @@ public class OpfabPublisherComponentTest {
 
         opfabConfig = new OpfabConfig();
         letscoProperties = new LetscoProperties();
+        coordinationService = Mockito.mock(CoordinationService.class);
 
         CoordinationConfig coordinationConfig = new CoordinationConfig();
         coordinationConfig.setTsos(Map.of(
@@ -99,13 +103,15 @@ public class OpfabPublisherComponentTest {
                                 .businessDataIdentifier(BusinessDataIdentifierDto.builder()
                                         .sendingUser(sendingUser)
                                         .recipients(recipients)
+                                        .caseId("caseId")
                                         .businessDayFrom(businessDayFrom)
                                         .businessDayTo(businessDayTo)
                                         .messageTypeName(messageTypeName).build()).build())
                         .build())
                 .payload(PayloadDto.builder().build()).build();
 
-        opfabPublisherComponent = new OpfabPublisherComponent(opfabConfig, coordinationConfig, letscoProperties);
+
+        opfabPublisherComponent = new OpfabPublisherComponent(opfabConfig, coordinationConfig, letscoProperties, coordinationService);
         process = OpfabUtil.generateProcessKey(eventMessageDto, true);
         opfabPublisherComponent.setProcessKey(process);
     }
@@ -139,12 +145,12 @@ public class OpfabPublisherComponentTest {
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
         String process = OpfabUtil.generateProcessKey(eventMessageDto, true);
         List<String> expectedTags = Stream.of(source, messageTypeName, process,
-                source + "_" + eventMessageDto.getHeader().getNoun())
+                source + "_" + eventMessageDto.getHeader().getNoun(), VISIBLE_CARD_TAG)
                 .map(String::toLowerCase).collect(toList());
         assertAll(
                 () -> assertEquals(expectedTags, card.getTags()),
                 () -> assertEquals(process, card.getProcess()),
-                () -> assertEquals(process + "_" + id, card.getProcessInstanceId()),
+                () -> assertEquals("caseId", card.getProcessInstanceId()),
                 () -> assertEquals(opfabConfig.getPublisher(), card.getPublisher()),
                 () -> assertEquals("1", card.getProcessVersion()),
                 () -> assertEquals(StringUtil.toLowercaseIdentifier("processaction"), card.getState())
@@ -160,13 +166,13 @@ public class OpfabPublisherComponentTest {
         Long id = 1L;
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
         List<String> expectedTags = Stream.of(source, messageTypeName, process,
-                source + "_" + eventMessageDto.getHeader().getNoun())
+                source + "_" + eventMessageDto.getHeader().getNoun(), VISIBLE_CARD_TAG)
                 .map(String::toLowerCase).collect(toList());
         expectedTags.add("tag");
         assertAll(
                 () -> assertEquals(expectedTags, card.getTags()),
                 () -> assertEquals(process, card.getProcess()),
-                () -> assertEquals(process + "_" + id, card.getProcessInstanceId()),
+                () -> assertEquals("caseId", card.getProcessInstanceId()),
                 () -> assertEquals(opfabConfig.getPublisher(), card.getPublisher()),
                 () -> assertEquals("1", card.getProcessVersion()),
                 () -> assertEquals(StringUtil.toLowercaseIdentifier("processaction"), card.getState())
@@ -202,19 +208,19 @@ public class OpfabPublisherComponentTest {
         Long id = 1L;
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
         List<String> expectedTags = Stream.of(source, messageTypeName, process,
-                source + "_" + eventMessageDto.getHeader().getNoun())
+                source + "_" + eventMessageDto.getHeader().getNoun(), VISIBLE_CARD_TAG)
                 .map(String::toLowerCase).collect(toList());
         expectedTags.add(process + "_ok");
         assertEquals(expectedTags, card.getTags());
 
         eventMessageDto.getPayload().getValidation().get().setResult(WARNING);
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
-        expectedTags.set(4, source.toLowerCase() + "_" + messageTypeName.toLowerCase() + "_warning");
+        expectedTags.set(5, source.toLowerCase() + "_" + messageTypeName.toLowerCase() + "_warning");
         assertEquals(expectedTags, card.getTags());
 
         eventMessageDto.getPayload().getValidation().get().setResult(ERROR);
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
-        expectedTags.set(4, source.toLowerCase() + "_" + messageTypeName.toLowerCase() + "_error");
+        expectedTags.set(5, source.toLowerCase() + "_" + messageTypeName.toLowerCase() + "_error");
         assertEquals(expectedTags, card.getTags());
     }
 
@@ -230,7 +236,7 @@ public class OpfabPublisherComponentTest {
         Long id = 1L;
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
         List<String> expectedTags = Stream.of(source, messageTypeName, process,
-                source + "_" + eventMessageDto.getHeader().getNoun())
+                source + "_" + eventMessageDto.getHeader().getNoun(), VISIBLE_CARD_TAG)
                 .map(String::toLowerCase).collect(toList());
         expectedTags.add(process + "_ok");
         expectedTags.add("tag_qcTagOk");
@@ -238,14 +244,14 @@ public class OpfabPublisherComponentTest {
 
         eventMessageDto.getPayload().getValidation().get().setResult(WARNING);
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
-        expectedTags.set(4, process + "_warning");
-        expectedTags.set(5, "tag_qcTagWarning");
+        expectedTags.set(5, process + "_warning");
+        expectedTags.set(6, "tag_qcTagWarning");
         assertEquals(expectedTags.stream().sorted().collect(toList()), card.getTags().stream().sorted().collect(toList()));
 
         eventMessageDto.getPayload().getValidation().get().setResult(ERROR);
         opfabPublisherComponent.setCardHeadersAndTags(card, eventMessageDto, id);
-        expectedTags.set(4, process + "_error");
-        expectedTags.set(5, "tag_qcTagError");
+        expectedTags.set(5, process + "_error");
+        expectedTags.set(6, "tag_qcTagError");
         assertEquals(expectedTags, card.getTags());
     }
 
@@ -428,8 +434,7 @@ public class OpfabPublisherComponentTest {
         Card card = new Card();
         opfabPublisherComponent.setCardRecipients(card, eventMessageDto);
         assertAll(
-                () -> assertEquals(RecipientEnum.GROUP, card.getRecipient().getType()),
-                () -> assertEquals(source, card.getRecipient().getIdentity()),
+                () -> assertEquals(Collections.singletonList(source), card.getGroupRecipients()),
                 () -> assertEquals(Collections.EMPTY_LIST, card.getEntityRecipients())
         );
     }
@@ -442,8 +447,7 @@ public class OpfabPublisherComponentTest {
         Card card = new Card();
         opfabPublisherComponent.setCardRecipients(card, eventMessageDto);
         assertAll(
-                () -> assertEquals(RecipientEnum.GROUP, card.getRecipient().getType()),
-                () -> assertEquals(source, card.getRecipient().getIdentity()),
+                () -> assertEquals(Collections.singletonList(source), card.getGroupRecipients()),
                 () -> assertEquals(recipients.stream().sorted().collect(Collectors.toList()),
                         card.getEntityRecipients().stream().sorted().collect(Collectors.toList()))
         );
@@ -457,8 +461,7 @@ public class OpfabPublisherComponentTest {
         Card card = new Card();
         opfabPublisherComponent.setCardRecipients(card, eventMessageDto);
         assertAll(
-                () -> assertEquals(RecipientEnum.GROUP, card.getRecipient().getType()),
-                () -> assertEquals(source, card.getRecipient().getIdentity()),
+                () -> assertEquals(Collections.singletonList(source), card.getGroupRecipients()),
                 () -> assertEquals(Arrays.asList(sendingUser), card.getEntityRecipients())
         );
     }
@@ -471,8 +474,7 @@ public class OpfabPublisherComponentTest {
         expectedEntityRecipients.add(sendingUser);
         expectedEntityRecipients.addAll(recipients);
         assertAll(
-                () -> assertEquals(RecipientEnum.GROUP, card.getRecipient().getType()),
-                () -> assertEquals(source, card.getRecipient().getIdentity()),
+                () -> assertEquals(Collections.singletonList(source), card.getGroupRecipients()),
                 () -> assertEquals(expectedEntityRecipients.stream().sorted().collect(Collectors.toList()),
                         card.getEntityRecipients().stream().sorted().collect(toList()))
         );
@@ -698,20 +700,20 @@ public class OpfabPublisherComponentTest {
     @Test
     public void setOpfabCardProcess_ProcessWithFilename() {
         opfabConfig.setProcessWithFilename(true);
+        eventMessageDto.getHeader().setNoun("DfgMessageValidated");
         eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().setFileName("filename.txt");
         Card card = new Card();
-        opfabPublisherComponent.setOpfabCardProcess(card,
-                eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier());
+        opfabPublisherComponent.setOpfabCardProcess(card, eventMessageDto);
         assertEquals(process + "_filename", card.getProcess());
     }
 
     @Test
     public void setOpfabCardProcess_ProcessWithFilename_FilenameHasNoExtension() {
         opfabConfig.setProcessWithFilename(true);
+        eventMessageDto.getHeader().setNoun("DfgMessageValidated");
         eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier().setFileName("filenameNoExtension");
         Card card = new Card();
-        opfabPublisherComponent.setOpfabCardProcess(card,
-                eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier());
+        opfabPublisherComponent.setOpfabCardProcess(card, eventMessageDto);
         assertEquals(process + "_filenamenoextension", card.getProcess());
     }
 
@@ -870,6 +872,19 @@ public class OpfabPublisherComponentTest {
         opfabPublisherComponent.addPayloadData(data, payloadDto);
         assertTrue(data.containsKey("payload"));
         assertEquals(hashCode, data.get("payload").hashCode());
+    }
+
+    @Test
+    public void publishOpfabCoordinationResultCard_feedConfigNotSet() {
+        opfabPublisherComponent.publishOpfabCoordinationResultCard(CoordinationFactory.initCoordination(FileTypeEnum.EXCEL));
+    }
+
+    @Test
+    public void publishOpfabCoordinationResultCard_feedConfigSet() {
+        Map<String, OpfabConfig.OpfabFeed> feedConfigMap = new HashMap();
+        feedConfigMap.put("coordinationProcessKey", new OpfabConfig.OpfabFeed("title", "summary"));
+        opfabConfig.setFeed(feedConfigMap);
+        opfabPublisherComponent.publishOpfabCoordinationResultCard(CoordinationFactory.initCoordination(FileTypeEnum.EXCEL));
     }
 
 }

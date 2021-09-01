@@ -51,7 +51,7 @@ logging:
 
 letsco:
   kafka:
-    topic-pattern: 'letsco_eventmessage_.*'
+    input-topic-pattern: 'letsco_eventmessage_input.*'
   timezone: "Europe/Paris"  # e.g: "Europe/London", "Europe/Paris", "Europe/Rome", "UTC", "UTC+1", "UTC-04:00", "GMT-5"
   input-file:
     dir: D:\_RTE_\tmp\input

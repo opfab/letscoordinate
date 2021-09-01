@@ -12,9 +12,7 @@
 package org.lfenergy.letscoordinate.backend.config;
 
 import lombok.*;
-import org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum;
-import org.lfenergy.letscoordinate.backend.enums.ChangeJsonDataFromWhichEnum;
-import org.lfenergy.letscoordinate.backend.enums.UnknownEicCodesProcessEnum;
+import org.lfenergy.letscoordinate.backend.enums.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.time.ZoneId;
@@ -27,9 +25,20 @@ import static java.util.stream.Collectors.toList;
 @Setter
 public class LetscoProperties {
 
+    private Kafka kafka;
     private ZoneId timezone = ZoneId.of("Europe/Paris");
     private InputFile inputFile;
     private Security security;
+    private Coordination coordination;
+    private boolean enableCaseIdAutoGeneration = true;
+
+    @Getter
+    @Setter
+    public static class Kafka {
+        private String inputTopicPattern;
+        private String defaultInputTopic;
+        private String defaultOutputTopic;
+    }
 
     @Getter
     @Setter
@@ -101,5 +110,43 @@ public class LetscoProperties {
     public static class Security {
         private String[] allowedOrigins;
         private String clientId;
+    }
+
+    @Getter
+    @Setter
+    public static class Coordination {
+        private CoordinationStatusStrategyEnum coordinationStatusCalculationStrategy;
+        private Map<CoordinationStatusStrategyEnum, CoordinationStatusCalculationRule> coordinationStatusCalculationRules;
+        private boolean notAnsweredDefaultCase;
+        private Map<CoordinationStatusStrategyEnum, CoordinationStatusEnum> notAnsweredDefaultCaseRules;
+
+        @Getter
+        @Setter
+        @Builder
+        @AllArgsConstructor
+        @NoArgsConstructor
+        public static class CoordinationStatusCalculationRule {
+            private CoordinationStatusEnum conConCon;
+            private CoordinationStatusEnum rejRejRej;
+            private CoordinationStatusEnum notNotNot;
+            private CoordinationStatusEnum mixMixMix;
+            private CoordinationStatusEnum conConRej;
+            private CoordinationStatusEnum conRejRej;
+            private CoordinationStatusEnum conConMix;
+            private CoordinationStatusEnum conRejMix;
+            private CoordinationStatusEnum conConNot;
+        }
+
+        public CoordinationStatusCalculationRule getCoordinationStatusCalculationRule() {
+            return coordinationStatusCalculationRules.get(coordinationStatusCalculationStrategy);
+        }
+
+        public CoordinationStatusEnum applyNotAnsweredDefaultValueIfNeeded(CoordinationStatusEnum coordinationStatusEnum) {
+            return coordinationStatusEnum == CoordinationStatusEnum.NOT && notAnsweredDefaultCase ? getNotAnsweredDefaultValue() : coordinationStatusEnum;
+        }
+
+        private CoordinationStatusEnum getNotAnsweredDefaultValue() {
+            return notAnsweredDefaultCaseRules.get(coordinationStatusCalculationStrategy);
+        }
     }
 }

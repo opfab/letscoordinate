@@ -18,8 +18,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
 import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
@@ -30,16 +29,20 @@ import org.lfenergy.letscoordinate.backend.dto.reporting.RscKpiReportDataDto;
 import org.lfenergy.letscoordinate.backend.dto.reporting.RscKpiReportSubmittedFormDataDto;
 import org.lfenergy.letscoordinate.backend.enums.*;
 import org.lfenergy.letscoordinate.backend.exception.InvalidInputFileException;
+import org.lfenergy.letscoordinate.backend.model.*;
 import org.lfenergy.letscoordinate.backend.service.EventMessageService;
 import org.lfenergy.letscoordinate.backend.util.Constants;
 import org.lfenergy.letscoordinate.backend.util.DateUtil;
+import org.lfenergy.letscoordinate.backend.util.ExcelUtil;
 import org.lfenergy.letscoordinate.backend.util.PojoUtil;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -64,12 +67,16 @@ public class ExcelDataProcessor implements DataProcessor {
     private final List<String> headerExclusiveColNames = Arrays.asList("verb", "noun", "timestamp", "source", "messageId");
     private final List<String> headerPropertiesExclusiveColNames = Arrays.asList("format");
     private final List<String> headerBusinessDateIdentifierColNames = Arrays.asList("businessApplication", "messageType", "messageTypeName", "businessDayFrom",
-            "businessDayTo", "processStep", "timeframe", "timeframeNumber", "sendingUser", "fileName", "tso", "biddingZone");
+            "businessDayTo", "processStep", "timeframe", "timeframeNumber", "sendingUser", "fileName", "tso", "biddingZone", "recipients");
     private final List<String> headerPropertiesColNames = Stream.of(headerPropertiesExclusiveColNames, headerBusinessDateIdentifierColNames)
             .flatMap(Collection::stream).collect(Collectors.toList());
 
     protected final List<String> headerColNames = Stream.of(headerExclusiveColNames, headerPropertiesColNames)
             .flatMap(Collection::stream).collect(Collectors.toList());
+
+    private final String headerCoordinationStatusColName = "coordinationStatus";
+    private final String headerCoordinationCommentsColName = "coordinationComments";
+    private final List<String> headerOutputColNames = Arrays.asList(headerCoordinationStatusColName, headerCoordinationCommentsColName);
 
     private final String dataTypeColName = "dataType";
     private final String nameColName = "name";
@@ -85,6 +92,11 @@ public class ExcelDataProcessor implements DataProcessor {
 
     protected final List<String> payloadColNames = Stream.of(Arrays.asList(dataTypeColName, nameColName), payloadDataColNames)
             .flatMap(Collection::stream).collect(Collectors.toList());
+
+    private final String answerColName = "answer";
+    private final String explanationColName = "explanation";
+    private final String commentColName = "comment";
+    private final List<String> payloadOutputDataColName = Arrays.asList(eicCodeColName, answerColName, explanationColName, commentColName);
 
 
     public Validation<ResponseErrorDto, EventMessageDto> inputStreamToPojo(String filePath, InputStream inputStream)
@@ -211,7 +223,7 @@ public class ExcelDataProcessor implements DataProcessor {
     public void initEventMessagePayload(EventMessageDto eventMessageDto,
                                         Sheet sheet,
                                         Map<String, Integer> columnIndexMap)
-            throws NoSuchFieldException, InstantiationException, IllegalAccessException {
+            throws NoSuchFieldException, InstantiationException, IllegalAccessException, InvalidInputFileException {
         if (eventMessageDto != null && sheet != null && columnIndexMap != null) {
             Map<DataTypeEnum, Map<String, List<IPayloadData>>> payloadMap = buildPayloadAsMap(sheet, columnIndexMap);
 
@@ -249,7 +261,7 @@ public class ExcelDataProcessor implements DataProcessor {
      * @throws IllegalAccessException see {@link PojoUtil#setProperty(Object, String, String)}
      */
     private Map<DataTypeEnum, Map<String, List<IPayloadData>>> buildPayloadAsMap(Sheet sheet,
-                                                                                 Map<String, Integer> columnIndexMap) throws NoSuchFieldException, IllegalAccessException, InstantiationException {
+                                                                                 Map<String, Integer> columnIndexMap) throws NoSuchFieldException, IllegalAccessException, InstantiationException, InvalidInputFileException {
         Map<DataTypeEnum, Map<String,List<IPayloadData>>> payloadMap = new LinkedHashMap<>();
 
         Integer dataTypeColIndex = columnIndexMap.get(dataTypeColName.toLowerCase());
@@ -261,36 +273,39 @@ public class ExcelDataProcessor implements DataProcessor {
                 if (currentRow != null && currentRow.getCell(dataTypeColIndex) != null) {
                     String dataTypeCellValue = currentRow.getCell(dataTypeColIndex).getStringCellValue();
                     DataTypeEnum dataType = DataTypeEnum.getByValue(dataTypeCellValue);
-                    Map<String,List<IPayloadData>> payloadDataMap = payloadMap.get(dataType);
-                    if (payloadDataMap == null) {
-                        payloadDataMap = new LinkedHashMap<>();
-                        payloadMap.put(dataType, payloadDataMap);
+                    if (dataType != null) {
+                        Map<String, List<IPayloadData>> payloadDataMap = payloadMap.get(dataType);
+                        if (payloadDataMap == null) {
+                            payloadDataMap = new LinkedHashMap<>();
+                            payloadMap.put(dataType, payloadDataMap);
+                        }
+                        String nameCellValue = currentRow.getCell(nameColIndex).getStringCellValue();
+                        List nameDataList = payloadDataMap.get(nameCellValue);
+                        if (nameDataList == null) {
+                            nameDataList = new ArrayList();
+                            payloadDataMap.put(nameCellValue, nameDataList);
+                        }
+                        switch (dataType) {
+                            case TEXT:
+                                TextDataDto textDataDto = new TextDataDto();
+                                setProperties(textDataDto, payloadTextDataColNames, currentRow, columnIndexMap);
+                                nameDataList.add(textDataDto);
+                                break;
+                            case LINK:
+                                LinkDataDto linkDataDto = new LinkDataDto();
+                                setProperties(linkDataDto, payloadLinkDataColNames, currentRow, columnIndexMap);
+                                nameDataList.add(linkDataDto);
+                                break;
+                            case RSC_KPI:
+                                createRscKpiDataAndAddToDataList(columnIndexMap, currentRow, nameDataList);
+                                break;
+                            case TIMESERIE:
+                                createTimeserieDataAndAddToDataList(columnIndexMap, currentRow, nameDataList);
+                                break;
+                        }
+                    } else if (StringUtils.isNotBlank(dataTypeCellValue)) {
+                        throw new InvalidInputFileException("Unknown dataType: " + dataTypeCellValue);
                     }
-                    String nameCellValue = currentRow.getCell(nameColIndex).getStringCellValue();
-                    List nameDataList = payloadDataMap.get(nameCellValue);
-                    if (nameDataList == null) {
-                        nameDataList = new ArrayList();
-                        payloadDataMap.put(nameCellValue, nameDataList);
-                    }
-                    switch (dataType) {
-                        case TEXT:
-                            TextDataDto textDataDto = new TextDataDto();
-                            setProperties(textDataDto, payloadTextDataColNames, currentRow, columnIndexMap);
-                            nameDataList.add(textDataDto);
-                            break;
-                        case LINK:
-                            LinkDataDto linkDataDto = new LinkDataDto();
-                            setProperties(linkDataDto, payloadLinkDataColNames, currentRow, columnIndexMap);
-                            nameDataList.add(linkDataDto);
-                            break;
-                        case RSC_KPI:
-                            createRscKpiDataAndAddToDataList(columnIndexMap, currentRow, nameDataList);
-                            break;
-                        case TIMESERIE:
-                            createTimeserieDataAndAddToDataList(columnIndexMap, currentRow, nameDataList);
-                            break;
-                    }
-
                 }
             }
         }
@@ -775,4 +790,182 @@ public class ExcelDataProcessor implements DataProcessor {
         // if nothing found
         return Optional.empty();
     }
+
+    /* * * * * * * * * * * * * * * * * * * *\
+    |*      EVENT MESSAGE OUTPUT FILE      *|
+    \* * * * * * * * * * * * * * * * * * * */
+
+    public byte[] generateEventMessageOutputFile(byte[] inputFile, EventMessage eventMessage) throws IOException {
+        XSSFWorkbook workbook = new XSSFWorkbook(new ByteArrayInputStream(inputFile));
+        XSSFSheet sheet = workbook.getSheetAt(EFFECTIVE_DATA_SHEET_INDEX);
+        int addedLines = 0;
+        final int HEADER_OUTPUT_ADDED_LINES = 3;
+        final int HEADER_OUTPUT_TITLE_LINE_INDEX = 3;
+        final int HEADER_OUTPUT_VALUE_LINE_INDEX = 4;
+        boolean acceptPropertiesIgnoreCase = letscoProperties.getInputFile().getValidation().isAcceptPropertiesIgnoreCase();
+
+        //PAYLOAD
+        try {
+            Map<String, Integer> paloadTitleIndexMap = getColTitlesIndexesForExcelBloc(ExcelBlocEnum.PAYLOAD, payloadColNames, sheet);
+            Map<String, Integer> payloadTitleOutputIndexMap = new HashMap<>();
+            int maxExistentIndex = paloadTitleIndexMap.values().stream().max(Integer::compareTo).orElse(0);
+            for (int newIndex = 0; newIndex < payloadOutputDataColName.size(); newIndex++) {
+                payloadTitleOutputIndexMap.put(payloadOutputDataColName.get(newIndex), maxExistentIndex + newIndex + 1);
+            }
+            // Display payload output columns titles
+            XSSFRow payloadTitlesRow = sheet.getRow(ExcelBlocEnum.PAYLOAD.getTitlesRowIndex());
+            XSSFCellStyle payloadTitleCellStype = payloadTitlesRow.getCell(paloadTitleIndexMap.get(acceptPropertiesIgnoreCase ? dataTypeColName.toLowerCase() : dataTypeColName)).getCellStyle();
+            for (String key : payloadTitleOutputIndexMap.keySet()) {
+                XSSFCell outputPayloadTitleCell = payloadTitlesRow.createCell(payloadTitleOutputIndexMap.get(key));
+                outputPayloadTitleCell.setCellValue(key);
+                outputPayloadTitleCell.setCellStyle(payloadTitleCellStype);
+            }
+
+            Integer dataTypeColIndex = paloadTitleIndexMap.get(acceptPropertiesIgnoreCase ? dataTypeColName.toLowerCase() : dataTypeColName);
+            Integer nameColIndex = paloadTitleIndexMap.get(acceptPropertiesIgnoreCase ? nameColName.toLowerCase() : nameColName);
+            Integer labelColIndex = paloadTitleIndexMap.get(acceptPropertiesIgnoreCase ? labelColName.toLowerCase() : labelColName);
+            Integer timestampColIndex = paloadTitleIndexMap.get(acceptPropertiesIgnoreCase ? timestampColName.toLowerCase() : timestampColName);
+
+
+            for (int payloadDataRowIndex = ExcelBlocEnum.PAYLOAD.getTitlesRowIndex() + 1; payloadDataRowIndex <= sheet.getLastRowNum() + addedLines; payloadDataRowIndex++) {
+                XSSFRow currentRow = sheet.getRow(payloadDataRowIndex);
+                if (currentRow != null && currentRow.getCell(dataTypeColIndex) != null) {
+                    String dataTypeCellValue = currentRow.getCell(dataTypeColIndex).getStringCellValue();
+                    DataTypeEnum dataType = DataTypeEnum.getByValue(dataTypeCellValue);
+                    if (dataType != null && dataType == DataTypeEnum.TIMESERIE) {
+                        String nameCellValue = currentRow.getCell(nameColIndex).getStringCellValue();
+                        Instant timestampCellValue = Instant.parse(currentRow.getCell(timestampColIndex).getStringCellValue());
+                        String labelCellValue = currentRow.getCell(labelColIndex).getStringCellValue();
+                        log.info("labelCellValue: " + labelCellValue);
+                        if (Constants.REMEDIAL_ACTIONS_KEY.equals(labelCellValue)) {
+                            // get data to display
+                            List<String> recipientsEicCodes = eventMessage.getEventMessageRecipients().stream()
+                                    .map(EventMessageRecipient::getEicCode)
+                                    .collect(Collectors.toList());
+
+                            // add empty lines and format existent ones
+                            XSSFRow newRow = sheet.getRow(payloadDataRowIndex + 1);
+                            if (newRow != null) {
+                                sheet.shiftRows(payloadDataRowIndex + 1, sheet.getLastRowNum(), recipientsEicCodes.size() - 1);
+                                for (int remedialActionsRowIndex = 0; remedialActionsRowIndex < recipientsEicCodes.size() - 1; remedialActionsRowIndex++) {
+                                    sheet.copyRows(payloadDataRowIndex, payloadDataRowIndex, payloadDataRowIndex + 1 + remedialActionsRowIndex, new CellCopyPolicy());
+                                }
+                            } else {
+                                for (int remedialActionsRowIndex = 0; remedialActionsRowIndex < recipientsEicCodes.size() - 1; remedialActionsRowIndex++) {
+                                    sheet.copyRows(payloadDataRowIndex, payloadDataRowIndex, payloadDataRowIndex + 1 + remedialActionsRowIndex, new CellCopyPolicy());
+                                }
+                            }
+                            addedLines += recipientsEicCodes.size() - 1;
+
+                            // Display output data
+                            for (Timeserie timeserie : eventMessage.getTimeseries()) {
+                                if (timeserie.getName() != null && timeserie.getName().equals(nameCellValue)) {
+                                    for (TimeserieData timeserieData : timeserie.getTimeserieDatas()) {
+                                        if (timeserieData.getTimestamp().toInstant().equals(timestampCellValue)) {
+                                            for (TimeserieDataDetails timeserieDataDetails : timeserieData.getTimeserieDataDetailses()) {
+                                                if (Constants.REMEDIAL_ACTIONS_KEY.equals(timeserieDataDetails.getLabel())
+                                                        && CollectionUtils.isNotEmpty(timeserieDataDetails.getTimeserieDataDetailsResults())) {
+                                                    for (int eicCodeIndex = 0; eicCodeIndex < recipientsEicCodes.size(); eicCodeIndex++) {
+                                                        XSSFRow currentOutputRow = sheet.getRow(payloadDataRowIndex + eicCodeIndex);
+                                                        for (TimeserieDataDetailsResult res : timeserieDataDetails.getTimeserieDataDetailsResults()) {
+                                                            if (recipientsEicCodes.get(eicCodeIndex).equals(res.getEicCode())) {
+                                                                if (currentOutputRow == null)
+                                                                    currentOutputRow = sheet.createRow(payloadDataRowIndex + eicCodeIndex);
+                                                                // eicCode
+                                                                XSSFCell eicCodeCell = currentOutputRow.createCell(payloadTitleOutputIndexMap.get(eicCodeColName));
+                                                                eicCodeCell.setCellValue(res.getEicCode());
+                                                                // answer
+                                                                XSSFCell answerCell = currentOutputRow.createCell(payloadTitleOutputIndexMap.get(answerColName));
+                                                                answerCell.setCellValue(res.getAnswer().name());
+                                                                // explanation
+                                                                XSSFCell explanationCell = currentOutputRow.createCell(payloadTitleOutputIndexMap.get(explanationColName));
+                                                                explanationCell.setCellValue(res.getExplanation());
+                                                                // comment
+                                                                XSSFCell commentCell = currentOutputRow.createCell(payloadTitleOutputIndexMap.get(commentColName));
+                                                                commentCell.setCellValue(res.getComment());
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                    // skip copied rows
+                                                    payloadDataRowIndex += recipientsEicCodes.size() - 1;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            for (String key : payloadTitleOutputIndexMap.keySet()) {
+                                ExcelUtil.createStyledUnusedCell(workbook, currentRow, payloadTitleOutputIndexMap.get(key));
+                            }
+                        }
+                    } else {
+                        for (String key : payloadTitleOutputIndexMap.keySet()) {
+                            ExcelUtil.createStyledUnusedCell(workbook, currentRow, payloadTitleOutputIndexMap.get(key));
+                        }
+                    }
+                }
+            }
+            // remove old eicCode column from payload block
+            for (int payloadRowIndex = ExcelBlocEnum.PAYLOAD.getTitlesRowIndex(); payloadRowIndex <= sheet.getLastRowNum(); payloadRowIndex++) {
+                XSSFRow currentRow = sheet.getRow(payloadRowIndex);
+                if (currentRow != null) {
+                    ExcelUtil.shiftRowCells(currentRow, paloadTitleIndexMap.get(acceptPropertiesIgnoreCase ? eicCodeColName.toLowerCase() : eicCodeColName) + 1, 1);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error while generating the payload part of the output file! {}", e);
+        }
+
+        // HEADER
+        // Prepare rows for header output data
+        sheet.shiftRows(ExcelBlocEnum.PAYLOAD.getTitlesRowIndex(), sheet.getLastRowNum(), HEADER_OUTPUT_ADDED_LINES);
+        sheet.createFreezePane(0, ExcelBlocEnum.PAYLOAD.getTitlesRowIndex() + HEADER_OUTPUT_ADDED_LINES);
+        addedLines += HEADER_OUTPUT_ADDED_LINES;
+        for (int addedLineIndex = 1; addedLineIndex <= HEADER_OUTPUT_ADDED_LINES; addedLineIndex++) {
+            sheet.copyRows(ExcelBlocEnum.HEADER.getTitlesRowIndex() + 2, ExcelBlocEnum.HEADER.getTitlesRowIndex() + 2,
+                    ExcelBlocEnum.HEADER.getTitlesRowIndex() + 2 + addedLineIndex, new CellCopyPolicy());
+        }
+        // Prepare header cell styles
+        XSSFRow headerTitleRow = sheet.getRow(ExcelBlocEnum.HEADER.getTitlesRowIndex());
+        XSSFCellStyle headerTitleCellStype = headerTitleRow.getCell(headerTitleRow.getFirstCellNum()).getCellStyle();
+        XSSFRow headerValueRow = sheet.getRow(ExcelBlocEnum.HEADER.getTitlesRowIndex() + 1);
+        XSSFCellStyle headerValueCellStype = headerValueRow.getCell(headerValueRow.getFirstCellNum()).getCellStyle();
+        // add header output data
+        XSSFRow headerOutputTitlesRow = sheet.getRow(HEADER_OUTPUT_TITLE_LINE_INDEX);
+        headerOutputTitlesRow.getCell(0).setCellValue(headerCoordinationStatusColName);
+        headerOutputTitlesRow.getCell(0).setCellStyle(headerTitleCellStype);
+
+        XSSFRow headerOutputValuesRow = sheet.getRow(HEADER_OUTPUT_VALUE_LINE_INDEX);
+        headerOutputValuesRow.getCell(0).setCellValue(Optional.ofNullable(eventMessage.getCoordinationStatus()).map(CoordinationStatusEnum::name).orElse(null));
+        headerOutputValuesRow.getCell(0).setCellStyle(headerValueCellStype);
+
+        headerOutputTitlesRow.getCell(2).setCellValue(headerCoordinationCommentsColName);
+        headerOutputTitlesRow.getCell(2).setCellStyle(headerTitleCellStype);
+        sheet.addMergedRegion(new CellRangeAddress(HEADER_OUTPUT_TITLE_LINE_INDEX, HEADER_OUTPUT_VALUE_LINE_INDEX, 2, 2));
+
+        headerOutputTitlesRow.getCell(3).setCellValue("eicCode");
+        headerOutputTitlesRow.getCell(3).setCellStyle(headerTitleCellStype);
+        headerOutputValuesRow.getCell(3).setCellValue("comment");
+        headerOutputValuesRow.getCell(3).setCellStyle(headerTitleCellStype);
+
+        for (int gcDataIndex = 0; gcDataIndex < eventMessage.getEventMessageCoordinationComments().size(); gcDataIndex++) {
+            if (headerOutputTitlesRow.getCell(4 + gcDataIndex) == null)
+                headerOutputTitlesRow.createCell(4 + gcDataIndex);
+            headerOutputTitlesRow.getCell(4 + gcDataIndex).setCellValue(eventMessage.getEventMessageCoordinationComments().get(gcDataIndex).getEicCode());
+            headerOutputTitlesRow.getCell(4 + gcDataIndex).setCellStyle(headerValueCellStype);
+            if (headerOutputValuesRow.getCell(4 + gcDataIndex) == null)
+                headerOutputValuesRow.createCell(4 + gcDataIndex);
+            headerOutputValuesRow.getCell(4 + gcDataIndex).setCellValue(eventMessage.getEventMessageCoordinationComments().get(gcDataIndex).getGeneralComment());
+            headerOutputValuesRow.getCell(4 + gcDataIndex).setCellStyle(headerValueCellStype);
+        }
+
+        // CREATING THE FILE
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            workbook.write(byteArrayOutputStream);
+            return byteArrayOutputStream.toByteArray();
+        }
+    }
+
 }

@@ -12,11 +12,11 @@
 package org.lfenergy.letscoordinate.backend.enums;
 
 import lombok.Getter;
-import org.lfenergy.operatorfabric.cards.model.SeverityEnum;
+import org.opfab.cards.model.SeverityEnum;
 
 import java.util.Arrays;
 
-import static org.lfenergy.operatorfabric.cards.model.SeverityEnum.*;
+import static org.opfab.cards.model.SeverityEnum.*;
 
 @Getter
 public enum BasicGenericNounEnum {
@@ -25,7 +25,8 @@ public enum BasicGenericNounEnum {
     PROCESS_FAILED("ProcessFailed", "process failed", ALARM),
     PROCESS_ACTION("ProcessAction", "process action", ACTION),
     PROCESS_INFORMATION("ProcessInformation", "process information", INFORMATION),
-    MESSAGE_VALIDATED("DfgMessageValidated", "message validated", null);
+    MESSAGE_VALIDATED("DfgMessageValidated", "message validated", null),
+    COORDINATION("Coordination", "coordination", ACTION);
 
     private String noun;
     private String titleProcessType;

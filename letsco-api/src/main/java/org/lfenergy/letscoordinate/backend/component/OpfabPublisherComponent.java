@@ -24,11 +24,18 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.PayloadDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationMessageDto;
 import org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum;
+import org.lfenergy.letscoordinate.backend.enums.OutputResultAnswerEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
+import org.lfenergy.letscoordinate.backend.mapper.EventMessageMapper;
+import org.lfenergy.letscoordinate.backend.model.Coordination;
+import org.lfenergy.letscoordinate.backend.model.EventMessage;
+import org.lfenergy.letscoordinate.backend.model.EventMessageRecipient;
 import org.lfenergy.letscoordinate.backend.model.opfab.ValidationData;
+import org.lfenergy.letscoordinate.backend.service.CoordinationService;
 import org.lfenergy.letscoordinate.backend.util.*;
-import org.lfenergy.operatorfabric.cards.model.*;
+import org.opfab.cards.model.*;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -40,11 +47,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.lfenergy.letscoordinate.backend.config.OpfabConfig.ChangeTimeserieDataDetailValueTypeEnum.INSTANT;
+import static org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum.COORDINATION;
 import static org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum.MESSAGE_VALIDATED;
+import static org.lfenergy.letscoordinate.backend.enums.FileDirectionEnum.INPUT;
 import static org.lfenergy.letscoordinate.backend.util.Constants.*;
 
 @Component
 @Slf4j
+@Transactional
 public class OpfabPublisherComponent {
 
     private String processKey;
@@ -52,12 +62,17 @@ public class OpfabPublisherComponent {
     private Map<String, CoordinationConfig.Tso> tsos;
     private Map<String, CoordinationConfig.Rsc> rscs;
     private LetscoProperties letscoProperties;
+    private CoordinationService coordinationService;
 
-    public OpfabPublisherComponent(OpfabConfig opfabConfig, CoordinationConfig coordinationConfig, LetscoProperties letscoProperties) {
+    public OpfabPublisherComponent(OpfabConfig opfabConfig,
+                                   CoordinationConfig coordinationConfig,
+                                   LetscoProperties letscoProperties,
+                                   CoordinationService coordinationService) {
         this.opfabConfig = opfabConfig;
         this.tsos = coordinationConfig.getTsos();
         this.rscs = coordinationConfig.getRscs();
         this.letscoProperties = letscoProperties;
+        this.coordinationService = coordinationService;
     }
 
     void setProcessKey(String processKey) {
@@ -68,7 +83,6 @@ public class OpfabPublisherComponent {
         processKey = OpfabUtil.generateProcessKey(eventMessageDto, opfabConfig.isProcessKeyToLowerCaseIdentifier());
         List<Card> cards = generateOpfabCards(eventMessageDto, id);
         cards.forEach(c -> {
-            // TODO This field must be handled in future releases for response cards
             c.setKeepChildCards(false);
             c.setPublisherType(PublisherTypeEnum.EXTERNAL);
             HttpUtil.post(opfabConfig.getUrl().getCardsPub(), c);
@@ -97,8 +111,8 @@ public class OpfabPublisherComponent {
         Card card = new Card();
         setCardHeadersAndTags(card, eventMessageDto, id);
         setOpfabCardDates(card, eventMessageDto);
-        specificCardTreatment(card, eventMessageDto, id);
         setCardRecipients(card, eventMessageDto);
+        specificCardTreatment(card, eventMessageDto, id);
         log.info("Opfab card generated");
         return card;
     }
@@ -122,7 +136,7 @@ public class OpfabPublisherComponent {
         String source = eventMessageDto.getHeader().getSource();
         BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
         String messageTypeName = bdi.getMessageTypeName();
-        List<String> tags = Stream.of(source, messageTypeName, processKey, source + "_" + noun)
+        List<String> tags = Stream.of(source, messageTypeName, processKey, source + "_" + noun, VISIBLE_CARD_TAG)
                 .map(String::toLowerCase).distinct().collect(Collectors.toList());
         if (MESSAGE_VALIDATED.getNoun().equals(noun)) {
             Optional<String> filenameOpt = bdi.getFileName();
@@ -140,17 +154,24 @@ public class OpfabPublisherComponent {
             setOpfabCardState(card, noun);
         }
         card.setTags(tags);
-        setOpfabCardProcess(card, bdi);
-        card.setProcessInstanceId(processKey + "_" + id);
+        setOpfabCardProcess(card, eventMessageDto);
+        card.setProcessInstanceId(generateProcessInstanceId(bdi.getCaseId(), processKey, id));
         card.setPublisher(opfabConfig.getPublisher());
         card.setProcessVersion("1");
     }
 
-    void setOpfabCardProcess(Card card, BusinessDataIdentifierDto bdi) {
+    private String generateProcessInstanceId (Optional<String> caseId, String processKey, Long eventMessageId) {
+        return caseId.orElse(processKey + "_" + eventMessageId);
+    }
+
+    void setOpfabCardProcess(Card card, EventMessageDto eventMessageDto) {
         if (opfabConfig.getChangeProcess().containsKey(processKey)) {
             card.setProcess(opfabConfig.getChangeProcess().get(processKey));
         } else {
-            card.setProcess(generateProcessKeyWithFilenameIfNeeded(processKey, bdi));
+            BasicGenericNounEnum basicGenericNounEnum = BasicGenericNounEnum.getByNoun(eventMessageDto.getHeader().getNoun());
+            card.setProcess(basicGenericNounEnum == MESSAGE_VALIDATED
+                    ? generateProcessKeyWithFilenameIfNeeded(processKey, eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier())
+                    : processKey);
         }
     }
 
@@ -235,8 +256,7 @@ public class OpfabPublisherComponent {
         Optional<String> sendingUser = businessDataIdentifier.getSendingUser();
         Optional<List<String>> recipient = businessDataIdentifier.getRecipients();
 
-        card.setRecipient(new Recipient().type(RecipientEnum.GROUP).identity(
-                opfabConfig.isRecipientToLowerCaseIdentifier() ?
+        card.setGroupRecipients(Collections.singletonList(opfabConfig.isRecipientToLowerCaseIdentifier() ?
                         StringUtil.toLowercaseIdentifier(source) : source));
 
         Set<String> entityRecipientList = new HashSet<>();
@@ -286,20 +306,26 @@ public class OpfabPublisherComponent {
                 opfabCard.setData(generateCardData(eventMessageDto, cardId));
                 break;
             case MESSAGE_VALIDATED:
-                titleProcessType = "message validated";
+                titleProcessType = basicGenericNoun.getTitleProcessType();
                 messageValidatedTreatment(opfabCard, eventMessageDto);
+                break;
+            case COORDINATION:
+                titleProcessType = basicGenericNoun.getTitleProcessType();
+                coordinationTreatment(opfabCard, eventMessageDto, cardId);
                 break;
         }
 
-        String title = generateFeedTitle(titleProcessType, processStepOpt, eventMessageDto);
-        Map<String, String> params = new HashMap<>();
-        params.put("title", title);
-        opfabCard.setTitle(new I18n().key("cardFeed.title").parameters(params));
+        if (basicGenericNoun != COORDINATION) {
+            String title = generateFeedTitle(titleProcessType, processStepOpt, eventMessageDto);
+            Map<String, String> params = new HashMap<>();
+            params.put("title", title);
+            opfabCard.setTitle(new I18n().key("cardFeed.title").parameters(params));
 
-        String summary = generateFeedSummary(timeframeOpt, timeframeNumberOpt, businessDayFrom, businessDayTo, eventMessageDto);
-        Map<String, String> summaryParams = new HashMap<>();
-        summaryParams.put("summary", summary);
-        opfabCard.setSummary(new I18n().key("cardFeed.summary").parameters(summaryParams));
+            String summary = generateFeedSummary(timeframeOpt, timeframeNumberOpt, businessDayFrom, businessDayTo, eventMessageDto);
+            Map<String, String> summaryParams = new HashMap<>();
+            summaryParams.put("summary", summary);
+            opfabCard.setSummary(new I18n().key("cardFeed.summary").parameters(summaryParams));
+        }
     }
 
     Map<String, Object> generateCardData(EventMessageDto eventMessageDto, Long cardId) {
@@ -336,7 +362,7 @@ public class OpfabPublisherComponent {
                     payloadDto.getTimeserie().forEach(t ->
                             t.getData().forEach(d ->
                                     d.getDetail().forEach(detail -> {
-                                        if (c.containsKey(detail.getLabel())) {
+                                        if (detail.getValue() != null && c.containsKey(detail.getLabel())) {
                                             OpfabConfig.ChangeTimeserieDataDetailValueTypeEnum changeTimeserieDataDetailValueTypeEnum =
                                                     c.get(detail.getLabel());
                                             if (changeTimeserieDataDetailValueTypeEnum == INSTANT) {
@@ -399,6 +425,31 @@ public class OpfabPublisherComponent {
         card.setData(data);
     }
 
+    private void coordinationTreatment(Card card, EventMessageDto eventMessageDto, Long cardId) {
+        BasicGenericNounEnum basicGenericNounEnum = BasicGenericNounEnum.getByNoun(eventMessageDto.getHeader().getNoun());
+        if (basicGenericNounEnum == COORDINATION) {
+            Coordination coordination = coordinationService.initAndSaveCoordination(card, eventMessageDto, cardId);
+            card.setSeverity(SeverityEnum.ACTION);
+            card.setState("initial");
+
+            Map<String, List<String>> concernedEntitiesMap = getConcernedEntitiesMap(coordination.getEventMessage());
+            card.setEntityRecipients(concernedEntitiesMap.get(ENTITIES_RECIPIENTS));
+            card.setEntitiesRequiredToRespond(concernedEntitiesMap.get(ENTITIES_REQUIRED_TO_RESPOND));
+            card.setEntitiesAllowedToRespond(concernedEntitiesMap.get(ENTITIES_ALLOWED_TO_RESPOND));
+
+            Map<String, String> params = new HashMap<>();
+            params.put("title", generateCoordinationFeedTitle(coordination));
+            card.setTitle(new I18n().key("cardFeed.title").parameters(params));
+            Map<String, String> summaryParams = new HashMap<>();
+            summaryParams.put("summary", generateCoordinationFeedSummary(coordination));
+            card.setSummary(new I18n().key("cardFeed.summary").parameters(summaryParams));
+
+            card.setData(generateCoordinationCardData(coordination, cardId));
+
+            coordinationService.sendCoordinationFileCard(card, INPUT);
+        }
+    }
+
     private static final String PARAM_START_IDENTIFIER = "<";
     private static final String PARAM_END_IDENTIFIER = ">";
 
@@ -423,7 +474,7 @@ public class OpfabPublisherComponent {
 
     private String generateFeedTitle(String titleProcessType, Optional<String> processStep, EventMessageDto eventMessageDto) {
         String processKey = generateKeyToGetCustomFeedParams(this.processKey, eventMessageDto);
-        if (opfabConfig.getFeed().containsKey(processKey)) {
+        if (opfabConfig.getFeed().get(processKey) != null && opfabConfig.getFeed().get(processKey).getTitle() != null) {
             String title = opfabConfig.getFeed().get(processKey).getTitle();
             title = replacePlaceholders(title, eventMessageDto);
             return title;
@@ -435,7 +486,7 @@ public class OpfabPublisherComponent {
     private String generateFeedSummary(Optional<String> timeframe, Optional<Integer> timeframeNumber, Instant businessDayFrom,
                                        Instant businessDayTo, EventMessageDto eventMessageDto) {
         String processKey = generateKeyToGetCustomFeedParams(this.processKey, eventMessageDto);
-        if (opfabConfig.getFeed().containsKey(processKey)) {
+        if (opfabConfig.getFeed().get(processKey) != null && opfabConfig.getFeed().get(processKey).getSummary() != null) {
             String summary = opfabConfig.getFeed().get(processKey).getSummary();
             summary = replacePlaceholders(summary, eventMessageDto);
             return summary;
@@ -574,4 +625,157 @@ public class OpfabPublisherComponent {
         }
         return new AbstractMap.SimpleEntry(placeholder, placeholderValue);
     }
+
+    /*------------------------------------------------ Coordination --------------------------------------------------*/
+
+    public Card publishOpfabCoordinationResultCard(Coordination coordination) {
+        EventMessage eventMessage = coordination.getEventMessage();
+        Map<String, List<String>> concernedEntitiesMap = getConcernedEntitiesMap(eventMessage);
+        OutputResultAnswerEnum coordinationStatus = OpfabUtil.getCoordinationStatus(coordination, concernedEntitiesMap.get(ENTITIES_REQUIRED_TO_RESPOND));
+
+        Card card = new Card();
+        card.setKeepChildCards(false);
+        card.setPublisherType(PublisherTypeEnum.EXTERNAL);
+        card.setTags(createCoordinationCardTags(eventMessage, coordination.getProcessKey()));
+        card.setProcess(coordination.getProcessKey());
+        card.setProcessInstanceId(generateProcessInstanceId(Optional.ofNullable(eventMessage.getCaseId()), coordination.getProcessKey(), eventMessage.getId()));
+        card.setPublisher(opfabConfig.getPublisher());
+        card.setProcessVersion("1");
+        card.setSeverity(OpfabUtil.isAgreementFound(coordination, concernedEntitiesMap.get(ENTITIES_REQUIRED_TO_RESPOND))
+                ? SeverityEnum.COMPLIANT : SeverityEnum.ALARM);
+        card.setState(coordinationStatus.getBundleStateName());
+        card.setTimeSpans(Arrays.asList(new TimeSpan().start(eventMessage.getTimestamp())));
+        card.setPublishDate(coordination.getPublishDate());
+        card.setStartDate(coordination.getStartDate());
+        card.setEndDate(coordination.getEndDate());
+
+        card.setGroupRecipients(Collections.singletonList(opfabConfig.isRecipientToLowerCaseIdentifier() ?
+                StringUtil.toLowercaseIdentifier(eventMessage.getSource()) : eventMessage.getSource()));
+
+        card.setEntityRecipients(concernedEntitiesMap.get(ENTITIES_RECIPIENTS));
+        card.setEntitiesRequiredToRespond(concernedEntitiesMap.get(ENTITIES_REQUIRED_TO_RESPOND));
+        card.setEntitiesAllowedToRespond(concernedEntitiesMap.get(ENTITIES_ALLOWED_TO_RESPOND));
+
+        Map<String, String> params = new HashMap<>();
+        params.put("title", generateCoordinationFeedTitle(coordination));
+        card.setTitle(new I18n().key("cardFeed.title").parameters(params));
+        Map<String, String> summaryParams = new HashMap<>();
+        summaryParams.put("summary", generateCoordinationFeedSummary(coordination));
+        card.setSummary(new I18n().key("cardFeed.summary").parameters(summaryParams));
+
+        card.setData(generateCoordinationCardData(coordination, coordination.getEventMessage().getId()));
+
+        log.info("Result card:\n{}", card.toString());
+        HttpUtil.post(opfabConfig.getUrl().getCardsPub(), card);
+
+        return card;
+    }
+
+    private Map<String, List<String>> getConcernedEntitiesMap(EventMessage eventMessage) {
+        return getConcernedEntitiesMap(eventMessage, opfabConfig, processKey, tsos);
+    }
+
+    public static Map<String, List<String>> getConcernedEntitiesMap(EventMessage eventMessage,
+                                                                    OpfabConfig opfabConfig,
+                                                                    String processKey,
+                                                                    Map<String, CoordinationConfig.Tso> tsos) {
+        Map concernedEntitiesMap = new HashMap();
+
+        Optional<String> tso = Optional.ofNullable(eventMessage.getTso());
+        Optional<String> sendingUser = Optional.ofNullable(eventMessage.getSendingUser());
+        Optional<List<String>> recipients = Optional.ofNullable(eventMessage.getEventMessageRecipients())
+                .map(list -> Optional.of(list.stream()
+                        .map(EventMessageRecipient::getEicCode)
+                        .collect(Collectors.toList())))
+                .orElse(Optional.empty());
+
+        Set<String> entityRecipientList = new HashSet<>();
+        Set<String> entitiesRequiredToRespond = new HashSet<>();
+        Set<String> entitiesAllowedToRespond = new HashSet<>();
+
+        tso.ifPresent(entityRecipientList::add);
+        if (opfabConfig.getEntityRecipients().containsKey(processKey)) {
+            OpfabConfig.OpfabEntityRecipients entityRecipients = opfabConfig.getEntityRecipients().get(processKey);
+            String notAllowed = entityRecipients.getNotAllowed().orElse("");
+            if (!"sendingUser".equals(notAllowed)) {
+                sendingUser.ifPresent(entitiesAllowedToRespond::add);
+            }
+            if (!"recipient".equals(notAllowed)) {
+                recipients.ifPresent(entitiesRequiredToRespond::addAll);
+            }
+            if (entityRecipients.isAddRscs()) {
+                entitiesAllowedToRespond.addAll(tsos.entrySet().stream()
+                        .filter(t -> entitiesRequiredToRespond.contains(t.getKey()))
+                        .map(Map.Entry::getValue)
+                        .map(CoordinationConfig.Tso::getRsc).collect(Collectors.toList()));
+            }
+        } else {
+            sendingUser.ifPresent(entitiesAllowedToRespond::add);
+            recipients.ifPresent(entitiesRequiredToRespond::addAll);
+        }
+
+        concernedEntitiesMap.put(ENTITIES_REQUIRED_TO_RESPOND, new ArrayList<>(entitiesRequiredToRespond));
+        concernedEntitiesMap.put(ENTITIES_ALLOWED_TO_RESPOND, new ArrayList<>(entitiesAllowedToRespond));
+
+        entityRecipientList.addAll(entitiesRequiredToRespond);
+        entityRecipientList.addAll(entitiesAllowedToRespond);
+        concernedEntitiesMap.put(ENTITIES_RECIPIENTS, new ArrayList<>(entityRecipientList));
+
+        return concernedEntitiesMap;
+    }
+
+    private List<String> createCoordinationCardTags(EventMessage eventMessage, String processKey) {
+        List<String> tags = Stream.of(eventMessage.getSource(), eventMessage.getMessageTypeName(), processKey,
+                eventMessage.getSource() + "_" + eventMessage.getNoun(), VISIBLE_CARD_TAG)
+                .map(String::toLowerCase).distinct().collect(Collectors.toList());
+        opfabConfig.getTags().ifPresent(t -> {
+            if (t.containsKey(processKey)) {
+                tags.add(t.get(processKey).getTag());
+            }
+        });
+        return tags;
+    }
+
+    Map<String, Object> generateCoordinationCardData(Coordination coordination, Long cardId) {
+        Map<String, Object> data = new HashMap<>();
+        EventMessage eventMessage = coordination.getEventMessage();
+        data.put("cardId", cardId);
+        data.put("messageTypeName", eventMessage.getMessageTypeName());
+        Optional.ofNullable(eventMessage.getSendingUser()).ifPresent(u -> {
+            if (tsos.containsKey(u))
+                data.put("sendingUser", tsos.get(u).getName());
+            else if (rscs.containsKey(u))
+                data.put("sendingUser", rscs.get(u).getName());
+        });
+        Map<String, List<String>> concernedEntitiesMap = getConcernedEntitiesMap(eventMessage);
+        data.put("coordination", coordination);
+        data.put("tsos", concernedEntitiesMap.get(ENTITIES_REQUIRED_TO_RESPOND));
+        data.put("agreementFound", OpfabUtil.isAgreementFound(coordination, concernedEntitiesMap.get(ENTITIES_REQUIRED_TO_RESPOND)));
+        return data;
+    }
+
+    private String generateCoordinationFeedTitle(Coordination coordination) {
+        if (opfabConfig.getFeed().get(coordination.getProcessKey()) != null && opfabConfig.getFeed().get(coordination.getProcessKey()).getTitle() != null) {
+            return opfabConfig.getFeed().get(coordination.getProcessKey()).getTitle();
+        } else {
+            return String.format("%s %s%s", coordination.getEventMessage().getSource(), COORDINATION.getTitleProcessType(),
+                    Optional.ofNullable(coordination.getEventMessage().getProcessStep()).map(p -> " - " + p).orElse(""));
+        }
+    }
+
+    private String generateCoordinationFeedSummary(Coordination coordination) {
+        if (opfabConfig.getFeed().get(coordination.getProcessKey()) != null && opfabConfig.getFeed().get(coordination.getProcessKey()).getSummary() != null) {
+            String summary = opfabConfig.getFeed().get(coordination.getProcessKey()).getSummary();
+            summary = replacePlaceholders(summary, EventMessageMapper.buildEventMessageDtoLightForCoordination(coordination.getEventMessage()));
+            return summary;
+        } else {
+            EventMessage eventMessage = coordination.getEventMessage();
+            return String.format("BP: %s-%s - %s",
+                    DateUtil.formatDate(eventMessage.getBusinessDayFrom().atZone(letscoProperties.getTimezone())),
+                    DateUtil.formatDate(eventMessage.getBusinessDayTo().atZone(letscoProperties.getTimezone())),
+                    OpfabUtil.coordinationRasToString(coordination)
+            );
+        }
+    }
+
 }

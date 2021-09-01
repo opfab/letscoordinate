@@ -1,0 +1,57 @@
+{
+  "license": "MPL-2.0",
+  "cardDetails":{
+    "title":"{{title}}"
+  },
+  "cardFeed": {
+    "title": "{{title}}",
+    "summary": "{{summary}}"
+  },
+  "process": {
+    "name": "Coordination notification"
+  },
+  "coordination": {
+    "name": "Coordination A",
+    "cardDetails":{
+      "title":"Service A Coordination A"
+    },
+    "status": {
+      "inprogress": "In progress",
+      "finished": "Finished"
+    },
+    "logging": {
+      "initial": {
+        "name": "Coordination request: In progress",
+        "description": "Coordination request: In progress"
+      },
+      "answerProposalConfirmed": {
+        "name": "Coordination answer: Proposal confirmed",
+        "description": "Coordination answer: Proposal confirmed"
+      },
+      "answerProposalRejected": {
+        "name": "Coordination answer: Proposal rejected",
+        "description": "Coordination answer: Proposal rejected"
+      },
+      "answerDifferentChoices": {
+        "name": "Coordination answer: Different choices",
+        "description": "Coordination answer: Different choices"
+      },
+      "proposalConfirmed": {
+        "name": "Coordination results: Proposal confirmed",
+        "description": "Coordination results: Proposal confirmed"
+      },
+      "proposalRejected": {
+        "name": "Coordination results: Proposal rejected",
+        "description": "Coordination results: Proposal rejected"
+      },
+      "noAnswerProvided": {
+        "name": "Coordination results: No answer provided",
+        "description": "Coordination results: No answer provided"
+      },
+      "differentChoices": {
+        "name": "Coordination results: Different choices",
+        "description": "Coordination results: Different choices"
+      }
+    }
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "license": "MPL-2.0",
+  "id": "servicea_coordinationa",
+  "name": "process.name",
+  "version": "1",
+  "defaultLocale": "en",
+  "uiVisibility": {
+    "monitoring": true,
+    "logging": true,
+    "calendar": false
+  },
+  "csses": [
+    "main"
+  ],
+  "menuEntries": [],
+  "locales": ["en"],
+  "states": {
+    "initial": {
+      "name": "coordination.logging.initial.name",
+      "description": "coordination.logging.initial.description",
+      "color": "orange",
+      "response": {
+        "lock": false,
+        "state": "answerProposalConfirmed",
+        "externalRecipients": [ "letsco_opensource" ]
+      },
+      "detailTitle": {
+        "key": "coordination.cardDetails.title"
+      },
+      "templateName": "coordinationRequest",
+      "styles": [
+        "main"
+      ],
+      "acknowledgmentAllowed": "Always",
+      "type" : "INPROGRESS"
+    },
+
+    "answerProposalConfirmed": {
+      "name": "coordination.logging.answerProposalConfirmed.name",
+      "color": "green",
+      "description": "coordination.logging.answerProposalConfirmed.description",
+      "type" : "INPROGRESS"
+    },
+    "answerProposalRejected": {
+      "name": "coordination.logging.answerProposalRejected.name",
+      "color": "red",
+      "description": "coordination.logging.answerProposalRejected.description",
+      "type" : "INPROGRESS"
+    },
+    "answerDifferentChoices": {
+      "name": "coordination.logging.answerDifferentChoices.name",
+      "color": "orange",
+      "description": "coordination.logging.answerDifferentChoices.description",
+      "type" : "INPROGRESS"
+    },
+
+    "proposalConfirmed": {
+      "name": "coordination.logging.proposalConfirmed.name",
+      "color": "green",
+      "description": "coordination.logging.proposalConfirmed.description",
+      "detailTitle": {
+        "key": "coordination.cardDetails.title"
+      },
+      "templateName": "coordinationResult",
+      "styles": [
+        "main"
+      ],
+      "acknowledgmentAllowed": "Always",
+      "type" : "FINISHED"
+    },
+    "proposalRejected": {
+      "name": "coordination.logging.proposalRejected.name",
+      "color": "red",
+      "description": "coordination.logging.proposalRejected.description",
+      "detailTitle": {
+        "key": "coordination.cardDetails.title"
+      },
+      "templateName": "coordinationResult",
+      "styles": [
+        "main"
+      ],
+      "acknowledgmentAllowed": "Always",
+      "type" : "FINISHED"
+    },
+    "noAnswerProvided": {
+      "name": "coordination.logging.noAnswerProvided.name",
+      "description": "coordination.logging.noAnswerProvided.description",
+      "detailTitle": {
+        "key": "coordination.cardDetails.title"
+      },
+      "templateName": "coordinationResult",
+      "styles": [
+        "main"
+      ],
+      "acknowledgmentAllowed": "Always",
+      "type" : "FINISHED"
+    },
+    "differentChoices": {
+      "name": "coordination.logging.differentChoices.name",
+      "color": "orange",
+      "description": "coordination.logging.differentChoices.description",
+      "detailTitle": {
+        "key": "coordination.cardDetails.title"
+      },
+      "templateName": "coordinationResult",
+      "styles": [
+        "main"
+      ],
+      "acknowledgmentAllowed": "Always",
+      "type" : "FINISHED"
+    }
+  }
+}
+
+

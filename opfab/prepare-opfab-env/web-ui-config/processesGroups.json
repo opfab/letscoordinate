@@ -6,7 +6,9 @@
         "servicea_processmonitoring",
         "servicea_validation_filea",
         "servicea_validation_fileb",
-        "servicea_cardcreation"
+        "servicea_cardcreation",
+        "servicea_coordinationa",
+        "servicea_coordinationa_file"
       ]
     },
     {

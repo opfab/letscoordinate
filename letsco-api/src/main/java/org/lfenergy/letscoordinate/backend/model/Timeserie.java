@@ -41,9 +41,6 @@ public class Timeserie implements java.io.Serializable {
     @Column(name = "name", nullable = false, length = 250)
     private String name;
 
-    @Column(name = "coordination_status", length = 10)
-    private String coordinationStatus;
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "timeserie", cascade = CascadeType.ALL)
     private List<TimeserieData> timeserieDatas = new ArrayList<>();
 

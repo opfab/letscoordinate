@@ -23,7 +23,7 @@ To use Let's Coordinate, you need a linux OS with the following:
 
 **Please note**: 
 * It is highly recommended to use [sdkman](https://sdkman.io/) (v5.11.0 or grater) and [nvm](https://github.com/nvm-sh/nvm) (v14.11.0 or grater) to manage *Maven*, *Java*, *NPM* and *Node JS* tools versions (with sdkman and nvm, the previously mentioned tools will be automatically installed later).
-* The required OperatorFabric version is **2.3.0.RELEASE** (configured by default to be used with the current version of Let's Coordinate 1.2.0.RELEASE)
+* The required OperatorFabric version is **2.8.0.RELEASE** (configured by default to be used with the current version of Let's Coordinate 1.3.0.RELEASE)
 
 ## 2. Setup and run Let's Coordinate
 
@@ -37,7 +37,7 @@ git clone https://github.com/opfab/letscoordinate.git
 
 #### 2.2. Create test branch
 
-Before starting Let's Coordinate, it's recommended to create a test branch from the latest stable release (1.2.0.RELEASE in our case).
+Before starting Let's Coordinate, it's recommended to create a test branch from the latest stable release (1.3.0.RELEASE in our case).
 To do this, you first need to make sure that you have the latest tag list from your remote repository:
 
 ```
@@ -47,7 +47,7 @@ git fetch --all --tags
 Then, you can create the test branch:
 
 ```
-git checkout tags/1.2.0.RELEASE -b test-letsco-1.2.0.RELEASE
+git checkout tags/1.3.0.RELEASE -b test-letsco-1.3.0.RELEASE
 ```
 
 #### 2.3. Run Let's Coordinate
@@ -75,10 +75,10 @@ source ./load_environment.sh
 To start Let's Coordinate, position your self in the "*bin*" directory and execute the following commands:
 
 ```
-./server.sh --first-init start 
+./server.sh -f start 
 ```
 
-The *--first-init* (or -f) option (which is equivalent to the options *--build* and *--init* together) is required while testing the project for the first time.
+The ```-f``` option (or ```--first-init```, which is equivalent to the options ```--build``` and ```--init``` together) is required while testing the project for the first time.
 It allows to:
 * install the OperatorFabric required dependencies, 
 * build and deploy the Let's Coordinate docker images locally,
@@ -102,20 +102,9 @@ To see more about the server.sh commands and options, please try:
 
 ## 3. Use Let's Coordinate
 
-#### 3.1. Send a new card
+#### 3.1. Generate a token
 
-- Go to the following url (letsco-data-provider swagger-ui): [http://localhost:8082/swagger-ui.html](http://localhost:8082/swagger-ui.html)
-- Click on *kafka-producer-controller*
-- Click on *POST /letsco/data-provider/v1/kafka/json/raw-msg*
-- Click on *Try it out*
-- In the data body value, put the content of one of the files from the directory "*message_models/json/card_feed/*" (e.g: *ProcessSuccessful.json*, *MessageValidated_NEGATIVE_ACK.json*, ...)
-- Click on *Execute*
-
-If you open a browser and connect to application ([http://localhost/ui/](http://localhost/ui/)) with the username **user.test** and password **test**, you should see the new card in the Feed (if it is not the case, please change the timeline view or/and period to include the card's dates: timestamp or/and business period).
-
-Feel free to test the other json samples from the directory "*message_models/json/card_feed/*" 
-
-#### 3.2. Generate a RSC KPI report
+To be able to use the secured APIs of the letsco-api module (e.g. to send notifications, to generate an RSC KPI report, ...), you first need to generate a new token:
 
 - Go to the following url (letsco-api swagger-ui): [http://localhost:8088/swagger-ui.html](http://localhost:8088/swagger-ui.html)
 - Click on *authentication-controller*
@@ -123,12 +112,32 @@ Feel free to test the other json samples from the directory "*message_models/jso
 - Click on *Try it out*
 - Set **user.test** as username and **test** as password
 - Click on *Execute* 
-- Copy the generated token (with the Bearer word)
+
+The result returned in the "Response body" is the token that we will use in the next sections for authentication (by default the generated tokens are valid for 24 hours. After exceeding this period, 
+a new token should be generated)
+
+#### 3.2. Send a new card 
+
+- Go to the following url (letsco-api swagger-ui): [http://localhost:8088/swagger-ui.html](http://localhost:8088/swagger-ui.html)
 - Click on *event-message-controller*
 - Click on *POST /letsco/api/v1/upload/save*
 - Click on *Try it out*
-- Past the previous copied token in the *Authorization* field
-- Click the "*Browse...*" button and choose the "*message_models/json/rsc_kpi_report/kpi_use_cases.json*" file.
+- Copy the previous generated token (see section 3.1) and past it in the *Authorization* field (be sure that the copied text starts with the "Bearer" keyword!)
+- Click the "*Browse...*" button and choose one of the files from the directory "*util/messages_models/json/card_feed*".
+- Click on *Execute*
+
+If you open a browser and connect to application ([http://localhost/ui/](http://localhost/ui/)) with the username **user.test** and password **test**, you should see the new card in the Feed (if it is not the case, please change the timeline view or/and period to include the card's dates: timestamp or/and business period).
+
+Feel free to test the other json samples from the directory "*util/messages_models/json/card_feed*" 
+
+#### 3.3. Generate a RSC KPI report
+
+- Go to the following url (letsco-api swagger-ui): [http://localhost:8088/swagger-ui.html](http://localhost:8088/swagger-ui.html)
+- Click on *event-message-controller*
+- Click on *POST /letsco/api/v1/upload/save*
+- Click on *Try it out*
+- Copy the previous generated token (see section 3.1) and past it in the *Authorization* field (be sure that the copied text starts with the "Bearer" keyword!)
+- Click the "*Browse...*" button and choose the file "*util/messages_models/json/rsc_kpi_report/kpi_use_cases.json*".
 - Click on *Execute*
 - Connect to OpFab ([http://localhost/ui/](http://localhost/ui/)) with the username **user.test** and password **test**.
 - Select the *"RSC KPI Report"* menu.

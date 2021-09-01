@@ -13,7 +13,9 @@ package org.lfenergy.letscoordinate.backend.dto.eventmessage.header;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import org.lfenergy.letscoordinate.backend.enums.CoordinationStatusEnum;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.List;
@@ -28,7 +30,7 @@ import java.util.Optional;
 public class BusinessDataIdentifierDto {
 
     @Getter(AccessLevel.NONE)
-    private List<String> recipients;
+    private String businessApplication;
     private String messageType;
     @NotNull
     private String messageTypeName;
@@ -40,17 +42,24 @@ public class BusinessDataIdentifierDto {
     @Getter(AccessLevel.NONE)
     private String timeframe;
     @Getter(AccessLevel.NONE)
-    private String businessApplication;
-    @Getter(AccessLevel.NONE)
     private Integer timeframeNumber;
     @Getter(AccessLevel.NONE)
     private String sendingUser;
     @Getter(AccessLevel.NONE)
+    private String caseId;
+    @Getter(AccessLevel.NONE)
     private String fileName;
+    @Getter(AccessLevel.NONE)
+    private List<String> recipients;
     @Getter(AccessLevel.NONE)
     private String tso;
     @Getter(AccessLevel.NONE)
     private String biddingZone;
+    @Getter(AccessLevel.NONE)
+    private CoordinationStatusEnum coordinationStatus;
+    @Getter(AccessLevel.NONE)
+    @Valid
+    private List<CoordinationCommentDto> coordinationComments;
 
     public Optional<String> getProcessStep() {
         return Optional.ofNullable(processStep);
@@ -123,8 +132,35 @@ public class BusinessDataIdentifierDto {
         return Optional.ofNullable(businessApplication);
     }
 
+    @JsonProperty("caseId")
+    public String getCaseIdSimple() {
+        return caseId;
+    }
+
+    public Optional<String> getCaseId() {
+        return Optional.ofNullable(caseId);
+    }
+
     @JsonProperty("businessApplication")
     public String getBusinessApplicationSimple() {
         return businessApplication;
+    }
+
+    public Optional<CoordinationStatusEnum> getCoordinationStatus() {
+        return Optional.ofNullable(coordinationStatus);
+    }
+
+    @JsonProperty("coordinationStatus")
+    public CoordinationStatusEnum getCoordinationStatusSimple() {
+        return coordinationStatus;
+    }
+
+    public Optional<List<CoordinationCommentDto>> getCoordinationComments() {
+        return Optional.ofNullable(coordinationComments);
+    }
+
+    @JsonProperty("coordinationComments")
+    public List<CoordinationCommentDto> getCoordinationCommentsSimple() {
+        return coordinationComments;
     }
 }

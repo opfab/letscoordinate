@@ -52,7 +52,7 @@ public class KafkaProducerController {
 
     @PostMapping(value = "/json/raw-msg")
     public ResponseEntity sendRawMessage(@RequestBody String data, @RequestParam(required = false) String topic) {
-        sendMessageToKafka(topic == null ? letscoKafkaProperties.getTopicNamePrefix() + "raw" : topic, data);
+        sendMessageToKafka(topic == null ? letscoKafkaProperties.getTopicNamePrefix() + "_raw" : topic, data);
         return ResponseEntity.ok(data);
     }
 

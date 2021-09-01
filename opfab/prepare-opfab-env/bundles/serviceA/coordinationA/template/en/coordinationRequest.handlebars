@@ -1,0 +1,411 @@
+<!-- Copyright (c) 2020-2021, RTE (https://www.rte-france.com)                     -->
+<!-- Copyright (c) 2020-2021 RTE international (https://www.rte-international.com) -->
+<!-- See AUTHORS.txt                                                               -->
+<!-- This Source Code Form is subject to the terms of the Mozilla Public           -->
+<!-- License, v. 2.0. If a copy of the MPL was not distributed with this           -->
+<!-- file, You can obtain one at http://mozilla.org/MPL/2.0/.                      -->
+<!-- SPDX-License-Identifier: MPL-2.0                                              -->
+<!-- This file is part of the Let’s Coordinate project.                            -->
+
+{{#with card.data}}
+    <div>
+
+        <div class="m-3" style="overflow: hidden;">
+            <p>
+                <b>Business period:</b> {{dateFormat (math coordination.startDate.epochSecond '*' 1000)
+                                                     format='DD/MM/YYYY HH:mm'}} -
+                {{dateFormat (math coordination.endDate.epochSecond '*' 1000) format='DD/MM/YYYY HH:mm'}}
+            </p>
+
+            {{#if (bool sendingUser '!=' null)}}
+                <p class="mt-4 mb-3">
+                    <b>Proposed by:</b> {{sendingUser}}
+                </p>
+            {{/if}}
+
+            <p class="mt-4 mb-3">
+                <b>Description:</b></br>Could you please validate this {{messageTypeName}}?
+            </p>
+            <br/>
+
+            {{#if (bool coordination.coordinationRas.length '>' 0)}}
+                <div>
+                    <table class="card-table col-sm-10" style="margin-left: auto; margin-right: auto;">
+                        <thead>
+                        <tr>
+                            <th scope="col">Event</th>
+                            <th scope="col">Constraint</th>
+                            <th scope="col">Remedial actions</th>
+                            <th scope="col" class="tso-col-cell" style="width: 40px;">TSO</th>
+                            <th scope="col" class="txt-align-center bg-green" style="width: 40px;">OK</th>
+                            <th scope="col" class="txt-align-center bg-red" style="width: 40px;">NOK</th>
+                            <th scope="col" class="txt-align-center bg-red" style="width: 200px;">Explanation</th>
+                            <th scope="col" class="txt-align-center" style="width: 200px;">Comment</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{#each coordination.coordinationRas as |ra|}}
+                            {{#each ../tsos as |tsoEicCode|}}
+                                <tr id="tr_{{ra.id}}" class="crd-data-tr hidden" data-tso="{{tsoEicCode}}">
+                                    <td class="crd-data-common-td" data-tso="{{tsoEicCode}}">{{ra.event}}</td>
+                                    <td class="crd-data-common-td" data-tso="{{tsoEicCode}}">{{ra.constraintt}}</td>
+                                    <td class="crd-data-common-td" data-tso="{{tsoEicCode}}">{{ra.remedialAction}}</td>
+                                    <td id="idTdTso_{{ra.id}}_{{tsoEicCode}}" class="tso-col-cell tso-name-cell"
+                                        data-tso="{{tsoEicCode}}" style="white-space: nowrap;">{{tsoEicCode}}</td>
+                                    <td id="idTdOK_{{ra.id}}_{{tsoEicCode}}"
+                                        class="crd-data-td txt-align-center bg-green-light">
+                                        <input id="idRadioOK_{{ra.id}}_{{tsoEicCode}}"
+                                               type="radio" name="radio_{{ra.id}}_{{tsoEicCode}}"
+                                               value="OK" class="rd-choice input-component">
+                                        <span id="idSpanOK_{{ra.id}}_{{tsoEicCode}}" class="output-component hidden">?</span>
+                                    </td>
+                                    <td id="idTdNOK_{{ra.id}}_{{tsoEicCode}}"
+                                        class="crd-data-td txt-align-center bg-red-light">
+                                        <input id="idRadioNOK_{{ra.id}}_{{tsoEicCode}}"
+                                               type="radio" name="radio_{{ra.id}}_{{tsoEicCode}}"
+                                               value="NOK" class="rd-choice input-component">
+                                        <span id="idSpanNOK_{{ra.id}}_{{tsoEicCode}}" class="output-component hidden">?</span>
+                                    </td>
+                                    <td id="idTdExpl_{{ra.id}}_{{tsoEicCode}}"
+                                        class="crd-data-td txt-align-center bg-red-light">
+                                        <select name="selectExpl_{{ra.id}}_{{tsoEicCode}}"
+                                                id="idSelectExpl_{{ra.id}}_{{tsoEicCode}}"
+                                                class="select-expl input-component hidden">
+                                            <option value="">--Please choose an option--</option>
+                                            <option value="Explanation 1">Explanation 1</option>
+                                            <option value="Explanation 2">Explanation 2</option>
+                                            <option value="Explanation 3">Explanation 3</option>
+                                        </select>
+                                        <span id="idSpanExpl_{{ra.id}}_{{tsoEicCode}}" class="output-component hidden"></span>
+                                    </td>
+                                    <td id="idTdComment_{{ra.id}}_{{tsoEicCode}}" class="crd-data-td">
+                                        <input id="idComment_{{ra.id}}_{{tsoEicCode}}" type="text"
+                                               class="input-component" style="width: 100%;">
+                                        <span id="idSpanComment_{{ra.id}}_{{tsoEicCode}}"
+                                              class="output-component hidden"></span>
+                                    </td>
+                                </tr>
+                            {{/each}}
+                        {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            {{/if}}
+
+            <p class="mt-4 mb-3">
+                <b>General comment:</b>
+            </p>
+            <div id="idDivGeneralComment">
+                <textarea id="generalComment" row="2"
+                          style="margin-left: auto; margin-right: auto; width: 100%;" class="input-gc-component"></textarea>
+            </div>
+
+
+        </div>
+
+    </div>
+{{/with}}
+
+
+<script>
+    var entities = {};
+    var opfabUrl = location.origin;
+    var isLocked = templateGateway.isLocked;
+    var access_token = window.sessionStorage.getItem('access_token');
+    var currentUserEntities = Array.from({{ json userContext.entities }});
+    var entityRecipients = Array.from({{ json card.entityRecipients }});
+    var currentUserTso = currentUserEntities.filter(e => entityRecipients.includes(e))[0];
+
+    var entitiesRequiredToRespond = Array.from({{ json card.entitiesRequiredToRespond }});
+    var entitiesAllowedToRespond = Array.from({{ json card.entitiesAllowedToRespond }});
+
+    /* ---------------------------------------- RETRIEVE THE ENTITIES DETAILS --------------------------------------- */
+
+    function getAllEntities() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    var concernedTsos = {{json card.entityRecipients}};
+                    entities = JSON.parse(this.response)
+                            .filter(entity => concernedTsos.indexOf(entity.id) > -1)
+                            .reduce((acc, entity) => {
+                                acc[entity.id] = entity.name;
+                                return acc;
+                            }, {});
+                    updateEntitiesNames();
+                }
+            }
+        };
+        xhttp.open("GET", opfabUrl + "/users/entities", true);
+        xhttp.setRequestHeader("Authorization", "Bearer " + access_token);
+        xhttp.send();
+    }
+
+    getAllEntities();
+
+    function updateEntitiesNames() {
+        Array.from(document.getElementsByClassName('tso-name-cell'))
+                .forEach(e => e.innerHTML = entities[e.getAttribute('data-tso')]);
+    }
+
+    /* ----------------------------------------- INIT CARD'S DETAILED VIEW ------------------------------------------ */
+
+    if (!templateGateway.isLocked) {
+        if (templateGateway.userMemberOfAnEntityRequiredToRespond) {
+            if (Array.from(templateGateway.childCards).length === 0) {
+                document.querySelectorAll('tr[class*="crd-data-tr"][data-tso="' + currentUserTso + '"]')
+                        .forEach(function (el) {el.classList.remove('hidden');});
+                document.querySelectorAll('.tso-col-cell').forEach(function (el) {el.classList.add('hidden');});
+            } else {
+                applyLock(templateGateway.childCards);
+                unlockAnswersBlock();
+                unlockGeneralCommentBlock();
+            }
+        } else {
+            lockAnswersBlock();
+            printChildCardsAnswers(templateGateway.childCards);
+        }
+    }
+
+    /* ------------------------------------------ INIT RADIO CHECK EVENT -------------------------------------------- */
+
+    function showHideExpl() {
+        if (this.value === 'OK') {
+            this.parentNode.parentNode.getElementsByClassName('select-expl')[0].classList.add('hidden');
+        } else {
+            this.parentNode.parentNode.getElementsByClassName('select-expl')[0].classList.remove('hidden');
+        }
+    }
+
+    Array.from(document.getElementsByClassName('rd-choice')).forEach(e => {
+        e.addEventListener('click', showHideExpl, false);
+    });
+
+    /* ---------------------------------------- OPFAB OVERRIDABLE FUNCTIONS ----------------------------------------- */
+
+    templateGateway.lockAnswer = function () {
+        applyLock(templateGateway.childCards);
+    }
+
+    templateGateway.unlockAnswer = function () {
+        templateGateway.isLocked = false;
+        unlockAnswersBlock();
+        unlockGeneralCommentBlock();
+    }
+
+    templateGateway.applyChildCards = () => {
+        if (templateGateway.isLocked) {
+            printChildCardsAnswers(templateGateway.childCards.filter(childCard => childCard.publisher !== currentUserTso));
+            lockGeneralCommentBlock(templateGateway.childCards);
+        }
+    }
+
+    templateGateway.getUserResponse = function () {
+        var userResponse = validateAndSubmitForm();
+        templateGateway.childCards = templateGateway.childCards.filter(childCard => childCard.publisher !== currentUserTso);
+        templateGateway.childCards.unshift({ // Add element at first
+            publisher: currentUserTso,
+            data: userResponse.responseCardData
+        });
+        templateGateway.isLocked = true;
+        return userResponse;
+    }
+
+    /* -------------------------------------------- CUSTOM IMPLEMENTATION ------------------------------------------- */
+
+    function applyLock(childCards) {
+        lockAnswersBlock();
+        printChildCardsAnswers(childCards);
+        lockGeneralCommentBlock(childCards);
+    }
+
+    function lockAnswersBlock() {
+        document.querySelectorAll('tr[class*="crd-data-tr"]').forEach(function (el) {
+            el.classList.remove('hidden');
+        });
+        document.querySelectorAll('.tso-col-cell').forEach(function (el) {
+            el.classList.remove('hidden');
+        });
+        document.querySelectorAll('td[class*="crd-data-common-td"]').forEach(function (el) {
+            if (el.getAttribute('data-tso') === entitiesRequiredToRespond[0]) {
+                el.classList.remove('hidden');
+                el.rowSpan = entitiesRequiredToRespond.length;
+            } else {
+                el.classList.add('hidden');
+            }
+        });
+        document.querySelectorAll('.input-component').forEach(function (el) {
+            el.classList.add('hidden');
+        });
+        document.querySelectorAll('.input-gc-component').forEach(function (el) {
+            if (entitiesAllowedToRespond.includes(currentUserTso)) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        });
+        document.querySelectorAll('span[class*="output-component"]').forEach(function (el) {
+            el.classList.remove('hidden');
+        });
+        document.querySelectorAll('.crd-data-td').forEach(function (el) {
+            el.classList.remove('bg-red-light', 'bg-green-light');
+        });
+        document.querySelectorAll('td[class*="tso-name-cell"]').forEach(function (el) {
+            el.classList.add('bg-orange', 'txt-color-black');
+        });
+    }
+
+    function unlockAnswersBlock() {
+        if (entitiesRequiredToRespond.includes(currentUserTso)) {
+            var coordinationRas = {{json card.data.coordination.coordinationRas}};
+            var currentChildCart = templateGateway.childCards.filter(childCard => childCard.publisher === currentUserTso)[0];
+            for (let ra of coordinationRas) {
+                document.getElementById('idTdTso_' + ra.id + '_' + currentUserTso).classList.add('bg-orange');
+                document.getElementById('idTdTso_' + ra.id + '_' + currentUserTso).classList.remove('bg-green-light', 'bg-red-light');
+
+                document.getElementById('idSpanOK_' + ra.id + '_' + currentUserTso).innerText = '';
+                document.getElementById('idSpanNOK_' + ra.id + '_' + currentUserTso).innerText = '';
+                document.getElementById('idSpanOK_' + ra.id + '_' + currentUserTso).classList.add('hidden');
+                document.getElementById('idSpanNOK_' + ra.id + '_' + currentUserTso).classList.add('hidden');
+                document.getElementById('idTdOK_' + ra.id + '_' + currentUserTso).classList.add('bg-green-light');
+                document.getElementById('idTdNOK_' + ra.id + '_' + currentUserTso).classList.add('bg-red-light');
+                document.getElementById('idRadioOK_' + ra.id + '_' + currentUserTso).classList.remove('hidden');
+                document.getElementById('idRadioNOK_' + ra.id + '_' + currentUserTso).classList.remove('hidden');
+
+                document.getElementById('idSpanExpl_' + ra.id + '_' + currentUserTso).innerText = '';
+                document.getElementById('idSpanExpl_' + ra.id + '_' + currentUserTso).classList.add('hidden');
+                document.getElementById('idTdExpl_' + ra.id + '_' + currentUserTso).classList.add('bg-red-light');
+                document.getElementById('idSelectExpl_' + ra.id + '_' + currentUserTso).classList.add('hidden');
+
+                document.getElementById('idSpanComment_' + ra.id + '_' + currentUserTso).innerText = '';
+                document.getElementById('idTdComment_' + ra.id + '_' + currentUserTso).classList.remove('bg-green-light', 'bg-red-light');
+                document.getElementById('idComment_' + ra.id + '_' + currentUserTso).classList.remove('hidden');
+            }
+
+            // set selected values
+            if (currentChildCart) {
+                for (let datum of currentChildCart.data.formData) {
+                    var selectedRadioValue = datum.response;
+                    document.querySelector('input[name=radio_' + datum.id + '_' + currentUserTso + ']').checked = false;
+                    document.getElementById('idRadio' + selectedRadioValue + '_' + datum.id + '_' + currentUserTso).click();
+
+                    document.getElementById('idSelectExpl_' + datum.id + '_' + currentUserTso).value = datum.explanation;
+
+                    document.getElementById('idComment_' + datum.id + '_' + currentUserTso).value = datum.comment;
+                }
+            }
+        }
+    }
+
+    function printChildCardsAnswers(childCards) {
+        Array.from(childCards).filter(card => card.data.formData !== undefined).forEach(card => {
+            for (let datum of card.data.formData) {
+                document.getElementById('idTdTso_' + datum.id + '_' + card.publisher).classList.remove('bg-orange', 'bg-green-light', 'bg-red-light');
+                document.getElementById('idTdOK' + '_' + datum.id + '_' + card.publisher).classList.remove('bg-orange', 'bg-green-light', 'bg-red-light');
+                document.getElementById('idTdNOK' + '_' + datum.id + '_' + card.publisher).classList.remove('bg-orange', 'bg-green-light', 'bg-red-light');
+                document.getElementById('idTdExpl_' + datum.id + '_' + card.publisher).classList.remove('bg-orange', 'bg-green-light', 'bg-red-light');
+                document.getElementById('idTdComment_' + datum.id + '_' + card.publisher).classList.remove('bg-orange', 'bg-green-light', 'bg-red-light');
+
+                document.getElementById('idTdTso_' + datum.id + '_' + card.publisher).classList.add(datum.response === 'OK' ? 'bg-green-light' : 'bg-red-light');
+                document.getElementById('idSpanOK_' + datum.id + '_' + card.publisher).innerText = '';
+                document.getElementById('idSpanNOK_' + datum.id + '_' + card.publisher).innerText = '';
+                document.getElementById('idSpan' + datum.response + '_' + datum.id + '_' + card.publisher).innerText = 'X';
+                document.getElementById('idTd' + datum.response + '_' + datum.id + '_' + card.publisher).classList.add(datum.response === 'OK' ? 'bg-green-light' : 'bg-red-light');
+                document.getElementById('idTd' + datum.response + '_' + datum.id + '_' + card.publisher).classList.add('txt-color-black');
+
+                document.getElementById('idSpanExpl_' + datum.id + '_' + card.publisher).innerText = datum.explanation;
+                if (datum.explanation !== '') {
+                    document.getElementById('idTdExpl_' + datum.id + '_' + card.publisher).classList.add('bg-red-light');
+                    document.getElementById('idTdExpl_' + datum.id + '_' + card.publisher).classList.add('txt-color-black');
+                }
+
+                if (datum.comment !== '') {
+                    document.getElementById('idSpanComment_' + datum.id + '_' + card.publisher).innerText = datum.comment;
+                    document.getElementById('idTdComment_' + datum.id + '_' + card.publisher).classList.add(datum.response === 'OK' ? 'bg-green-light' : 'bg-red-light');
+                    document.getElementById('idTdComment_' + datum.id + '_' + card.publisher).classList.add('txt-color-black');
+                }
+            }
+        });
+    }
+
+    function lockGeneralCommentBlock(childCards) {
+        document.getElementById('idDivGeneralComment').innerHTML = '';
+        var childCardsWithGeneralComment = childCards.filter(childCard => childCard.data.generalComment !== '');
+        Array.from(childCardsWithGeneralComment).forEach(card => {
+            document.getElementById('idDivGeneralComment').innerHTML += `<p id="idPTso_${card.publisher}" data-tso="${card.publisher}" class="output-component bold tso-name-cell ml-3 mb-1">${card.publisher}</p>` +
+                    `                    <p id="idPGeneralComment_${card.publisher}" class="output-component ml-5">${card.data.generalComment}</p>`;
+        });
+        updateEntitiesNames();
+    }
+    
+    function unlockGeneralCommentBlock() {
+        var currentUserGeneralCommentFound = false;
+        document.getElementById('idDivGeneralComment').innerHTML = '';
+        var childCardsWithGeneralComment = templateGateway.childCards.filter(childCard => childCard.data.generalComment !== '');
+        Array.from(childCardsWithGeneralComment).forEach(card => {
+            if (card.publisher === currentUserTso) {
+                currentUserGeneralCommentFound = true;
+                document.getElementById('idDivGeneralComment').innerHTML += `<p id="idPTso_${card.publisher}" data-tso="${card.publisher}" class="output-component bold tso-name-cell ml-3 mb-1">${card.publisher}</p>` +
+                        `                    <textarea id="generalComment" row="2" style="margin-left: auto; margin-right: auto; width: 100%;" class="input-gc-component">${card.data.generalComment}</textarea>`;
+            } else {
+                document.getElementById('idDivGeneralComment').innerHTML += `<p id="idPTso_${card.publisher}" data-tso="${card.publisher}" class="output-component bold tso-name-cell ml-3 mb-1">${card.publisher}</p>` +
+                        `                    <p id="idPGeneralComment_${card.publisher}" class="output-component ml-5">${card.data.generalComment}</p>`;
+            }
+        });
+        if (currentUserGeneralCommentFound === false) {
+            document.getElementById('idDivGeneralComment').innerHTML = `<textarea id="generalComment" row="2" style="margin-left: auto; margin-right: auto; width: 100%;" class="input-component"></textarea>`
+                    + document.getElementById('idDivGeneralComment').innerHTML;
+        }
+        updateEntitiesNames();
+    }
+
+    function validateAndSubmitForm() {
+        let validationDataId = {{card.data.cardId}};
+        let generalComment = document.getElementById('generalComment').value;
+        if (!entitiesRequiredToRespond.includes(currentUserTso)) {
+            return {
+                valid: true, responseCardData: {
+                    validationDataId: validationDataId,
+                    generalComment: generalComment
+                }
+            };
+        }
+
+        var coordinationRas = {{json card.data.coordination.coordinationRas}};
+        let formData = [];
+        //let allRadiosChecked = true;
+        for (let c of Array.from(coordinationRas)) {
+            let checkedRadio = document.querySelector('input[name=radio_' + c.id + '_' + currentUserTso + ']:checked');
+            let explSelect = document.getElementById('idSelectExpl_' + c.id + '_' + currentUserTso);
+            if (checkedRadio === null) {
+                return {valid: false, errorMsg: 'You should respond to each proposal!'};
+            } else if (checkedRadio.value === 'NOK' && explSelect.value === '') {
+                return {valid: false, errorMsg: 'You should provide an explanation to each refused proposal!'};
+            }
+            formData.push({
+                'id': c.id,
+                'response': checkedRadio.value,
+                'explanation': (checkedRadio.value === 'NOK') ? explSelect.value : "",
+                'comment': document.getElementById('idComment_' + c.id + '_' + currentUserTso).value
+            });
+        };
+
+        const result = {
+            valid: true,
+            responseCardData: {
+                validationDataId,
+                generalComment,
+                formData
+            }
+        };
+
+        // find responseState
+        var answers = formData.map(data => data.response);
+        result['responseState'] = answers.includes('OK') && answers.includes('NOK')
+                ? 'answerDifferentChoices'
+                : (answers.includes('OK') ? 'answerProposalConfirmed' : 'answerProposalRejected');
+
+        return result;
+    }
+</script>

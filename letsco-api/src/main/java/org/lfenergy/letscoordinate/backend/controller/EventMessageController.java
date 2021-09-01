@@ -14,29 +14,46 @@ package org.lfenergy.letscoordinate.backend.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import io.vavr.control.Validation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.lfenergy.letscoordinate.backend.component.OpfabPublisherComponent;
 import org.lfenergy.letscoordinate.backend.config.LetscoProperties;
-import org.lfenergy.letscoordinate.backend.dto.ProcessedFileDto;
+import org.lfenergy.letscoordinate.backend.dto.KafkaFileWrapperDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageWrapperDto;
+import org.lfenergy.letscoordinate.backend.model.Coordination;
+import org.lfenergy.letscoordinate.backend.service.CoordinationService;
 import org.lfenergy.letscoordinate.backend.service.InputFileToPojoService;
+import org.opfab.cards.model.Card;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
+import static org.lfenergy.letscoordinate.backend.enums.FileDirectionEnum.INPUT;
+import static org.lfenergy.letscoordinate.backend.enums.FileDirectionEnum.OUTPUT;
+
 @RestController
 @RequestMapping("/letsco/api/v1")
 @RequiredArgsConstructor
 @Api(description = "Controller providing APIs to manage XLSX and JSON EventMessage data")
+@Slf4j
 public class EventMessageController {
 
     final private LetscoProperties letscoProperties;
     final private InputFileToPojoService inputFileToPojoService;
+    final private CoordinationService coordinationService;
+    private final OpfabPublisherComponent opfabPublisherComponent;
 
     @PostMapping(value = "/upload/validate")
     @ApiOperation(value = "Validate uploaded file (Excel or JSON) and generate JSON from validated data")
     @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
-    public ResponseEntity uploadedExcelToJson(@RequestParam("file") MultipartFile multipartFile) {
+    public ResponseEntity validateFile(@RequestParam("file") MultipartFile multipartFile) {
         return inputFileToPojoService.uploadedFileToPojo(multipartFile).fold(
                 invalid -> ResponseEntity.status(invalid.getStatus()).body(invalid),
                 valid -> ResponseEntity.ok(EventMessageWrapperDto.builder().eventMessage(valid).build())
@@ -51,7 +68,7 @@ public class EventMessageController {
             hidden = true
     )
     @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
-    public ResponseEntity uploadedExcelsToJson(@RequestBody MultipartFile[] multipartFiles) {
+    public ResponseEntity validateFiles(@RequestBody MultipartFile[] multipartFiles) {
         return inputFileToPojoService.uploadedExcelsToPojo(multipartFiles).fold(
                 invalid -> ResponseEntity.status(invalid.getStatus()).body(invalid),
                 valid -> ResponseEntity.ok(valid)
@@ -59,16 +76,12 @@ public class EventMessageController {
     }
 
     @PostMapping(value = "/upload/save", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    @ApiOperation(value = "Validate uploaded file (Excel or JSON) and save validated data into database")
+    @ApiOperation(value = "Validate uploaded file (Excel or JSON) and save validated data into database (The file saving is asynchronous)")
     @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
-    public ResponseEntity saveUploadedExcelFile(@RequestParam("file") MultipartFile multipartFile) {
-        return inputFileToPojoService.uploadExcelFileAndSaveGeneratedData(multipartFile).fold(
+    public ResponseEntity saveUploadedFile(@RequestParam("file") MultipartFile multipartFile) {
+        return inputFileToPojoService.uploadFileAndSaveGeneratedData(multipartFile).fold(
                 invalid -> ResponseEntity.status(invalid.getStatus()).body(invalid),
-                valid -> ResponseEntity.ok(ProcessedFileDto.builder()
-                        .id(valid.getId())
-                        .fileName(multipartFile.getOriginalFilename())
-                        .build()
-                )
+                valid -> ResponseEntity.ok().build()
         );
     }
 
@@ -80,7 +93,7 @@ public class EventMessageController {
             hidden = true
     )
     @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
-    public ResponseEntity saveUploadedExcelFiles(@RequestParam("file") MultipartFile[] multipartFiles) {
+    public ResponseEntity saveUploadedFiles(@RequestParam("file") MultipartFile[] multipartFiles) {
         return inputFileToPojoService.uploadExcelFilesAndSaveGeneratedData(multipartFiles).fold(
                 invalid -> ResponseEntity.status(invalid.getStatus()).body(invalid),
                 valid -> ResponseEntity.ok(valid)
@@ -105,6 +118,90 @@ public class EventMessageController {
                 invalid -> ResponseEntity.status(invalid.getStatus()).body(invalid),
                 valid -> ResponseEntity.ok().build()
         );
+    }
+
+    @PostMapping("/coordination")
+    @ApiOperation(value = "Coordination callback", hidden = true)
+    public ResponseEntity coordinationCallback(@RequestBody Card card) throws IOException {
+        log.info("Callback card received:\n" + card.toString());
+        Validation<Boolean, Coordination> validation = coordinationService.saveAnswersAndCheckIfAllTsosHaveAnswered(card);
+        if (validation.isValid()) {
+            log.info("All required entities have been answered! => Publishing result card...");
+            Card resultCard = opfabPublisherComponent.publishOpfabCoordinationResultCard(validation.get());
+            log.info("Generating output file...");
+            boolean outputFileGenerated = coordinationService.generateOutputFile(validation.get());
+            log.info("Output file generated!");
+            if (outputFileGenerated) {
+                coordinationService.sendCoordinationFileCard(resultCard, OUTPUT);
+            }
+        } else {
+            log.info("Some entities did not respond yet!");
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/eventmessages/{id}/files/input")
+    @ApiOperation(value = "Get input file by event_message id")
+    @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
+    public ResponseEntity getInputFile(@PathVariable Long id) {
+        return coordinationService.getEventMessageFileIfExists(id, INPUT)
+                .map(eventMessageFile -> ResponseEntity.ok(KafkaFileWrapperDto.builder()
+                        .fileName(eventMessageFile.getFileName())
+                        .fileType(eventMessageFile.getFileType())
+                        .fileContent(eventMessageFile.getFileContent())
+                        .build()))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/eventmessages/{id}/files/output")
+    @ApiOperation(value = "Get output file by event_message id")
+    @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
+    public ResponseEntity getOutputFile(@PathVariable Long id) {
+        return coordinationService.getEventMessageFileIfExists(id, OUTPUT)
+                .map(eventMessageFile -> ResponseEntity.ok(KafkaFileWrapperDto.builder()
+                        .fileName(eventMessageFile.getFileName())
+                        .fileType(eventMessageFile.getFileType())
+                        .fileContent(eventMessageFile.getFileContent())
+                        .build()))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/eventmessages/{id}/generate-output-file")
+    @ApiOperation(
+            value = "Manual generation of output file for event_message by its id",
+            notes = "For test purposes only!",
+            hidden = true
+    )
+    @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
+    public ResponseEntity generateOutputFile(@PathVariable Long id) throws IOException {
+        coordinationService.applyCoordinationAnswersToEventMessage(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/eventmessages/{id}/download-output-file")
+    @ApiOperation(
+            value = "Generate download link to download output file by event_message id",
+            notes = "For test purposes only!",
+            hidden = true
+    )
+    @ApiImplicitParam(required = true, name = "Authorization", dataType = "string", paramType = "header")
+    public ResponseEntity downloadOutputFile(@PathVariable Long id) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        headers.add("Pragma", "no-cache");
+        headers.add("Expires", "0");
+        return coordinationService.getEventMessageFileIfExists(id, OUTPUT)
+                .map(eventMessageFile -> {
+                    headers.setContentDisposition(ContentDisposition.builder("inline")
+                            .filename(eventMessageFile.getFileName())
+                            .build());
+                    return ResponseEntity.ok()
+                            .headers(headers)
+                            //.contentLength(eventMessageFile.getFileContent().length)
+                            .contentType(MediaType.parseMediaType("application/octet-stream"))
+                            .body(new ByteArrayResource(eventMessageFile.getFileContent()));
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
 }

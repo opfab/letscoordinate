@@ -175,7 +175,7 @@ public class ExcelDataProcessorTest {
         assertAll(
                 () -> assertNotNull(map),
                 () -> assertTrue(!map.isEmpty()),
-                () -> assertEquals(8, map.keySet().size())
+                () -> assertEquals(9, map.keySet().size())
         );
     }
 
@@ -241,7 +241,7 @@ public class ExcelDataProcessorTest {
     }
 
     @Test
-    public void initEventMessagePayload_shouldNotUpdateEventMessageDtoPayload() throws NoSuchFieldException, IllegalAccessException, InstantiationException {
+    public void initEventMessagePayload_shouldNotUpdateEventMessageDtoPayload() throws NoSuchFieldException, IllegalAccessException, InstantiationException, InvalidInputFileException {
         EventMessageDto eventMessageDto = new EventMessageDto();
         int initialHashCode = eventMessageDto.hashCode();
         excelDataProcessor.initEventMessagePayload(eventMessageDto, null, null);

@@ -29,8 +29,8 @@ public class KafkaConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    @Value("${letsco.kafka.topic-pattern}")
-    private String kafkaTopicPattern;
+    @Value("${letsco.kafka.input-topic-pattern}")
+    private String kafkaInputTopicPattern;
 
     @Bean
     public Map<String, Object> consumerConfigs() {
@@ -57,7 +57,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    public String kafkaTopicPattern() {
-        return kafkaTopicPattern;
+    public String kafkaInputTopicPattern() {
+        return kafkaInputTopicPattern;
     }
 }

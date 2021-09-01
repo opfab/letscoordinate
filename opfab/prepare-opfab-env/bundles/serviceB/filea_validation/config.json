@@ -4,6 +4,11 @@
   "name": "process.name",
   "version": "1",
   "defaultLocale": "en",
+  "uiVisibility": {
+    "monitoring": false,
+    "logging": false,
+    "calendar": false
+  },
   "templates": [
     "messageValidated"
   ],

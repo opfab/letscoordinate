@@ -36,4 +36,16 @@ public final class Constants {
 
     public static final String VALIDATION = "validation";
     public static final String PROCESS_MONITORING = "processmonitoring";
+
+    public static final String EVENT_KEY = "Event";
+    public static final String CONSTRAINT_KEY = "Constraint";
+    public static final String REMEDIAL_ACTIONS_KEY = "Remedial actions";
+
+    public static final String ENTITIES_RECIPIENTS = "ENTITIES_RECIPIENTS";
+    public static final String ENTITIES_REQUIRED_TO_RESPOND = "ENTITIES_REQUIRED_TO_RESPOND";
+    public static final String ENTITIES_ALLOWED_TO_RESPOND = "ENTITIES_ALLOWED_TO_RESPOND";
+
+    public static final int NBR_EVENTS_TO_DISPLAY_IN_CARD_SUMMARY = 3;
+
+    public static final String VISIBLE_CARD_TAG = "visible_card";
 }
