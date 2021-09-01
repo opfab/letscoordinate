@@ -18,6 +18,7 @@
     "initial": {
       "name": "coordination.logging.initial.name",
       "description": "coordination.logging.initial.description",
+      "color": "orange",
       "response": {
         "lock": false,
         "state": "answerProposalConfirmed",
