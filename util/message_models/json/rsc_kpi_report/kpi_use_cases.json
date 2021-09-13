@@ -3,7 +3,7 @@
     "xmlns": "http://iec.ch/TC57/2011/schema/message",
     "header": {
       "verb": "created",
-      "noun": "ProcessSuccessful",
+      "noun": "NOT_GENERIC_NOTIF",
       "timestamp": "2021-03-12T08:13:15Z",
       "source": "SERVICE_A",
       "messageId": "134654a095714812ba74323b021f23b5",
@@ -12,8 +12,8 @@
         "businessDataIdentifier": {
           "businessApplication": "PanEuropeanServiceATool",
           "messageTypeName": "NotificationTypeA",
-          "businessDayFrom": "2021-03-12T23:00:00Z",
-          "businessDayTo": "2021-03-19T23:00:00Z",
+          "businessDayFrom": "2021-03-10T23:00:00Z",
+          "businessDayTo": "2021-03-20T23:00:00Z",
           "processStep": "Initial Calculation"
         }
       }
@@ -41,7 +41,7 @@
       ],
       "rscKpi": [
         {
-          "name": "gp1",
+          "name": "gp01",
           "joinGraph": "true",
           "data": [
             {
@@ -207,7 +207,7 @@
           ]
         },
         {
-          "name": "gp2",
+          "name": "gp02",
           "data": [
             {
               "timestamp": "2021-07-31T22:00:00Z",
@@ -292,7 +292,7 @@
           ]
         },
         {
-          "name": "bp1",
+          "name": "bp01",
           "data": [
             {
               "timestamp": "2021-08-01T22:00:00Z",
@@ -671,7 +671,7 @@
           ]
         },
         {
-          "name": "bp2",
+          "name": "bp02",
           "joinGraph": "false",
           "data": [
             {
@@ -992,7 +992,7 @@
           ]
         },
         {
-          "name": "bp7",
+          "name": "bp07",
           "data": [
             {
               "timestamp": "2021-08-01T22:00:00Z",

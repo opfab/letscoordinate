@@ -11,6 +11,6 @@
 
 package org.lfenergy.letscoordinate.backend.enums;
 
-public enum CoordinationAnswerEnum {
-    OK, NOK;
+public enum CoordinationProcessStatusEnum {
+    IN_PROGRESS, FINISHED
 }

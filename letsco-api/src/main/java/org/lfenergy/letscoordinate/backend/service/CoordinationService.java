@@ -31,24 +31,25 @@ import org.lfenergy.letscoordinate.backend.kafka.LetscoKafkaProducer;
 import org.lfenergy.letscoordinate.backend.mapper.EventMessageMapper;
 import org.lfenergy.letscoordinate.backend.model.*;
 import org.lfenergy.letscoordinate.backend.processor.ExcelDataProcessor;
-import org.lfenergy.letscoordinate.backend.repository.CoordinationGeneralCommentRepository;
-import org.lfenergy.letscoordinate.backend.repository.CoordinationRaAnswerRepository;
-import org.lfenergy.letscoordinate.backend.repository.CoordinationRepository;
-import org.lfenergy.letscoordinate.backend.repository.EventMessageRepository;
+import org.lfenergy.letscoordinate.backend.repository.*;
 import org.lfenergy.letscoordinate.backend.util.Constants;
-import org.lfenergy.letscoordinate.backend.util.HttpUtil;
 import org.opfab.cards.model.Card;
 import org.opfab.cards.model.PublisherTypeEnum;
 import org.opfab.cards.model.SeverityEnum;
-import org.opfab.cards.model.TimeSpan;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.lfenergy.letscoordinate.backend.enums.CoordinationProcessStatusEnum.FINISHED;
+import static org.lfenergy.letscoordinate.backend.enums.CoordinationProcessStatusEnum.IN_PROGRESS;
 import static org.lfenergy.letscoordinate.backend.util.Constants.ENTITIES_REQUIRED_TO_RESPOND;
 
 @Slf4j
@@ -59,6 +60,7 @@ public class CoordinationService {
     private final CoordinationRepository coordinationRepository;
     private final CoordinationRaAnswerRepository coordinationRaAnswerRepository;
     private final CoordinationGeneralCommentRepository coordinationGeneralCommentRepository;
+    private final CoordinationLttdQueueRepository coordinationLttdQueueRepository;
     private final ObjectMapper objectMapper;
     private final EventMessageRepository eventMessageRepository;
     private final OpfabConfig opfabConfig;
@@ -66,15 +68,14 @@ public class CoordinationService {
     private final LetscoKafkaProducer letscoKafkaProducer;
     private final ExcelDataProcessor excelDataProcessor;
     private final LetscoProperties letscoProperties;
+    private final RestTemplate restTemplateForOpfab;
 
     public Validation<Boolean, Coordination> saveAnswersAndCheckIfAllTsosHaveAnswered(Card card) {
         saveAnswers(card);
         return checkIfAllTsosHaveAnswered(card);
     }
 
-    public Coordination initAndSaveCoordination(Card card,
-                                                EventMessageDto eventMessageDto,
-                                                Long idEventMessage) {
+    public Coordination initAndSaveCoordination(Card card, Long idEventMessage) {
         Optional<EventMessage> eventMessageOptional = eventMessageRepository.findById(idEventMessage);
         if (eventMessageOptional.isPresent()) {
             EventMessage eventMessage = eventMessageOptional.get();
@@ -88,7 +89,9 @@ public class CoordinationService {
             coordination.setPublishDate(timestamp);
             coordination.setStartDate(businessDayFrom.isBefore(timestamp) ? businessDayFrom : timestamp);
             coordination.setEndDate(businessDayTo);
-            coordination.setStatus(null);
+            coordination.setStatus(IN_PROGRESS);
+            Instant lttd = generateLttdByProcessKey(card.getProcess());
+            coordination.setLttd(lttd);
             coordination.setCoordinationRas(Optional.ofNullable(eventMessage.getTimeseries())
                     .map(timeseries -> timeseries.stream().findFirst()
                             .map(timeserie -> timeserie.getTimeserieDatas().stream()
@@ -96,9 +99,43 @@ public class CoordinationService {
                                     .collect(Collectors.toList()))
                             .orElseGet(ArrayList::new))
                     .orElseGet(ArrayList::new));
-            return coordinationRepository.save(coordination);
+
+            Coordination savedCoordination = coordinationRepository.save(coordination);
+
+            if (lttd != null) {
+                coordinationLttdQueueRepository.save(CoordinationLttdQueue.builder()
+                        .coordination(savedCoordination)
+                        .lttd(lttd)
+                        .build());
+            }
+
+            return savedCoordination;
         }
         return null;
+    }
+
+    protected Instant generateLttdByProcessKey(String processKey) {
+        Instant lttd = null;
+        LttdEnum lttdEnum = letscoProperties.getCoordination().getLttd().getSpecificLttd().get(processKey);
+        if (lttdEnum == null && letscoProperties.getCoordination().getLttd().isApplyDefaultLttdIfNoSpecificLttdFound()) {
+            lttdEnum = letscoProperties.getCoordination().getLttd().getDefaultLttd();
+        }
+        if (lttdEnum != null) {
+            LocalDateTime now = LocalDateTime.now(letscoProperties.getTimezone());
+            switch (lttdEnum) {
+                case AT_8_PM:
+                    LocalDateTime localLttd = now.withHour(20).withMinute(0).withSecond(0).withNano(0);
+                    if (now.getHour() >= 20) {
+                        localLttd = localLttd.plusDays(1);
+                    }
+                    lttd = localLttd.toInstant(letscoProperties.getTimezone().getRules().getOffset(now));
+                    break;
+                case AFTER_2_HOURS:
+                    lttd = now.plusHours(2).toInstant(letscoProperties.getTimezone().getRules().getOffset(now));
+                    break;
+            }
+        }
+        return lttd;
     }
 
     public void saveAnswers(Card card) {
@@ -117,7 +154,8 @@ public class CoordinationService {
                     .map(CoordinationRa::getCoordinationRaAnswers)
                     .flatMap(Collection::stream)
                     .filter(coordinationRaAnswer -> coordinationRaAnswer.getEicCode().equals(publisher))
-                    .forEach(coordinationRaAnswer -> coordinationRaAnswerRepository.deleteByEicCodeAndCoordinationRaId(coordinationRaAnswer.getEicCode(), coordinationRaAnswer.getCoordinationRa().getId()));
+                    .forEach(coordinationRaAnswer -> coordinationRaAnswerRepository.deleteByEicCodeAndCoordinationRaId(
+                            coordinationRaAnswer.getEicCode(), coordinationRaAnswer.getCoordinationRa().getId()));
             coordination.getCoordinationRas().forEach(coordinationRa -> {
                 CoordinationResponseDataDto.FormData newAnswer = dataMap.formDataMap().get(coordinationRa.getId());
                 if (newAnswer != null) {
@@ -171,10 +209,9 @@ public class CoordinationService {
         return new CoordinationRa();
     }
 
-    public boolean generateOutputFile(Coordination coordination) throws IOException {
-        EventMessage updatedEventMessage = applyCoordinationAnswersToEventMessage(coordination);
+    public boolean sendOutputFileToKafka(EventMessage eventMessage) {
         try {
-            letscoKafkaProducer.sendFileToKafka(eventMessageOutputFileToKafkaFileWrapperDto(updatedEventMessage),
+            letscoKafkaProducer.sendFileToKafka(eventMessageOutputFileToKafkaFileWrapperDto(eventMessage),
                     letscoProperties.getKafka().getDefaultOutputTopic());
         } catch (Exception e) {
             log.error("Error while sending data to kafka!", e);
@@ -224,7 +261,7 @@ public class CoordinationService {
                                         timeserieDataDetails.getTimeserieDataDetailsResults().add(TimeserieDataDetailsResult.builder()
                                                 .timeserieDataDetails(timeserieDataDetails)
                                                 .eicCode(answer.getEicCode())
-                                                .answer(answer.getAnswer() == CoordinationAnswerEnum.OK ? OutputResultAnswerEnum.CON : OutputResultAnswerEnum.REJ)
+                                                .answer(answer.getAnswer() == CoordinationEntityRaResponseEnum.OK ? CoordinationEntityGlobalResponseEnum.CON : CoordinationEntityGlobalResponseEnum.REJ)
                                                 .comment(StringUtils.isNotBlank(answer.getComment()) ? answer.getComment() : null)
                                                 .explanation(StringUtils.isNotBlank(answer.getExplanation()) ? answer.getExplanation() : null)
                                                 .build())
@@ -339,31 +376,33 @@ public class CoordinationService {
     private CoordinationStatusEnum calculateCoordinationStatus (Coordination coordination, List<String> concernedEntities) {
         LetscoProperties.Coordination.CoordinationStatusCalculationRule rules = letscoProperties.getCoordination().getCoordinationStatusCalculationRule();
 
-        Map<String, OutputResultAnswerEnum> entityAnswersMap = getEntityAnswersMap(coordination, concernedEntities);
-        Map<OutputResultAnswerEnum, Long> countingMap = entityAnswersMap.values().stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        Map<String, CoordinationEntityGlobalResponseEnum> entityAnswersMap = getEntityAnswersMap(coordination, concernedEntities);
+        Map<CoordinationEntityGlobalResponseEnum, Long> countingMap = entityAnswersMap.values().stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
-        if (countingMap.keySet().size() == 1) {
-            if (countingMap.keySet().toArray()[0] == OutputResultAnswerEnum.CON)
+        if (countingMap.keySet().isEmpty()) {
+            return letscoProperties.getCoordination().applyNotAnsweredDefaultValueIfNeeded(rules.getNotNotNot());
+        } else if (countingMap.keySet().size() == 1) {
+            if (countingMap.keySet().toArray()[0] == CoordinationEntityGlobalResponseEnum.CON)
                 return letscoProperties.getCoordination().applyNotAnsweredDefaultValueIfNeeded(rules.getConConCon());
-            else if (countingMap.keySet().toArray()[0] == OutputResultAnswerEnum.REJ)
+            else if (countingMap.keySet().toArray()[0] == CoordinationEntityGlobalResponseEnum.REJ)
                 return letscoProperties.getCoordination().applyNotAnsweredDefaultValueIfNeeded(rules.getRejRejRej());
-            else if (countingMap.keySet().toArray()[0] == OutputResultAnswerEnum.MIX)
+            else if (countingMap.keySet().toArray()[0] == CoordinationEntityGlobalResponseEnum.MIX)
                 return letscoProperties.getCoordination().applyNotAnsweredDefaultValueIfNeeded(rules.getMixMixMix());
             else
                 return letscoProperties.getCoordination().applyNotAnsweredDefaultValueIfNeeded(rules.getNotNotNot());
         } else {
-            if (countingMap.containsKey(OutputResultAnswerEnum.CON)) {
-                if (countingMap.containsKey(OutputResultAnswerEnum.REJ)) {
-                    if (countingMap.containsKey(OutputResultAnswerEnum.MIX)) {
+            if (countingMap.containsKey(CoordinationEntityGlobalResponseEnum.CON)) {
+                if (countingMap.containsKey(CoordinationEntityGlobalResponseEnum.REJ)) {
+                    if (countingMap.containsKey(CoordinationEntityGlobalResponseEnum.MIX)) {
                         return letscoProperties.getCoordination().applyNotAnsweredDefaultValueIfNeeded(rules.getConRejMix());
                     } else {
-                        if (countingMap.get(OutputResultAnswerEnum.CON) > countingMap.get(OutputResultAnswerEnum.REJ))
+                        if (countingMap.get(CoordinationEntityGlobalResponseEnum.CON) > countingMap.get(CoordinationEntityGlobalResponseEnum.REJ))
                             return letscoProperties.getCoordination().applyNotAnsweredDefaultValueIfNeeded(rules.getConConRej());
                         else
                             return letscoProperties.getCoordination().applyNotAnsweredDefaultValueIfNeeded(rules.getConRejRej());
                     }
                 } else {
-                    if (countingMap.containsKey(OutputResultAnswerEnum.MIX)) {
+                    if (countingMap.containsKey(CoordinationEntityGlobalResponseEnum.MIX)) {
                         return letscoProperties.getCoordination().applyNotAnsweredDefaultValueIfNeeded(rules.getConConMix());
                     } else {
                         return letscoProperties.getCoordination().applyNotAnsweredDefaultValueIfNeeded(rules.getConConNot());
@@ -375,29 +414,29 @@ public class CoordinationService {
         }
     }
 
-    private Map<String, OutputResultAnswerEnum> getEntityAnswersMap(Coordination coordination, List<String> concernedEntities) {
+    private Map<String, CoordinationEntityGlobalResponseEnum> getEntityAnswersMap(Coordination coordination, List<String> concernedEntities) {
         Map<String, List<CoordinationRaAnswer>> entityAnswersMap = coordination.getCoordinationRas().stream()
                 .map(CoordinationRa::getCoordinationRaAnswers)
                 .filter(CollectionUtils::isNotEmpty)
                 .flatMap(Collection::stream)
                 .filter(Objects::nonNull)
                 .collect(Collectors.groupingBy(CoordinationRaAnswer::getEicCode));
-        Map<String, OutputResultAnswerEnum> result = new HashMap<>();
+        Map<String, CoordinationEntityGlobalResponseEnum> result = new HashMap<>();
         for (String entity: concernedEntities) {
             if (entityAnswersMap.containsKey(entity)) {
-                Set<CoordinationAnswerEnum> answers = entityAnswersMap.get(entity).stream()
+                Set<CoordinationEntityRaResponseEnum> answers = entityAnswersMap.get(entity).stream()
                         .map(CoordinationRaAnswer::getAnswer)
                         .collect(Collectors.toSet());
                 if (answers.isEmpty())
-                    result.put(entity, OutputResultAnswerEnum.NOT);
+                    result.put(entity, CoordinationEntityGlobalResponseEnum.NOT);
                 else if (answers.size() > 1)
-                    result.put(entity, OutputResultAnswerEnum.MIX);
-                else if (answers.toArray()[0] == CoordinationAnswerEnum.OK)
-                    result.put(entity, OutputResultAnswerEnum.CON);
+                    result.put(entity, CoordinationEntityGlobalResponseEnum.MIX);
+                else if (answers.toArray()[0] == CoordinationEntityRaResponseEnum.OK)
+                    result.put(entity, CoordinationEntityGlobalResponseEnum.CON);
                 else
-                    result.put(entity, OutputResultAnswerEnum.REJ);
+                    result.put(entity, CoordinationEntityGlobalResponseEnum.REJ);
             } else {
-                result.put(entity, OutputResultAnswerEnum.NOT);
+                result.put(entity, CoordinationEntityGlobalResponseEnum.NOT);
             }
         }
         return result;
@@ -428,11 +467,21 @@ public class CoordinationService {
             data.put("businessDayTo", coordinationCard.getEndDate());
             data.put("isInputFile", fileDirectionEnum == FileDirectionEnum.INPUT);
             card.setData(data);
-            log.info("Opfab {} file notification generated", fileDirectionEnum);
-            HttpUtil.post(opfabConfig.getUrl().getCardsPub(), card);
+            log.debug("Opfab {} file notification generated", fileDirectionEnum);
+            restTemplateForOpfab.exchange(opfabConfig.getUrl().getCardsPub(), HttpMethod.POST, new HttpEntity<>(card), Object.class);
         } catch (Exception e) {
             log.error("Unable to send coordination file notification!", e);
         }
+    }
+
+    public List<CoordinationLttdQueue> getLttdExpiredCoordinations() {
+        return coordinationLttdQueueRepository.findByLttdLessThan(Instant.now());
+    }
+
+    public void updateCoordinationProcessStatusAndRemoveItFromLttdQueue(CoordinationLttdQueue coordinationLttdQueue) {
+        coordinationLttdQueue.getCoordination().setStatus(FINISHED);
+        coordinationRepository.save(coordinationLttdQueue.getCoordination());
+        coordinationLttdQueueRepository.deleteById(coordinationLttdQueue.getId());
     }
 
 }

@@ -251,7 +251,7 @@ public class ExcelDataProcessor implements DataProcessor {
 
     /**
      * Allows to transform the {@link Sheet}'s data to a map having as keys the dataType (e.g TEXT, LINK, RSC_KPI, TIMESERIE)
-     * and as values an other map grouping the payload data by dataName (e.g GP1 for RSC_KPI dataType, probabilisticResults
+     * and as values an other map grouping the payload data by dataName (e.g GP01 for RSC_KPI dataType, probabilisticResults
      * for RSC_KPI TIMESERIE)
      *
      * @param sheet the data {@link Sheet}
@@ -403,7 +403,7 @@ public class ExcelDataProcessor implements DataProcessor {
     /**
      * Allows to generate the payload for the complex data (extending {@link AbstractPayloadComplexData})
      *
-     * @param payloadDetailsMap map grouping the payload data by dataName (e.g GP1 for RSC_KPI dataType,
+     * @param payloadDetailsMap map grouping the payload data by dataName (e.g GP01 for RSC_KPI dataType,
      *                          probabilisticResults for RSC_KPI TIMESERIE)
      * @param resultType a Class< T exends {@link IPayloadData}> to represent the output type
      * @param dataType a Class< T1 extends AbstractPayloadComplexData> to represent the input data type

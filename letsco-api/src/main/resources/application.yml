@@ -67,6 +67,12 @@ letsco:
       - http://letsco-front:4200
     clientId: opfab-client
   coordination:
+    lttd:
+      scheduler-fixed-delay: 3000
+      apply-default-lttd-if-no-specific-lttd-found: false
+      default-lttd: AFTER_2_HOURS
+      specific-lttd:
+        servicea_coordinationa: AT_8_PM
     coordination-status-calculation-strategy: MAJORITY
     coordination-status-calculation-rules:
       WORST_CASE:
@@ -99,7 +105,7 @@ letsco:
         con-con-mix: CON
         con-rej-mix: MIX
         con-con-not: CON
-    not-answered-default-case: true
+    not-answered-default-case: false
     not-answered-default-case-rules:
       WORST_CASE: REJ
       BEST_CASE: CON

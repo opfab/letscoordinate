@@ -19,10 +19,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableConfigurationProperties({LetscoProperties.class, OpfabConfig.class, KeycloakConfig.class})
 @EnableJpaRepositories
+@EnableScheduling
 @EnableKafka
 public class LetscoApiApplication {
 

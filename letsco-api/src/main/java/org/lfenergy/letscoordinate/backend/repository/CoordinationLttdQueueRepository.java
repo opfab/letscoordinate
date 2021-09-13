@@ -9,20 +9,15 @@
  * This file is part of the Let’s Coordinate project.
  */
 
-package org.lfenergy.letscoordinate.backend.enums;
+package org.lfenergy.letscoordinate.backend.repository;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import org.lfenergy.letscoordinate.backend.model.CoordinationLttdQueue;
+import org.springframework.data.repository.CrudRepository;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+import java.time.Instant;
+import java.util.List;
 
-public enum CoordinationStatusEnum {
-    CON ("proposalConfirmed"),
-    REJ ("proposalRejected"),
-    MIX ("differentChoices"),
-    NOT ("noAnswerProvided");
-
-    @Getter
-    private String bundleStateName;
+public interface CoordinationLttdQueueRepository extends CrudRepository<CoordinationLttdQueue, Long> {
+    List<CoordinationLttdQueue> findByLttdLessThan(Instant lttd);
 }
+

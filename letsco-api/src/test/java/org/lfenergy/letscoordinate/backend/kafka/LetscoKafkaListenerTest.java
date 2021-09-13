@@ -44,6 +44,7 @@ import org.lfenergy.letscoordinate.backend.util.CoordinationFactory;
 import org.lfenergy.letscoordinate.backend.util.OpfabUtil;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -78,6 +79,8 @@ public class LetscoKafkaListenerTest {
     EventMessageRepository eventMessageRepository;
     @Mock
     OpfabPublisherComponent opfabPublisherComponent;
+    @Mock
+    RestTemplate restTemplate;
 
     @BeforeEach
     public void beforeEach() {
@@ -96,7 +99,7 @@ public class LetscoKafkaListenerTest {
         jsonDataProcessor = new JsonDataProcessor(objectMapper, eventMessageService);
 
         letscoKafkaListener = new LetscoKafkaListener(jsonDataProcessor, excelDataProcessor, eventMessageRepository,
-                opfabPublisherComponent, letscoProperties, opfabConfig, objectMapper);
+                opfabPublisherComponent, letscoProperties, opfabConfig, objectMapper, restTemplate);
 
         timestamp = Instant.parse("2021-03-17T10:15:30.00Z");
         eventMessageDto = EventMessageDto.builder()

@@ -12,7 +12,7 @@
 package org.lfenergy.letscoordinate.backend.dto.coordination;
 
 import lombok.*;
-import org.lfenergy.letscoordinate.backend.enums.CoordinationAnswerEnum;
+import org.lfenergy.letscoordinate.backend.enums.CoordinationEntityRaResponseEnum;
 
 import java.util.*;
 import java.util.function.Function;
@@ -33,7 +33,7 @@ public class CoordinationResponseDataDto {
     @Builder
     public static class FormData {
         private Long id;
-        private CoordinationAnswerEnum response;
+        private CoordinationEntityRaResponseEnum response;
         private String explanation;
         private String comment;
     }

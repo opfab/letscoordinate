@@ -12,7 +12,7 @@
 package org.lfenergy.letscoordinate.backend.model;
 
 import lombok.*;
-import org.lfenergy.letscoordinate.backend.enums.OutputResultAnswerEnum;
+import org.lfenergy.letscoordinate.backend.enums.CoordinationEntityGlobalResponseEnum;
 
 import javax.persistence.*;
 
@@ -42,7 +42,7 @@ public class TimeserieDataDetailsResult implements java.io.Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "answer", nullable = false, length = 50)
-    private OutputResultAnswerEnum answer;
+    private CoordinationEntityGlobalResponseEnum answer;
 
     @Column(name = "explanation", length = 1000)
     private String explanation;

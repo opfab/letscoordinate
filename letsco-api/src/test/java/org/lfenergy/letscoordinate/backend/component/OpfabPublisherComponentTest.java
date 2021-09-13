@@ -24,8 +24,10 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.header.PropertiesDto
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.PayloadDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationMessageDto;
+import org.lfenergy.letscoordinate.backend.enums.CoordinationStatusEnum;
 import org.lfenergy.letscoordinate.backend.enums.FileTypeEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
+import org.lfenergy.letscoordinate.backend.model.Coordination;
 import org.lfenergy.letscoordinate.backend.model.opfab.ValidationData;
 import org.lfenergy.letscoordinate.backend.service.CoordinationService;
 import org.lfenergy.letscoordinate.backend.util.CoordinationFactory;
@@ -38,6 +40,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opfab.cards.model.Card;
 import org.opfab.cards.model.SeverityEnum;
 import org.opfab.cards.model.TimeSpan;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -64,7 +68,10 @@ public class OpfabPublisherComponentTest {
     private OpfabPublisherComponent opfabPublisherComponent;
     private EventMessageDto eventMessageDto;
     private LetscoProperties letscoProperties;
+    @Mock
     private CoordinationService coordinationService;
+    @Mock
+    private RestTemplate restTemplateForOpfab;
 
     String process;
     String source = "source";
@@ -80,7 +87,6 @@ public class OpfabPublisherComponentTest {
 
         opfabConfig = new OpfabConfig();
         letscoProperties = new LetscoProperties();
-        coordinationService = Mockito.mock(CoordinationService.class);
 
         CoordinationConfig coordinationConfig = new CoordinationConfig();
         coordinationConfig.setTsos(Map.of(
@@ -111,7 +117,7 @@ public class OpfabPublisherComponentTest {
                 .payload(PayloadDto.builder().build()).build();
 
 
-        opfabPublisherComponent = new OpfabPublisherComponent(opfabConfig, coordinationConfig, letscoProperties, coordinationService);
+        opfabPublisherComponent = new OpfabPublisherComponent(opfabConfig, coordinationConfig, letscoProperties, coordinationService, restTemplateForOpfab);
         process = OpfabUtil.generateProcessKey(eventMessageDto, true);
         opfabPublisherComponent.setProcessKey(process);
     }
@@ -876,7 +882,9 @@ public class OpfabPublisherComponentTest {
 
     @Test
     public void publishOpfabCoordinationResultCard_feedConfigNotSet() {
-        opfabPublisherComponent.publishOpfabCoordinationResultCard(CoordinationFactory.initCoordination(FileTypeEnum.EXCEL));
+        Coordination coordination = CoordinationFactory.initCoordination(FileTypeEnum.EXCEL);
+        coordination.getEventMessage().setCoordinationStatus(CoordinationStatusEnum.MIX);
+        opfabPublisherComponent.publishOpfabCoordinationResultCard(coordination);
     }
 
     @Test
@@ -884,7 +892,9 @@ public class OpfabPublisherComponentTest {
         Map<String, OpfabConfig.OpfabFeed> feedConfigMap = new HashMap();
         feedConfigMap.put("coordinationProcessKey", new OpfabConfig.OpfabFeed("title", "summary"));
         opfabConfig.setFeed(feedConfigMap);
-        opfabPublisherComponent.publishOpfabCoordinationResultCard(CoordinationFactory.initCoordination(FileTypeEnum.EXCEL));
+        Coordination coordination = CoordinationFactory.initCoordination(FileTypeEnum.EXCEL);
+        coordination.getEventMessage().setCoordinationStatus(CoordinationStatusEnum.MIX);
+        opfabPublisherComponent.publishOpfabCoordinationResultCard(coordination);
     }
 
 }

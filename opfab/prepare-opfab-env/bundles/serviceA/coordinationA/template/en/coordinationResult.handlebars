@@ -12,7 +12,7 @@
         <div class="col-6">Status: <span class="text-success">Finished</span></div>
         <div class="col-6">
             <div style="float: right;">
-                <span>Answers :</span> {{#each tsos as |tsoEicCode|}}<span data-tso="{{tsoEicCode}}" class="tso-name-cell text-success">{{tsoEicCode}}</span>&nbsp;&nbsp;{{/each}}
+                <span>Answers :</span> {{#each tsos as |tsoEicCode|}}<span id="tsoResponseResultSpan_{{tsoEicCode}}" data-tso="{{tsoEicCode}}" class="tso-name-cell text-danger">{{tsoEicCode}}</span>&nbsp;&nbsp;{{/each}}
             </div>
         </div>
     </div>
@@ -184,6 +184,9 @@
                     document.getElementById('idTdAnswerComment_' + ra.id + '_' + answer.eicCode).classList.add(answer.answer === 'OK' ? 'bg-green-light' : 'bg-red-light');
                     document.getElementById('idTdAnswerComment_' + ra.id + '_' + answer.eicCode).classList.add('txt-color-black');
                 }
+
+                document.getElementById('tsoResponseResultSpan_' + answer.eicCode).classList.remove('text-danger');
+                document.getElementById('tsoResponseResultSpan_' + answer.eicCode).classList.add('text-success');
             }
         });
         answersRenderingStatus.value = 'FINISHED';

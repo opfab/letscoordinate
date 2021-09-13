@@ -29,7 +29,7 @@ public final class RscKpiFactory {
         return RscKpi.builder()
                 .id(1L)
                 .eventMessage(null)
-                .name("GP1")
+                .name("GP01")
                 .joinGraph(false)
                 .rscKpiDatas(Arrays.asList(createRscKpiData()))
                 .build();

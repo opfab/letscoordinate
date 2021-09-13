@@ -14,8 +14,7 @@ package org.lfenergy.letscoordinate.backend.util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
-import org.lfenergy.letscoordinate.backend.enums.CoordinationAnswerEnum;
-import org.lfenergy.letscoordinate.backend.enums.OutputResultAnswerEnum;
+import org.lfenergy.letscoordinate.backend.enums.CoordinationEntityRaResponseEnum;
 import org.lfenergy.letscoordinate.backend.model.Coordination;
 import org.lfenergy.letscoordinate.backend.model.CoordinationRa;
 import org.lfenergy.letscoordinate.backend.model.CoordinationRaAnswer;
@@ -42,7 +41,7 @@ public class OpfabUtilTest {
         return eventMessageDto;
     }
 
-    private Coordination initCoordination(CoordinationAnswerEnum answer1, CoordinationAnswerEnum answer2) {
+    private Coordination initCoordination(CoordinationEntityRaResponseEnum answer1, CoordinationEntityRaResponseEnum answer2) {
         Coordination coordination = new Coordination();
         List<CoordinationRaAnswer> answers = new ArrayList<>();
         if (answer1 != null)
@@ -73,57 +72,6 @@ public class OpfabUtilTest {
                 () -> assertNotNull(processKey),
                 () -> assertEquals("source_messagetypename", processKey)
         );
-    }
-
-    @Test
-    public void agreementFound() {
-        assertTrue(OpfabUtil.isAgreementFound(initCoordination(CoordinationAnswerEnum.OK, null), Arrays.asList("10XFR-RTE------Q")));
-    }
-
-    @Test
-    public void agreementNotFound() {
-        assertFalse(OpfabUtil.isAgreementFound(initCoordination(CoordinationAnswerEnum.OK, null), Arrays.asList("10XFR-RTE------Q", "10X1001A1001A345")));
-    }
-
-    @Test
-    public void getCoordinationStatus_coordination_null() {
-        assertEquals(OutputResultAnswerEnum.NOT, OpfabUtil.getCoordinationStatus(null, null));
-    }
-
-    @Test
-    public void getCoordinationStatus_coordinationRas_empty() {
-        assertEquals(OutputResultAnswerEnum.NOT, OpfabUtil.getCoordinationStatus(Coordination.builder().build(), null));
-    }
-
-    @Test
-    public void getCoordinationStatus_concernedEntities_empty() {
-        assertEquals(OutputResultAnswerEnum.NOT, OpfabUtil.getCoordinationStatus(Coordination.builder()
-                .coordinationRas(Arrays.asList(CoordinationRa.builder().build()))
-                .build(), null));
-    }
-
-    @Test
-    public void getCoordinationStatus_CON() {
-        assertEquals(OutputResultAnswerEnum.CON, OpfabUtil.getCoordinationStatus(initCoordination(CoordinationAnswerEnum.OK, CoordinationAnswerEnum.OK),
-                Arrays.asList("10XFR-RTE------Q", "10X1001A1001A345")));
-    }
-
-    @Test
-    public void getCoordinationStatus_REJ() {
-        assertEquals(OutputResultAnswerEnum.REJ, OpfabUtil.getCoordinationStatus(initCoordination(CoordinationAnswerEnum.NOK, CoordinationAnswerEnum.NOK),
-                Arrays.asList("10XFR-RTE------Q", "10X1001A1001A345")));
-    }
-
-    @Test
-    public void getCoordinationStatus_MIX() {
-        assertEquals(OutputResultAnswerEnum.MIX, OpfabUtil.getCoordinationStatus(initCoordination(CoordinationAnswerEnum.OK, CoordinationAnswerEnum.NOK),
-                Arrays.asList("10XFR-RTE------Q", "10X1001A1001A345")));
-    }
-
-    @Test
-    public void getCoordinationStatus_NOT() {
-        assertEquals(OutputResultAnswerEnum.NOT, OpfabUtil.getCoordinationStatus(initCoordination(null, null),
-                Arrays.asList("10XFR-RTE------Q", "10X1001A1001A345")));
     }
 
 }

@@ -63,7 +63,24 @@ public final class EventMessageMapper {
         return eventMessage;
     }
 
-    public static EventMessage headerFromDto(EventMessageDto eventMessageDto) {
+    public static EventMessage fromDtoForThirdApps(EventMessageDto eventMessageDto) {
+        if (eventMessageDto == null)
+            return null;
+
+        EventMessage eventMessage = headerFromDto(eventMessageDto);
+
+        if(eventMessageDto.getPayload() != null) {
+            final PayloadDto payloadDto = eventMessageDto.getPayload();
+            eventMessage.setRscKpis(Optional.ofNullable(payloadDto.getRscKpi())
+                    .map(rscKpis -> rscKpis.stream()
+                            .map(rscKpi -> EventMessageMapper.fromDto(rscKpi, eventMessage))
+                            .collect(Collectors.toList()))
+                    .orElse(null));
+        }
+        return eventMessage;
+    }
+
+    private static EventMessage headerFromDto(EventMessageDto eventMessageDto) {
         if (eventMessageDto == null)
             return null;
 

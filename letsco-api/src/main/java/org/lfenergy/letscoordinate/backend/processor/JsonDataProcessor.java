@@ -17,10 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageWrapperDto;
-import org.lfenergy.letscoordinate.backend.exception.InvalidInputFileException;
 import org.lfenergy.letscoordinate.backend.service.EventMessageService;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;

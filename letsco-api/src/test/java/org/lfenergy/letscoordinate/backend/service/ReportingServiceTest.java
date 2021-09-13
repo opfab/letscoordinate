@@ -121,7 +121,7 @@ public class ReportingServiceTest {
                 () -> assertTrue(rscKpiReportDataDto.getRscKpiTypedDataMap().containsKey(KpiDataTypeEnum.BP)),
                 () -> assertEquals(3, rscKpiReportDataDto.getRscKpiTypedDataMap().get(KpiDataTypeEnum.BP).size()),
                 () -> assertEquals(5, rscKpiReportDataDto.getRscKpiSubtypedDataMap().size()),
-                () -> assertTrue(rscKpiReportDataDto.getRscKpiSubtypedDataMap().keySet().containsAll(Arrays.asList("GP1", "GP2", "BP1", "BP2", "BP3"))),
+                () -> assertTrue(rscKpiReportDataDto.getRscKpiSubtypedDataMap().keySet().containsAll(Arrays.asList("GP01", "GP02", "BP01", "BP02", "BP03"))),
                 () -> assertEquals("serviceA_allKpis_panEu_20200115_20210115", rscKpiReportDataDto.getReportFileName())
         );
     }
@@ -149,7 +149,7 @@ public class ReportingServiceTest {
                 () -> assertTrue(rscKpiReportDataDto.getRscKpiTypedDataMap().containsKey(KpiDataTypeEnum.BP)),
                 () -> assertEquals(3, rscKpiReportDataDto.getRscKpiTypedDataMap().get(KpiDataTypeEnum.BP).size()),
                 () -> assertEquals(5, rscKpiReportDataDto.getRscKpiSubtypedDataMap().size()),
-                () -> assertTrue(rscKpiReportDataDto.getRscKpiSubtypedDataMap().keySet().containsAll(Arrays.asList("GP1", "GP2", "BP1", "BP2", "BP3"))),
+                () -> assertTrue(rscKpiReportDataDto.getRscKpiSubtypedDataMap().keySet().containsAll(Arrays.asList("GP01", "GP02", "BP01", "BP02", "BP03"))),
                 () -> assertEquals("serviceA_allKpis_panEu_20200115_20210115", rscKpiReportDataDto.getReportFileName())
         );
     }
@@ -177,7 +177,7 @@ public class ReportingServiceTest {
                 () -> assertTrue(rscKpiReportDataDto.getRscKpiTypedDataMap().containsKey(KpiDataTypeEnum.BP)),
                 () -> assertEquals(3, rscKpiReportDataDto.getRscKpiTypedDataMap().get(KpiDataTypeEnum.BP).size()),
                 () -> assertEquals(5, rscKpiReportDataDto.getRscKpiSubtypedDataMap().size()),
-                () -> assertTrue(rscKpiReportDataDto.getRscKpiSubtypedDataMap().keySet().containsAll(Arrays.asList("GP1", "GP2", "BP1", "BP2", "BP3"))),
+                () -> assertTrue(rscKpiReportDataDto.getRscKpiSubtypedDataMap().keySet().containsAll(Arrays.asList("GP01", "GP02", "BP01", "BP02", "BP03"))),
                 () -> assertEquals("serviceA_allKpis_panEu_20200115_20210115", rscKpiReportDataDto.getReportFileName())
         );
     }
@@ -205,7 +205,7 @@ public class ReportingServiceTest {
                 () -> assertTrue(rscKpiReportDataDto.getRscKpiTypedDataMap().containsKey(KpiDataTypeEnum.BP)),
                 () -> assertEquals(3, rscKpiReportDataDto.getRscKpiTypedDataMap().get(KpiDataTypeEnum.BP).size()),
                 () -> assertEquals(5, rscKpiReportDataDto.getRscKpiSubtypedDataMap().size()),
-                () -> assertTrue(rscKpiReportDataDto.getRscKpiSubtypedDataMap().keySet().containsAll(Arrays.asList("GP1", "GP2", "BP1", "BP2", "BP3"))),
+                () -> assertTrue(rscKpiReportDataDto.getRscKpiSubtypedDataMap().keySet().containsAll(Arrays.asList("GP01", "GP02", "BP01", "BP02", "BP03"))),
                 () -> assertEquals("serviceA_allKpis_panEu_20200115_20210115", rscKpiReportDataDto.getReportFileName())
         );
     }
