@@ -23,7 +23,6 @@ import org.lfenergy.letscoordinate.backend.exception.PositiveTechnicalQualityChe
 import org.lfenergy.letscoordinate.backend.model.*;
 import org.lfenergy.letscoordinate.backend.model.opfab.ValidationData;
 import org.lfenergy.letscoordinate.backend.util.RscKpiFactory;
-import org.lfenergy.letscoordinate.common.exception.AuthorizationException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Instant;
@@ -69,21 +68,6 @@ public class PojoTest {
         eventMessage.setTimeseries(new ArrayList<>());
 
         assertNotEquals(hashCode, eventMessage.hashCode());
-    }
-
-    @Test
-    public void userService () {
-        UserService userService = new UserService();
-
-        int hashCode = userService.hashCode();
-
-        userService.setId(1L);
-        userService.setServiceCode("SERVICE_A");
-        userService.setUser(new User());
-
-        assertNotNull(userService);
-        assertNotNull(userService.toString());
-        assertNotEquals(hashCode, userService.hashCode());
     }
 
     @Test

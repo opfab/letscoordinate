@@ -41,6 +41,7 @@ public class WithMockCustomUserSecurityContextFactory implements WithSecurityCon
                         {"preferred_username", customUser.username()},
                         {"eicCode", "eicCode"},
                         {"resource_access", resource_access},
+                        {"services", "SERVICE_A"}
                 }).collect(Collectors.toMap(data -> (String) data[0], data -> (Object) data[1]))),
                 Arrays.asList(new SimpleGrantedAuthority(customUser.authority())));
         context.setAuthentication(auth);

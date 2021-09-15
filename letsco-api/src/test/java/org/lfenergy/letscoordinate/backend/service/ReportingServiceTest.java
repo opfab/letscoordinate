@@ -24,11 +24,8 @@ import org.lfenergy.letscoordinate.backend.enums.DataGranularityEnum;
 import org.lfenergy.letscoordinate.backend.enums.KpiDataTypeEnum;
 import org.lfenergy.letscoordinate.backend.enums.ReportTypeEnum;
 import org.lfenergy.letscoordinate.backend.model.RscKpiData;
-import org.lfenergy.letscoordinate.backend.model.User;
-import org.lfenergy.letscoordinate.backend.model.UserService;
 import org.lfenergy.letscoordinate.backend.processor.ExcelDataProcessor;
 import org.lfenergy.letscoordinate.backend.repository.RscKpiDataRepository;
-import org.lfenergy.letscoordinate.backend.repository.UserRepository;
 import org.lfenergy.letscoordinate.backend.util.ApplicationContextUtil;
 import org.lfenergy.letscoordinate.backend.util.Constants;
 import org.lfenergy.letscoordinate.backend.util.RscKpiFactory;
@@ -38,7 +35,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -54,8 +54,6 @@ public class ReportingServiceTest {
     EventMessageService eventMessageService;
     LetscoProperties letscoProperties;
     @Mock
-    UserRepository userRepository;
-    @Mock
     RscKpiDataRepository rscKpiDataRepository;
 
     @BeforeEach
@@ -64,26 +62,19 @@ public class ReportingServiceTest {
         coordinationConfig = ApplicationContextUtil.initCoordinationConfig();
         eventMessageService = new EventMessageService(coordinationConfig, letscoProperties);
         excelDataProcessor = new ExcelDataProcessor(letscoProperties, coordinationConfig, eventMessageService);
-        reportingService = new ReportingService(coordinationConfig, rscKpiDataRepository, excelDataProcessor, userRepository);
+        reportingService = new ReportingService(coordinationConfig, rscKpiDataRepository, excelDataProcessor);
 
         SecurityContextHolder.getContext().setAuthentication(ApplicationContextUtil.createTestAuthentication());
     }
 
     @Test
     public void initRscKpiReportFormDto_shouldReturnRscKpiReportInitialFormDataDto() {
-        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(User.builder()
-                .username("user.test")
-                .userServices(Arrays.asList(
-                        UserService.builder().serviceCode("SERVICE_A").build(),
-                        UserService.builder().serviceCode("SERVICE_B").build()
-                        ))
-                .build()));
         Validation<String, RscKpiReportInitialFormDataDto> validation = reportingService.initRscKpiReportFormDto();
         assertAll(
                 () -> assertTrue(validation.isValid()),
                 () -> assertEquals(6, validation.get().getRscs().size()),
                 () -> assertEquals(2, validation.get().getRegions().size()),
-                () -> assertEquals(2, validation.get().getRscServices().size()),
+                () -> assertEquals(1, validation.get().getRscServices().size()),
                 () -> assertEquals(2, validation.get().getKpiDataTypes().size())
         );
     }

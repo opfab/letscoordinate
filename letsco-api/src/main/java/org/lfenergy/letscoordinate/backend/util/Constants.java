@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 public final class Constants {
 
     public static final String ROLE_PREFIX = "ROLE_";
-    public static final String SERVICE_PREFIX = ROLE_PREFIX + "SRV_";
 
     public static final String ALL_DATA_TYPE_CODE = "ALL";
     public static final String ALL_RSCS_CODE = "ALL_RSCS";
