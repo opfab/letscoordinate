@@ -162,8 +162,9 @@ public class ApplicationContextUtil {
                 .claim("sub", "user.test")
                 .claim("groups", Collections.singletonList("SERVICE_A"))
                 .claim("scope", "RSC TSO")
+                .claim("services", "SERVICE_A")
                 .build();
-        return new TestingAuthenticationToken(jwt, null, "ROLE_TSO", Constants.SERVICE_PREFIX + "SERVICE_A", Constants.SERVICE_PREFIX + "SERVICE_B");
+        return new TestingAuthenticationToken(jwt, null, "ROLE_TSO");
     }
 
 }

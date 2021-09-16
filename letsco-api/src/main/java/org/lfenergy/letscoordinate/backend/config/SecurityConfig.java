@@ -12,6 +12,8 @@
 package org.lfenergy.letscoordinate.backend.config;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.lfenergy.letscoordinate.backend.util.Constants;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -23,12 +25,15 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final LetscoProperties letscoProperties;
@@ -77,13 +82,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             this.clientId = clientId;
         }
 
+        @Override
         protected Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
-
-            Map<String, Map<String, Collection<String>>> resource_access = (Map<String, Map<String, Collection<String>>>) jwt.getClaims().get("resource_access");
-
-            Collection<String> authorities = resource_access.get(clientId).get("roles").stream()
-                    .map(role -> Constants.ROLE_PREFIX + role.toUpperCase())
-                    .collect(Collectors.toList());
+            Map<String, Object> claims = jwt.getClaims();
+            Map<String, Map<String, Collection<String>>> resourceAccess = (Map<String, Map<String, Collection<String>>>) claims.get("resource_access");
+            List<String> authorities = new ArrayList<>();
+            try {
+                Collection<String> roles = resourceAccess.get(clientId).get("roles");
+                if (CollectionUtils.isNotEmpty(roles)) {
+                    authorities = roles.stream()
+                            .map(role -> Constants.ROLE_PREFIX + role.toUpperCase())
+                            .collect(Collectors.toList());
+                } else {
+                    log.error("No roles found for user \"{}\"!", jwt.getSubject());
+                }
+            } catch (Exception e) {
+                log.error("Error while extracting authorities for user \"{}\"!", jwt.getSubject(), e);
+            }
 
             return authorities.stream()
                     .map(SimpleGrantedAuthority::new)

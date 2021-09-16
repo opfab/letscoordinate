@@ -9,6 +9,9 @@
     "enabled" : true,
     "totp" : false,
     "emailVerified" : false,
+    "attributes" : {
+      "services" : "[ \"SERVICE_A\", \"SERVICE_B\" ]"
+    },
     "credentials" : [ {
       "type" : "password",
       "hashedSaltedValue" : "7s25HFkeM9PRtZkCADMGxUSC9WiB6bj/ZXkC7Ctipif5ZgZHlr8KcSa+jchCja34JiywjYSPsOJhVehMH2Eg9g==",
@@ -26,7 +29,7 @@
     "realmRoles" : [ "uma_authorization", "offline_access" ],
     "clientRoles" : {
       "account" : [ "view-profile", "manage-account" ],
-      "opfab-client" : [ "RSC", "TSO", "SRV_SERVICE_A", "SRV_SERVICE_B" ]
+      "opfab-client" : [ "TSO" ]
     },
     "notBefore" : 0,
     "groups" : [ ]
@@ -39,6 +42,9 @@
     "enabled" : true,
     "totp" : false,
     "emailVerified" : false,
+    "attributes" : {
+      "services" : "[ \"SERVICE_A\" ]"
+    },
     "credentials" : [ {
       "type" : "password",
       "hashedSaltedValue" : "7s25HFkeM9PRtZkCADMGxUSC9WiB6bj/ZXkC7Ctipif5ZgZHlr8KcSa+jchCja34JiywjYSPsOJhVehMH2Eg9g==",
@@ -56,7 +62,7 @@
     "realmRoles" : [ "uma_authorization", "offline_access" ],
     "clientRoles" : {
       "account" : [ "view-profile", "manage-account" ],
-      "opfab-client" : [ "RSC", "TSO", "SRV_SERVICE_A" ]
+      "opfab-client" : [ "TSO" ]
     },
     "notBefore" : 0,
     "groups" : [ ]
@@ -67,6 +73,9 @@
     "enabled" : true,
     "totp" : false,
     "emailVerified" : false,
+    "attributes" : {
+      "services" : "[ \"SERVICE_A\", \"SERVICE_B\" ]"
+    },
     "credentials" : [ {
       "type" : "password",
       "hashedSaltedValue" : "7s25HFkeM9PRtZkCADMGxUSC9WiB6bj/ZXkC7Ctipif5ZgZHlr8KcSa+jchCja34JiywjYSPsOJhVehMH2Eg9g==",
@@ -84,7 +93,7 @@
     "realmRoles" : [ "uma_authorization", "offline_access" ],
     "clientRoles" : {
       "account" : [ "view-profile", "manage-account" ],
-      "opfab-client" : [ "RSC", "TSO", "SRV_SERVICE_A", "SRV_SERVICE_B" ]
+      "opfab-client" : [ "TSO" ]
     },
     "notBefore" : 0,
     "groups" : [ ]
@@ -95,6 +104,9 @@
     "enabled" : true,
     "totp" : false,
     "emailVerified" : false,
+    "attributes" : {
+      "services" : "[ \"SERVICE_A\", \"SERVICE_B\" ]"
+    },
     "credentials" : [ {
       "type" : "password",
       "hashedSaltedValue" : "7s25HFkeM9PRtZkCADMGxUSC9WiB6bj/ZXkC7Ctipif5ZgZHlr8KcSa+jchCja34JiywjYSPsOJhVehMH2Eg9g==",
@@ -112,7 +124,7 @@
     "realmRoles" : [ "uma_authorization", "offline_access" ],
     "clientRoles" : {
       "account" : [ "view-profile", "manage-account" ],
-      "opfab-client" : [ "RSC", "TSO", "SRV_SERVICE_A", "SRV_SERVICE_B" ]
+      "opfab-client" : [ "TSO" ]
     },
     "notBefore" : 0,
     "groups" : [ ]
@@ -123,6 +135,9 @@
     "enabled" : true,
     "totp" : false,
     "emailVerified" : false,
+    "attributes" : {
+      "services" : "[ \"SERVICE_A\", \"SERVICE_B\" ]"
+    },
     "credentials" : [ {
       "type" : "password",
       "hashedSaltedValue" : "7s25HFkeM9PRtZkCADMGxUSC9WiB6bj/ZXkC7Ctipif5ZgZHlr8KcSa+jchCja34JiywjYSPsOJhVehMH2Eg9g==",
@@ -140,7 +155,7 @@
     "realmRoles" : [ "uma_authorization", "offline_access" ],
     "clientRoles" : {
       "account" : [ "view-profile", "manage-account" ],
-      "opfab-client" : [ "RSC", "TSO", "SRV_SERVICE_A", "SRV_SERVICE_B" ]
+      "opfab-client" : [ "TSO" ]
     },
     "notBefore" : 0,
     "groups" : [ ]
@@ -151,6 +166,9 @@
     "enabled" : true,
     "totp" : false,
     "emailVerified" : false,
+    "attributes" : {
+      "services" : "[ \"SERVICE_A\", \"SERVICE_B\" ]"
+    },
     "credentials" : [ {
       "type" : "password",
       "hashedSaltedValue" : "7s25HFkeM9PRtZkCADMGxUSC9WiB6bj/ZXkC7Ctipif5ZgZHlr8KcSa+jchCja34JiywjYSPsOJhVehMH2Eg9g==",
@@ -168,7 +186,7 @@
     "realmRoles" : [ "uma_authorization", "offline_access" ],
     "clientRoles" : {
       "account" : [ "view-profile", "manage-account" ],
-      "opfab-client" : [ "RSC", "TSO", "SRV_SERVICE_A", "SRV_SERVICE_B" ]
+      "opfab-client" : [ "RSC" ]
     },
     "notBefore" : 0,
     "groups" : [ ]

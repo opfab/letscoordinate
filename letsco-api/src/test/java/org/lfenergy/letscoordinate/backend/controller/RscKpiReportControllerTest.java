@@ -17,11 +17,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.dto.reporting.RscKpiReportSubmittedFormDataDto;
 import org.lfenergy.letscoordinate.backend.enums.DataGranularityEnum;
-import org.lfenergy.letscoordinate.backend.model.User;
-import org.lfenergy.letscoordinate.backend.model.UserService;
 import org.lfenergy.letscoordinate.backend.processor.ExcelDataProcessor;
 import org.lfenergy.letscoordinate.backend.repository.RscKpiDataRepository;
-import org.lfenergy.letscoordinate.backend.repository.UserRepository;
 import org.lfenergy.letscoordinate.backend.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -34,12 +31,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -61,27 +55,17 @@ public class RscKpiReportControllerTest {
     @Autowired
     ExcelDataProcessor excelDataProcessor;
     @MockBean
-    UserRepository userRepository;
-    @MockBean
     RscKpiDataRepository rscKpiDataRepository;
 
     @Test
     @WithMockCustomUser
     public void getUserByUsername_shouldReturn200() throws Exception {
-        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(User.builder()
-                .id(1L)
-                .username("user.test")
-                .userServices(Arrays.asList(
-                        UserService.builder().serviceCode("SERVICE_A").build(),
-                        UserService.builder().serviceCode("SERVICE_B").build()
-                ))
-                .build()));
         mockMvc.perform(get("/letsco/api/v1/rsc-kpi-report/config-data"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rscs", hasSize(6)))
                 .andExpect(jsonPath("$.regions", hasSize(10)))
-                .andExpect(jsonPath("$.rscServices", hasSize(2)))
+                .andExpect(jsonPath("$.rscServices", hasSize(1)))
                 .andExpect(jsonPath("$.kpiDataTypes", hasSize(2)));
     }
 

@@ -18,7 +18,6 @@ import org.lfenergy.letscoordinate.backend.client.KeycloakClient;
 import org.lfenergy.letscoordinate.backend.dto.ResponseErrorDto;
 import org.lfenergy.letscoordinate.backend.dto.ResponseErrorMessageDto;
 import org.lfenergy.letscoordinate.backend.enums.ResponseErrorSeverityEnum;
-import org.lfenergy.letscoordinate.backend.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,9 +31,7 @@ import java.util.Collections;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,8 +44,6 @@ public class AuthenticationControllerTest {
     private MockMvc mockMvc;
     @MockBean
     KeycloakClient keycloakClient;
-    @MockBean
-    org.lfenergy.letscoordinate.backend.service.UserService userService;
 
     @Test
     public void getToken_withValidUsernamePassword() throws Exception {
@@ -80,22 +75,6 @@ public class AuthenticationControllerTest {
                 .andExpect(jsonPath("$.status").value(500))
                 .andExpect(jsonPath("$.code").value("TOKEN_GENERATION_ERROR"))
                 .andExpect(jsonPath("$.messages", hasSize(1)));
-    }
-
-    @Test
-    @WithMockCustomUser
-    public void login_shouldReturn200() throws Exception {
-        User user = User.builder()
-                .id(1L)
-                .username("user.test")
-                .eicCode("eic_code")
-                .build();
-        when(userService.getUserByUsername()).thenReturn(user);
-        mockMvc.perform(post("/letsco/api/v1/auth/login")
-                .with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value(user.getUsername()))
-                .andExpect(jsonPath("$.eicCode").value(user.getEicCode()));
     }
 
 }

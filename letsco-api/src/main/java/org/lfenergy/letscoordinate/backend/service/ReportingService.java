@@ -18,16 +18,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.lfenergy.letscoordinate.backend.config.CoordinationConfig;
 import org.lfenergy.letscoordinate.backend.dto.reporting.*;
 import org.lfenergy.letscoordinate.backend.enums.DataGranularityEnum;
-import org.lfenergy.letscoordinate.backend.enums.KpiDataSubtypeEnum;
 import org.lfenergy.letscoordinate.backend.enums.ReportTypeEnum;
 import org.lfenergy.letscoordinate.backend.mapper.RscKpiReportMapper;
 import org.lfenergy.letscoordinate.backend.model.RscKpi;
 import org.lfenergy.letscoordinate.backend.model.RscKpiData;
-import org.lfenergy.letscoordinate.backend.model.User;
-import org.lfenergy.letscoordinate.backend.model.UserService;
 import org.lfenergy.letscoordinate.backend.processor.ExcelDataProcessor;
 import org.lfenergy.letscoordinate.backend.repository.RscKpiDataRepository;
-import org.lfenergy.letscoordinate.backend.repository.UserRepository;
 import org.lfenergy.letscoordinate.backend.util.Constants;
 import org.lfenergy.letscoordinate.backend.util.SecurityUtil;
 import org.lfenergy.letscoordinate.backend.util.StringUtil;
@@ -37,10 +33,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,33 +47,27 @@ public class ReportingService {
     private final CoordinationConfig coordinationConfig;
     private final RscKpiDataRepository rscKpiDataRepository;
     private final ExcelDataProcessor excelDataProcessor;
-    private final UserRepository userRepository;
 
     public Validation<String, RscKpiReportInitialFormDataDto> initRscKpiReportFormDto() {
-        final String username;
         try {
-            username = SecurityUtil.getUsernameFromToken();
-        } catch (AuthorizationException authEx) {
-            return Validation.invalid(authEx.getMessage());
+            return Validation.<String, RscKpiReportInitialFormDataDto>valid(RscKpiReportInitialFormDataDto.builder()
+                    .rscs(coordinationConfig.getRscs().values().stream()
+                            .map(RscKpiReportMapper::toDto)
+                            .sorted(Comparator.comparing(RscDto::getIndex))
+                            .collect(Collectors.toList()))
+                    .regions(coordinationConfig.getRegions().values().stream()
+                            .map(RscKpiReportMapper::toDto)
+                            .sorted(Comparator.comparing(RegionDto::getIndex))
+                            .collect(Collectors.toList()))
+                    .rscServices(getCurrentUserServices(SecurityUtil.getServicesFromToken()))
+                    .kpiDataTypes(coordinationConfig.getKpiDataTypes().values().stream()
+                            .map(RscKpiReportMapper::toDto)
+                            .sorted(Comparator.comparing(KpiDataTypeDto::getIndex))
+                            .collect(Collectors.toList()))
+                    .build());
+        } catch (AuthorizationException e) {
+            return Validation.invalid(e.getMessage());
         }
-        Optional<User> user = userRepository.findByUsername(username);
-
-        return user.map(u -> Validation.<String, RscKpiReportInitialFormDataDto>valid(RscKpiReportInitialFormDataDto.builder()
-                .rscs(coordinationConfig.getRscs().values().stream()
-                        .map(RscKpiReportMapper::toDto)
-                        .sorted(Comparator.comparing(RscDto::getIndex))
-                        .collect(Collectors.toList()))
-                .regions(coordinationConfig.getRegions().values().stream()
-                        .map(RscKpiReportMapper::toDto)
-                        .sorted(Comparator.comparing(RegionDto::getIndex))
-                        .collect(Collectors.toList()))
-                .rscServices(getCurrentUserRcsServices(u.getUserServices()))
-                .kpiDataTypes(coordinationConfig.getKpiDataTypes().values().stream()
-                        .map(RscKpiReportMapper::toDto)
-                        .sorted(Comparator.comparing(KpiDataTypeDto::getIndex))
-                        .collect(Collectors.toList()))
-                .build()))
-                .orElseGet(() -> Validation.invalid("User \"" + username + "\" not found!"));
     }
 
     @Transactional(readOnly = true)
@@ -200,14 +191,11 @@ public class ReportingService {
                 }).collect(Collectors.toList());
     }
 
-    private List<UserServiceDto> getCurrentUserRcsServices(List<UserService> services) {
-        if (CollectionUtils.isEmpty(services))
+    private List<UserServiceDto> getCurrentUserServices(List<String> serviceCodeList) {
+        if (CollectionUtils.isEmpty(serviceCodeList))
             return new ArrayList<>();
-        List<String> userServicesCodes = services.stream()
-                .map(UserService::getServiceCode)
-                .collect(Collectors.toList());
         return coordinationConfig.getServices().values().stream()
-                .filter(s -> userServicesCodes.contains(s.getCode()))
+                .filter(s -> serviceCodeList.contains(s.getCode()))
                 .map(RscKpiReportMapper::toDto)
                 .sorted(Comparator.comparing(UserServiceDto::getName))
                 .collect(Collectors.toList());
