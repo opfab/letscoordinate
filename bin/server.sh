@@ -20,7 +20,7 @@ function helpCommand() {
   echo -e "\t\t\t  (useful with start and restart commands)"
   echo -e "\t-f, --first-init: equivalent to using --build and --init options together"
   echo -e "\t\t\t  (useful with start and restart commands)"
-  echo -e "\t-h, --help\t: get help on a command\n"
+  echo -e "\t-h, --help\t: display help\n"
 	echo -e "Commands:"
   echo -e "\tstart\t\t: start the server"
   echo -e "\trestart\t\t: stop and start the server"

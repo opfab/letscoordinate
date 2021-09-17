@@ -23,7 +23,7 @@ To use Let's Coordinate, you need a linux OS with the following:
 
 **Please note**: 
 * It is highly recommended to use [sdkman](https://sdkman.io/) (v5.11.0 or grater) and [nvm](https://github.com/nvm-sh/nvm) (v14.11.0 or grater) to manage *Maven*, *Java*, *NPM* and *Node JS* tools versions (with sdkman and nvm, the previously mentioned tools will be automatically installed later).
-* The required OperatorFabric version is **2.8.0.RELEASE** (configured by default to be used with the current version of Let's Coordinate 1.3.0.RELEASE)
+* The required OperatorFabric version is **2.8.0.RELEASE** (configured by default to be used with the current version of Let's Coordinate 1.3.1.SNAPSHOT)
 
 ## 2. Setup and run Let's Coordinate
 
@@ -37,7 +37,7 @@ git clone https://github.com/opfab/letscoordinate.git
 
 #### 2.2. Create test branch
 
-Before starting Let's Coordinate, it's recommended to create a test branch from the latest stable release (1.3.0.RELEASE in our case).
+Before starting Let's Coordinate, it's recommended to create a test branch from the latest stable release (1.3.1.SNAPSHOT in our case).
 To do this, you first need to make sure that you have the latest tag list from your remote repository:
 
 ```
@@ -47,7 +47,7 @@ git fetch --all --tags
 Then, you can create the test branch:
 
 ```
-git checkout tags/1.3.0.RELEASE -b test-letsco-1.3.0.RELEASE
+git checkout tags/1.3.1.SNAPSHOT -b test-letsco-1.3.1.SNAPSHOT
 ```
 
 #### 2.3. Run Let's Coordinate
