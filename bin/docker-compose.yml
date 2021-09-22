@@ -54,7 +54,7 @@ services:
     command: ['--default-time-zone=+00:00', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
   letsco-api:
     container_name: letsco-api
-    image: letscoordinate/letsco-api:latest
+    image: letscoordinate/backend:${LC_VERSION}
     depends_on:
       - mariadb
       - kafka
@@ -65,18 +65,9 @@ services:
       - TZ=Europe/Paris
       - OPFAB_PROCESS_WITH_FILENAME=true
     restart: always
-  letsco-data-provider:
-    container_name: letsco-data-provider
-    image: letscoordinate/letsco-data-provider:latest
-    depends_on:
-      - kafka
-    user: ${USER_ID}:${USER_GID}
-    ports:
-      - 8082:8082
-    restart: always
   letsco-front:
     container_name: letsco-front
-    image: letscoordinate/letsco-front:latest
+    image: letscoordinate/frontend:${LC_VERSION}
     depends_on:
       - letsco-api
 #    user: ${USER_ID}:${USER_GID}
