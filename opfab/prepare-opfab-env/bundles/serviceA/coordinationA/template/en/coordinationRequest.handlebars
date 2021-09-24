@@ -374,7 +374,6 @@
 
         var coordinationRas = {{json card.data.coordination.coordinationRas}};
         let formData = [];
-        //let allRadiosChecked = true;
         for (let c of Array.from(coordinationRas)) {
             let checkedRadio = document.querySelector('input[name=radio_' + c.id + '_' + currentUserTso + ']:checked');
             let explSelect = document.getElementById('idSelectExpl_' + c.id + '_' + currentUserTso);
@@ -385,6 +384,7 @@
             }
             formData.push({
                 'id': c.id,
+                'remedialAction': c.remedialAction,
                 'response': checkedRadio.value,
                 'explanation': (checkedRadio.value === 'NOK') ? explSelect.value : "",
                 'comment': document.getElementById('idComment_' + c.id + '_' + currentUserTso).value
