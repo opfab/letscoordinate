@@ -87,6 +87,8 @@ function initIfAsked() {
       sudo chown -R $USER:$USER ${LC_HOME}/opfab/operatorfabric-getting-started/server/businessconfig-storage
       cd ${LC_HOME}/opfab/prepare-opfab-env/web-ui-config
       ./send-processes-groups.sh
+      cd ${LC_HOME}/opfab/prepare-opfab-env/monitoringConfig
+      ./loadMonitoringConfig.sh monitoringConfig.json
       echo
   fi
 }

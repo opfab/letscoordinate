@@ -644,7 +644,7 @@ public class OpfabPublisherComponent {
         Map<String, List<String>> concernedEntitiesMap = getConcernedEntitiesMap(eventMessage);
 
         Card card = new Card();
-        card.setKeepChildCards(false);
+        card.setKeepChildCards(true);
         card.setPublisherType(PublisherTypeEnum.EXTERNAL);
         card.setTags(createCoordinationCardTags(eventMessage, coordination.getProcessKey()));
         card.setProcess(coordination.getProcessKey());
