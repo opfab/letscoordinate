@@ -79,7 +79,7 @@ public class EventMessage implements java.io.Serializable {
     @Column(name = "sending_user", length = 50)
     private String sendingUser;
 
-    @Column(name = "file_name", length = 100)
+    @Column(name = "file_name", length = 1000)
     private String fileName;
 
     @Column(name = "tso", length = 20)
