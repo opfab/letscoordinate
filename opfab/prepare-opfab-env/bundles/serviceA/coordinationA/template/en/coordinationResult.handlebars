@@ -9,7 +9,7 @@
 
 {{#with card.data}}
     <div class="row">
-        <div class="col-6">Status: <span class="text-success">Finished</span></div>
+        <div class="col-6">Process Status : <span class="text-success">FINISHED</span></div>
         <div class="col-6">
             <div style="float: right;">
                 <span>Answers :</span> {{#each tsos as |tsoEicCode|}}<span id="tsoResponseResultSpan_{{tsoEicCode}}" data-tso="{{tsoEicCode}}" class="tso-name-cell text-danger">{{tsoEicCode}}</span>&nbsp;&nbsp;{{/each}}

@@ -145,7 +145,7 @@ public class OpfabPublisherComponent {
         String source = eventMessageDto.getHeader().getSource();
         BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
         String messageTypeName = bdi.getMessageTypeName();
-        List<String> tags = Stream.of(source, messageTypeName, processKey, source + "_" + noun, VISIBLE_CARD_TAG)
+        List<String> tags = Stream.of(source, messageTypeName, processKey, source + "_" + noun)
                 .map(String::toLowerCase).distinct().collect(Collectors.toList());
         if (MESSAGE_VALIDATED.getNoun().equals(noun)) {
             Optional<String> filenameOpt = bdi.getFileName();
@@ -735,7 +735,7 @@ public class OpfabPublisherComponent {
 
     private List<String> createCoordinationCardTags(EventMessage eventMessage, String processKey) {
         List<String> tags = Stream.of(eventMessage.getSource(), eventMessage.getMessageTypeName(), processKey,
-                eventMessage.getSource() + "_" + eventMessage.getNoun(), VISIBLE_CARD_TAG)
+                eventMessage.getSource() + "_" + eventMessage.getNoun())
                 .map(String::toLowerCase).distinct().collect(Collectors.toList());
         opfabConfig.getTags().ifPresent(t -> {
             if (t.containsKey(processKey)) {

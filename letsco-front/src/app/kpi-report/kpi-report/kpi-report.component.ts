@@ -19,7 +19,6 @@ import {ReportTypeEnum} from "../../core/enums/report-type-enum";
 import {DatePipe} from "@angular/common";
 import {RomanNumeralPipe} from "../../core/pipes/roman-numeral.pipe";
 import {KpiDataTypeFullNamePipe} from "../../core/pipes/kpi-data-type-full-name.pipe";
-import {KpiSubmittedForm} from "../../core/models/kpi-submitted-form.model";
 import * as jsPDF from 'jspdf';
 import {ThemeService} from "../../core/services/theme.service";
 import {DataGranularityEnum} from "../../core/enums/data-granularity-enum";
@@ -43,6 +42,7 @@ const pdfConstants = {
     _x_title2: 25,
     _x_text1: 10,
     _x_text2: 13,
+    _x_text3: 35,
     _x_max: 100,
     _y_min: 10,
     _y_max: 276,
@@ -61,6 +61,7 @@ export class KpiReportComponent implements OnInit {
 
   rscKpiReportData: RscKpiReportData;
   dataUrlLogoLetsco: string;
+  noDataFoundMessage: string = 'No data for this selected granularity';
 
   constructor(private kpiReportService: KpiReportService,
               private datePipe: DatePipe,
@@ -187,7 +188,8 @@ export class KpiReportComponent implements OnInit {
       pdf.setFontSize(10);
       pdf.text(pdfConstants.layout._x_title1, _y += 10, `${this.romanNumeral.transform(i + 1)}. ${this.kpiDataTypeFullName.transform(rscKpiTypedDatum.type)}`);
       for (let [j,rscKpi] of rscKpiTypedDatum.rscKpis.entries()) {
-        if (_y + pdfConstants.graph.height > pdfConstants.layout._y_max) {
+        if ((rscKpi.data[0].kpiChartOptions.hasData() && _y + pdfConstants.graph.height > pdfConstants.layout._y_max)
+            || (!rscKpi.data[0].kpiChartOptions.hasData() && _y + pdfConstants.layout.titleLineHeight + pdfConstants.layout.textLineHeight > pdfConstants.layout._y_max)) {
           _y = this.initNewPdfPage(pdf, pageNum+=1);
         }
         pdf.setFont('times', 'bold');
@@ -195,38 +197,44 @@ export class KpiReportComponent implements OnInit {
         pdf.text(pdfConstants.layout._x_title2, _y += pdfConstants.layout.titleLineHeight, `${j+1}. KPI ${rscKpi.fullName}`);
         if (isSummaryPage === false) {
           for (let [k,rscKpiDatum] of rscKpi.data.entries()) {
-            // drawing graph
-            let kpiGraphId = rscKpi.code + '-graph' + k;
-            _y += pdfConstants.layout.textLineHeight;
-            let dataUrl = (document.getElementById(kpiGraphId) as HTMLCanvasElement).toDataURL();
-            if (this.themeService.currentThemeCode === 'NIGHT') {
-              pdf.setFillColor(52, 57, 64);
-              pdf.rect(pdfConstants.graph._x, _y, pdfConstants.graph.width, pdfConstants.graph.height, 'F');
-            }
-            pdf.addImage(dataUrl, 'PNG', pdfConstants.graph._x, _y, pdfConstants.graph.width, pdfConstants.graph.height, '', 'FAST');
+            if (rscKpiDatum.kpiChartOptions.hasData()) {
+              // drawing graph
+              let kpiGraphId = rscKpi.code + '-graph' + k;
+              _y += pdfConstants.layout.textLineHeight;
+              let dataUrl = (document.getElementById(kpiGraphId) as HTMLCanvasElement).toDataURL();
+              if (this.themeService.currentThemeCode === 'NIGHT') {
+                pdf.setFillColor(52, 57, 64);
+                pdf.rect(pdfConstants.graph._x, _y, pdfConstants.graph.width, pdfConstants.graph.height, 'F');
+              }
+              pdf.addImage(dataUrl, 'PNG', pdfConstants.graph._x, _y, pdfConstants.graph.width, pdfConstants.graph.height, '', 'FAST');
 
-            // drawing comment
-            _y += pdfConstants.graph.height;
-            let comment = rscKpiDatum.comment;
-            let wrapWidth = 180;
-            if ((comment.length > 0 && _y + 2*pdfConstants.layout.titleLineHeight > pdfConstants.layout._y_max)
-                || (comment.length === 0 && _y + pdfConstants.layout.titleLineHeight > pdfConstants.layout._y_max)) {
-              // this check is to avoid writing the word "Comment:" in the bottom of the page without it's content when exists,
-              // the should been written together in the top of a new page
-              _y = this.initNewPdfPage(pdf, pageNum+=1);
-            }
-            pdf.setFontSize(8);
-            pdf.setFont("times", "bold");
-            pdf.text(pdfConstants.layout._x_text2, _y += pdfConstants.layout.titleLineHeight, "Comment: ");
-            pdf.setFont("times", "normal");
-            if (comment.length > 0) {
-              let splitText = pdf.splitTextToSize(comment, wrapWidth);
-              for (let i = 0, length = splitText.length; i < length; i++) {
-                pdf.text(splitText[i], pdfConstants.layout._x_text2, _y += pdfConstants.layout.textLineHeight);
-                if (_y > pdfConstants.layout._y_max) {
-                  _y = this.initNewPdfPage(pdf, pageNum += 1);
+              // drawing comment
+              _y += pdfConstants.graph.height;
+              let comment = rscKpiDatum.comment;
+              let wrapWidth = 180;
+              if ((comment.length > 0 && _y + 2 * pdfConstants.layout.titleLineHeight > pdfConstants.layout._y_max)
+                  || (comment.length === 0 && _y + pdfConstants.layout.titleLineHeight > pdfConstants.layout._y_max)) {
+                // this check is to avoid writing the word "Comment:" in the bottom of the page without it's content when exists,
+                // the should been written together in the top of a new page
+                _y = this.initNewPdfPage(pdf, pageNum += 1);
+              }
+              pdf.setFontSize(8);
+              pdf.setFont("times", "bold");
+              pdf.text(pdfConstants.layout._x_text2, _y += pdfConstants.layout.titleLineHeight, "Comment: ");
+              pdf.setFont("times", "normal");
+              if (comment.length > 0) {
+                let splitText = pdf.splitTextToSize(comment, wrapWidth);
+                for (let i = 0, length = splitText.length; i < length; i++) {
+                  pdf.text(splitText[i], pdfConstants.layout._x_text2, _y += pdfConstants.layout.textLineHeight);
+                  if (_y > pdfConstants.layout._y_max) {
+                    _y = this.initNewPdfPage(pdf, pageNum += 1);
+                  }
                 }
               }
+            } else {
+              pdf.setFontSize(8);
+              pdf.setFont("times", "normal");
+              pdf.text(pdfConstants.layout._x_text3, _y += pdfConstants.layout.titleLineHeight, this.noDataFoundMessage);
             }
           }
         }

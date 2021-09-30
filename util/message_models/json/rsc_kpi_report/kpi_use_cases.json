@@ -3,7 +3,7 @@
     "xmlns": "http://iec.ch/TC57/2011/schema/message",
     "header": {
       "verb": "created",
-      "noun": "NOT_GENERIC_NOTIF",
+      "noun": "ProcessSuccessful",
       "timestamp": "2021-03-12T08:13:15Z",
       "source": "SERVICE_A",
       "messageId": "134654a095714812ba74323b021f23b5",

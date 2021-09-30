@@ -45,6 +45,4 @@ public final class Constants {
     public static final String ENTITIES_ALLOWED_TO_RESPOND = "ENTITIES_ALLOWED_TO_RESPOND";
 
     public static final int NBR_EVENTS_TO_DISPLAY_IN_CARD_SUMMARY = 3;
-
-    public static final String VISIBLE_CARD_TAG = "visible_card";
 }

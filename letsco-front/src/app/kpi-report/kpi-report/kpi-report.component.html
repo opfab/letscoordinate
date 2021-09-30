@@ -49,7 +49,10 @@
                         <div class="row mt-3">
 
                             <div class="col-sm-12">
-                                <div class="chartDiv">
+                                <div class="ml-5" *ngIf="!rscKpiDatum.kpiChartOptions.hasData()">
+                                    {{noDataFoundMessage}}
+                                </div>
+                                <div class="chartDiv" *ngIf="rscKpiDatum.kpiChartOptions.hasData()">
 
                                     <app-kpi-chart [kpiChartId]="rscKpiDatum.kpiChartId"
                                                    [kpiChartOptions]="rscKpiDatum.kpiChartOptions"

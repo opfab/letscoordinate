@@ -69,4 +69,16 @@ export class KpiChartOptions {
         }
     }
 
+    hasData(): boolean {
+        for (let i = 0 ; i < this.chartDataSets.length ; i++) {
+            if (this.chartDataSets[i]) {
+                for (let j = 0; j < this.chartDataSets[i].data.length; j++) {
+                    if (this.chartDataSets[i].data[j] && this.chartDataSets[i].data[j] !== 0)
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }
