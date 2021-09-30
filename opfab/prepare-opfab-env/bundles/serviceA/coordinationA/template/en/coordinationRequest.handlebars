@@ -151,8 +151,10 @@
 
     /* ----------------------------------------- INIT CARD'S DETAILED VIEW ------------------------------------------ */
 
-    if (!templateGateway.isLocked) {
-        if (templateGateway.userMemberOfAnEntityRequiredToRespond) {
+    // this is a temporary solution! (the [[templateGateway.getDisplayContext()==='archive']] condition should be removed
+    // from the 2 following lines when an OpFab patch for tickets #1819 & #1821 is delivered)
+    if (!templateGateway.isLocked || templateGateway.getDisplayContext()==='archive') {
+        if (templateGateway.userMemberOfAnEntityRequiredToRespond || templateGateway.getDisplayContext()==='archive') {
             if (Array.from(templateGateway.childCards).length === 0) {
                 document.querySelectorAll('tr[class*="crd-data-tr"][data-tso="' + currentUserTso + '"]')
                         .forEach(function (el) {el.classList.remove('hidden');});
