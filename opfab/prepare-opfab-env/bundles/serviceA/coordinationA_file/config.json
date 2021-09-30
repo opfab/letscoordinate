@@ -27,7 +27,8 @@
       "styles": [
         "main"
       ],
-      "acknowledgmentAllowed": "Always"
+      "acknowledgmentAllowed": "Always",
+      "isOnlyAChildState" : true
     },
     "outputFile": {
       "name": "outputFile.name",
@@ -39,7 +40,8 @@
       "styles": [
         "main"
       ],
-      "acknowledgmentAllowed": "Always"
+      "acknowledgmentAllowed": "Always",
+      "isOnlyAChildState" : true
     }
   }
 }

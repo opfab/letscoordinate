@@ -443,8 +443,7 @@ Feature: Prepare OpFab env. for Let's Co open source
   "login" : "user.test",
   "description" : "RTE",
   "timeZone" : "Europe/Paris",
-  "locale" : "en",
-  "defaultTags": [ "visible_card" ]
+  "locale" : "en"
 }
 """
 
@@ -522,8 +521,7 @@ Feature: Prepare OpFab env. for Let's Co open source
   "login" : "user.test2",
   "description" : "Terna",
   "timeZone" : "Europe/Paris",
-  "locale" : "en",
-  "defaultTags": [ "visible_card" ]
+  "locale" : "en"
 }
 """
 
@@ -611,8 +609,7 @@ Feature: Prepare OpFab env. for Let's Co open source
 {
   "login" : "user.rte",
   "timeZone" : "Europe/Paris",
-  "locale" : "en",
-  "defaultTags": [ "visible_card" ]
+  "locale" : "en"
 }
 """
 
@@ -699,8 +696,7 @@ Feature: Prepare OpFab env. for Let's Co open source
 {
   "login" : "user.terna",
   "timeZone" : "Europe/Paris",
-  "locale" : "en",
-  "defaultTags": [ "visible_card" ]
+  "locale" : "en"
 }
 """
 
@@ -787,8 +783,7 @@ Feature: Prepare OpFab env. for Let's Co open source
 {
   "login" : "user.amprion",
   "timeZone" : "Europe/Paris",
-  "locale" : "en",
-  "defaultTags": [ "visible_card" ]
+  "locale" : "en"
 }
 """
 
@@ -875,8 +870,7 @@ Feature: Prepare OpFab env. for Let's Co open source
 {
   "login" : "user.coreso",
   "timeZone" : "Europe/Paris",
-  "locale" : "en",
-  "defaultTags": [ "visible_card" ]
+  "locale" : "en"
 }
 """
 

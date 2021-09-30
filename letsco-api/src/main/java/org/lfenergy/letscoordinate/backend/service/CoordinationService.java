@@ -446,6 +446,7 @@ public class CoordinationService {
     public void sendCoordinationFileCard(Card coordinationCard, FileDirectionEnum fileDirectionEnum) {
         try {
             Card card = new Card();
+            card.toNotify(false);
             card.setProcessVersion("1");
             card.setPublisher(opfabConfig.getPublisher());
             card.setTitle(coordinationCard.getTitle());
