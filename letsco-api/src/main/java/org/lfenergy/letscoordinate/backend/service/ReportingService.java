@@ -101,7 +101,7 @@ public class ReportingService {
                 .collect(Collectors.toList());
         for (CoordinationConfig.KpiDataSubtype kpiDataSubtype : kpiDataSubtypeMap.values()) {
             for (RscKpi rscKpi : descSortedRscKpiList) {
-                if (kpiDataSubtype.getCode() != null && kpiDataSubtype.getCode().equalsIgnoreCase(rscKpi.getName())) {
+                if (kpiDataSubtype.getCode() != null && kpiDataSubtype.getCode().replace("_", ".").equalsIgnoreCase(rscKpi.getName())) {
                     kpiDataSubtype.setJoinGraph(rscKpi.getJoinGraph());
                     break;
                 }

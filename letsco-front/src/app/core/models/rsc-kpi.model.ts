@@ -18,6 +18,7 @@ export class RscKpi {
     constructor(public code: string,
                 public name: string,
                 public fullName: string,
+                public index: number,
                 public divHidden: boolean,
                 public data: RscKpiData[]) {
     }
@@ -56,9 +57,10 @@ export class RscKpiAdapter implements Adapter<RscKpi>{
         }
 
         return new RscKpi(
-            key,
+            kpiSubtype.code,
             kpiSubtype && kpiSubtype.name ? kpiSubtype.name : null,
-            key + (kpiSubtype && kpiSubtype.name ? " - " + kpiSubtype.name : ""),
+            kpiSubtype.code.replace("_", ".") + (kpiSubtype && kpiSubtype.name ? " - " + kpiSubtype.name : ""),
+            kpiSubtype.index,
             false,
             rscKpiData
         );

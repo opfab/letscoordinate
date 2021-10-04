@@ -34,7 +34,7 @@ export class RscKpiTypedDataAdapter implements Adapter<RscKpiTypedData>{
 
         return new RscKpiTypedData(
             key,
-            rscKpis
+            rscKpis.sort((a,b) => a.index - b.index)
         );
     }
 }

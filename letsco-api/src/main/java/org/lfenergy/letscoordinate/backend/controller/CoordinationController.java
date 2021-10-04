@@ -25,6 +25,7 @@ import org.opfab.cards.model.Card;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,7 +35,8 @@ import static org.lfenergy.letscoordinate.backend.enums.FileDirectionEnum.OUTPUT
 @RestController
 @RequestMapping("/letsco/api/v1")
 @RequiredArgsConstructor
-@Api(description = "Controller providing APIs to manage coordination", hidden = true)
+@ApiIgnore
+@Api(description = "Controller providing APIs to manage coordination")
 @Slf4j
 public class CoordinationController {
 
@@ -42,7 +44,7 @@ public class CoordinationController {
     private final OpfabPublisherComponent opfabPublisherComponent;
 
     @PostMapping("/coordination")
-    @ApiOperation(value = "Coordination callback", hidden = true)
+    @ApiOperation(value = "Coordination callback")
     @ResponseStatus(HttpStatus.OK)
     public void coordinationCallback(@RequestBody Card card) throws IOException {
         log.info("Callback card received:\n" + card.toString());
