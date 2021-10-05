@@ -137,7 +137,9 @@ Feel free to test the other json samples from the directory "*util/messages_mode
 - Click on *POST /letsco/api/v1/upload/save*
 - Click on *Try it out*
 - Copy the previous generated token (see section 3.1) and past it in the *Authorization* field (be sure that the copied text starts with the "Bearer" keyword!)
-- Click the "*Browse...*" button and choose the file "*util/messages_models/json/rsc_kpi_report/kpi_use_cases.json*".
+- Click the "*Browse...*" button and choose the file "*util/messages_models/json/rsc_kpi_report/kpi_use_cases_service_a.json*".
+- Click on *Execute*
+- Click the "*Browse...*" button again and choose the file "*util/messages_models/json/rsc_kpi_report/kpi_use_cases_service_b.json*".
 - Click on *Execute*
 - Connect to OpFab ([http://localhost/ui/](http://localhost/ui/)) with the username **user.test** and password **test**.
 - Select the *"RSC KPI Report"* menu.

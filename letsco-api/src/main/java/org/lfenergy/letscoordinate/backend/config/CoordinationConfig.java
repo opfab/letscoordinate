@@ -160,6 +160,7 @@ public class CoordinationConfig {
         private String code;
         private String name;
         private String graphType;
+        private Integer index = 0;
         private Boolean joinGraph; // this field will be set from DB with the rscKpi.joinGraph value
     }
 

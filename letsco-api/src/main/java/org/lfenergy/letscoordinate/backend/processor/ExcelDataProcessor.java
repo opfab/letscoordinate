@@ -497,7 +497,7 @@ public class ExcelDataProcessor implements DataProcessor {
                 for(KpiDataSubtypeEnum kpiDataSubtypeEnum : subtypeMap.keySet()) {
                     Map<String, List<RscKpiDto.DataDto>> dataList = subtypeMap.get(kpiDataSubtypeEnum);
                     // Create sheet
-                    XSSFSheet sheet = workbook.createSheet(kpiDataSubtypeEnum.name());
+                    XSSFSheet sheet = workbook.createSheet(kpiDataSubtypeEnum.name().replace("_", "."));
                     int lastColumnNumber = 0;
                     // Create first row with the GPx/BPx title
                     int rowCount = 0;
@@ -505,7 +505,7 @@ public class ExcelDataProcessor implements DataProcessor {
                     int columnCount = 0;
                     Cell cell = row.createCell(columnCount++);
                     CoordinationConfig.KpiDataSubtype kpiDataSubtype = rscKpiReportDataDto.getRscKpiSubtypedDataMap().get(kpiDataSubtypeEnum.name());
-                    cell.setCellValue("KPI " + kpiDataSubtypeEnum.name() + (kpiDataSubtype != null ? " - " + kpiDataSubtype.getName() : ""));
+                    cell.setCellValue("KPI " + kpiDataSubtypeEnum.name().replace("_", ".") + (kpiDataSubtype != null ? " - " + kpiDataSubtype.getName() : ""));
                     cell.setCellStyle(COLUMN_TITLE_STYLE);
 
                     if (rscKpiReportDataDto.getSubmittedFormData().getDataGranularity() == DataGranularityEnum.DAILY) { // CASE: DAILY VIEW
