@@ -110,6 +110,7 @@ public class InputFileToPojoService {
     }
 
     public Validation<ResponseErrorDto, EventMessageDto> uploadFileAndSaveGeneratedData(MultipartFile multipartFile) {
+        log.info("Upload file and save data => {}", Optional.ofNullable(multipartFile).map(MultipartFile::getOriginalFilename).orElse(null));
         Validation<ResponseErrorDto, EventMessageDto> validation = uploadedFileToPojo(multipartFile);
         try {
             String fileExtension = StringUtil.getFileExtension(Optional.ofNullable(multipartFile.getOriginalFilename())

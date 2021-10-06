@@ -57,7 +57,7 @@ public final class OpfabUtil {
         return new StringBuilder().append(eventMessageDto.getHeader().getSource()).append("_")
                 .append(bdi.getBusinessApplication().orElse(null)).append("_")
                 .append(bdi.getMessageTypeName()).append("_")
-                .append(bdi.getBusinessDayFrom()).append("_")
-                .append(bdi.getBusinessDayTo()).toString();
+                .append(bdi.getBusinessDayFrom().toEpochMilli()).append("_")
+                .append(bdi.getBusinessDayTo().toEpochMilli()).toString();
     }
 }
