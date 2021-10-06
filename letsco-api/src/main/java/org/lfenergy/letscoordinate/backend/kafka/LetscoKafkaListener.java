@@ -54,6 +54,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 import static org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum.MESSAGE_VALIDATED;
@@ -89,6 +90,7 @@ public class LetscoKafkaListener {
         KafkaFileWrapperDto kafkaFileWrapperDto;
         try {
             kafkaFileWrapperDto = objectMapper.readValue(data, KafkaFileWrapperDto.class);
+            log.info("Data received for file \"{}\"!", kafkaFileWrapperDto.getFileName());
         } catch (Exception e) {
             log.error("Unable to convert the data value to a KafkaFileWrapperDto object: {}", data);
             return;
@@ -148,14 +150,15 @@ public class LetscoKafkaListener {
                                 .eventMessage(eventMessageDto)
                                 .build())
                         .build();
+                log.info("Send saved data (id={}) to third application (location={})", eventMessage.getId(), url);
                 restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(thirdAppDataWrapperDto), Object.class);
                 return;
             }
 
             opfabPublisherComponent.publishOpfabCard(eventMessageDto, eventMessage.getId());
 
-        } catch (IgnoreProcessException | PositiveTechnicalQualityCheckException e) {
-            log.info(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error!", e);
         }
     }
 
