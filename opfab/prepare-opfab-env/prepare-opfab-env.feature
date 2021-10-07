@@ -165,6 +165,82 @@ Feature: Prepare OpFab env. for Let's Co open source
     When method post
     Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceACardCreationPerimeter")
 
+  Scenario: Create perimeter for Service A Smart Notification
+
+    * def serviceACoordinationAPerimeter =
+"""
+{
+  "id" : "serviceACoordinationAPerimeter",
+  "process" : "servicea_coordinationa",
+  "stateRights" : [
+    {
+      "state" : "initial",
+      "right" : "ReceiveAndWrite"
+    },
+    {
+      "state" : "answerProposalConfirmed",
+      "right" : "ReceiveAndWrite"
+    },
+    {
+      "state" : "answerProposalRejected",
+      "right" : "ReceiveAndWrite"
+    },
+    {
+      "state" : "answerDifferentChoices",
+      "right" : "ReceiveAndWrite"
+    },
+    {
+      "state" : "proposalConfirmed",
+      "right" : "Receive"
+    },
+    {
+      "state" : "proposalRejected",
+      "right" : "Receive"
+    },
+    {
+      "state" : "noAnswerProvided",
+      "right" : "Receive"
+    },
+    {
+      "state" : "differentChoices",
+      "right" : "Receive"
+    }
+  ]
+}
+"""
+
+    Given url opfabUrl + 'users/perimeters'
+    And header Authorization = 'Bearer ' + authToken
+    And request serviceACoordinationAPerimeter
+    When method post
+    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceACoordinationAPerimeter")
+
+  Scenario: Create perimeter for Service A Coordination A File
+
+    * def serviceACoordinationAFilePerimeter =
+"""
+{
+  "id" : "serviceACoordinationAFilePerimeter",
+  "process" : "servicea_coordinationa_file",
+  "stateRights" : [
+    {
+      "state" : "inputFile",
+      "right" : "Receive"
+    },
+    {
+      "state" : "outputFile",
+      "right" : "Receive"
+    }
+  ]
+}
+"""
+
+    Given url opfabUrl + 'users/perimeters'
+    And header Authorization = 'Bearer ' + authToken
+    And request serviceACoordinationAFilePerimeter
+    When method post
+    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceACoordinationAFilePerimeter")
+
   Scenario: Create perimeter for Service B Process Monitoring
 
     * def serviceBProcessMonitoringPerimeter =
@@ -273,13 +349,13 @@ Feature: Prepare OpFab env. for Let's Co open source
     When method post
     Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceBCardCreationPerimeter")
 
-  Scenario: Create perimeter for Service A Smart Notification
+  Scenario: Create perimeter for Service B Smart Notification
 
-    * def serviceACoordinationAPerimeter =
+    * def serviceBCoordinationBPerimeter =
 """
 {
-  "id" : "serviceACoordinationAPerimeter",
-  "process" : "servicea_coordinationa",
+  "id" : "serviceBCoordinationBPerimeter",
+  "process" : "serviceb_coordinationb",
   "stateRights" : [
     {
       "state" : "initial",
@@ -319,17 +395,17 @@ Feature: Prepare OpFab env. for Let's Co open source
 
     Given url opfabUrl + 'users/perimeters'
     And header Authorization = 'Bearer ' + authToken
-    And request serviceACoordinationAPerimeter
+    And request serviceBCoordinationBPerimeter
     When method post
-    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceACoordinationAPerimeter")
+    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceBCoordinationBPerimeter")
 
-  Scenario: Create perimeter for Service A Coordination A File
+  Scenario: Create perimeter for Service B Coordination B File
 
-    * def serviceACoordinationAFilePerimeter =
+    * def serviceBCoordinationBFilePerimeter =
 """
 {
-  "id" : "serviceACoordinationAFilePerimeter",
-  "process" : "servicea_coordinationa_file",
+  "id" : "serviceBCoordinationBFilePerimeter",
+  "process" : "serviceb_coordinationb_file",
   "stateRights" : [
     {
       "state" : "inputFile",
@@ -345,9 +421,9 @@ Feature: Prepare OpFab env. for Let's Co open source
 
     Given url opfabUrl + 'users/perimeters'
     And header Authorization = 'Bearer ' + authToken
-    And request serviceACoordinationAFilePerimeter
+    And request serviceBCoordinationBFilePerimeter
     When method post
-    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceACoordinationAFilePerimeter")
+    Then assert responseStatus == 201 || (responseStatus == 400 && response.errors[0] == "Duplicate key : serviceBCoordinationBFilePerimeter")
 
   Scenario: Add perimeters to group 'servicea'
 
@@ -365,7 +441,7 @@ Feature: Prepare OpFab env. for Let's Co open source
 
     Given url opfabUrl + 'users/groups/' + group + '/perimeters'
     And header Authorization = 'Bearer ' + authToken
-    And request ["serviceBProcessMonitoringPerimeter", "serviceBValidationFileAPerimeter", "serviceBValidationFileBPerimeter", "serviceBCardCreationPerimeter"]
+    And request ["serviceBProcessMonitoringPerimeter", "serviceBValidationFileAPerimeter", "serviceBValidationFileBPerimeter", "serviceBCardCreationPerimeter", "serviceBCoordinationBPerimeter", "serviceBCoordinationBFilePerimeter"]
     When method patch
     Then status 200
 
@@ -913,4 +989,4 @@ Feature: Prepare OpFab env. for Let's Co open source
     When method get
     Then status 200
     And match response.userData.login == 'user.test'
-    And assert response.computedPerimeters.length == 28
+    And assert response.computedPerimeters.length == 38

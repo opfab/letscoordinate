@@ -17,7 +17,9 @@
         "serviceb_processmonitoring",
         "serviceb_validation_filea",
         "serviceb_validation_fileb",
-        "serviceb_cardcreation"
+        "serviceb_cardcreation",
+        "serviceb_coordinationb",
+        "serviceb_coordinationb_file"
       ]
     }
   ],

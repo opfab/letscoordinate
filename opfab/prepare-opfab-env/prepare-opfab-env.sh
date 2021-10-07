@@ -22,6 +22,8 @@ cd ${LC_HOME}/opfab/prepare-opfab-env/bundles
 ./send_bundles.sh serviceB pm
 ./send_bundles.sh serviceB vfa
 ./send_bundles.sh serviceB vfb
+./send_bundles.sh serviceB co
+./send_bundles.sh serviceB cof
 
 cd ..
 java -jar karate.jar prepare-opfab-env.feature
