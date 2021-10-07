@@ -1,0 +1,49 @@
+{
+  "eventMessage": {
+    "xmlns": "http://iec.ch/TC57/2011/schema/message",
+    "header": {
+      "verb": "created",
+      "noun": "Coordination",
+      "timestamp": "2021-10-12T07:59:01Z",
+      "source": "Service B",
+      "messageId": "3f5d0a7a6e9242b23893dd51034431855",
+      "properties": {
+        "format": "JSON",
+        "businessDataIdentifier": {
+          "businessApplication": "PanEuropeanServiceBTool",
+          "messageTypeName": "Coordination B",
+          "businessDayFrom": "2021-10-05T22:00:00Z",
+          "businessDayTo": "2021-10-15T22:00:00Z",
+          "sendingUser": "22XCORESO------S",
+          "recipients": ["10XFR-RTE------Q", "10X1001A1001A345", "10XDE-RWENET---W"]
+        }
+      }
+    },
+    "payload": {
+      "timeserie": [
+        {
+          "name": "Coordination",
+          "data": [
+            {
+              "timestamp": "2021-10-12T07:59:01Z",
+              "detail": [
+                {
+                  "label": "Event",
+                  "value": "Event"
+                },
+                {
+                  "label": "Constraint",
+                  "value": "Constraint"
+                },
+                {
+                  "label": "Remedial actions",
+                  "value": "Action"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -26,9 +26,17 @@ if [ $1 = 'serviceA' ] || [ $1 = 'serviceB' ]; then
   elif [ $2 = 'cc' ]; then
     cd $1/cardCreation
   elif [ $2 = 'co' ]; then
-    cd $1/coordinationA
+    if [ $1 = 'serviceA' ]; then
+      cd $1/coordinationA
+    else
+      cd $1/coordinationB
+    fi
   elif [ $2 = 'cof' ]; then
-    cd $1/coordinationA_file
+    if [ $1 = 'serviceA' ]; then
+      cd $1/coordinationA_file
+    else
+      cd $1/coordinationB_file
+    fi
   else
     echo "Incorrect arg: $2"
     exit 1
