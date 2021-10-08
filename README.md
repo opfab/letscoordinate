@@ -23,7 +23,7 @@ To use Let's Coordinate, you need a linux OS with the following:
 
 **Please note**: 
 * It is highly recommended to use [sdkman](https://sdkman.io/) (v5.11.0 or grater) and [nvm](https://github.com/nvm-sh/nvm) (v14.11.0 or grater) to manage *Maven*, *Java*, *NPM* and *Node JS* tools versions (with sdkman and nvm, the previously mentioned tools will be automatically installed later).
-* The required OperatorFabric version is **2.10.0.RELEASE** (configured by default to be used with the current version of Let's Coordinate 1.3.1.SNAPSHOT)
+* The required OperatorFabric version is **2.10.0.RELEASE** (configured by default to be used with the current version of Let's Coordinate 1.3.1.RELEASE)
 
 ## 2. Setup and run Let's Coordinate
 
@@ -37,7 +37,7 @@ git clone https://github.com/opfab/letscoordinate.git
 
 #### 2.2. Create test branch
 
-Before starting Let's Coordinate, it's recommended to create a test branch from the latest stable release (1.3.1.SNAPSHOT in our case).
+Before starting Let's Coordinate, it's recommended to create a test branch from the latest stable release (1.3.1.RELEASE in our case).
 To do this, you first need to make sure that you have the latest tag list from your remote repository:
 
 ```
@@ -47,7 +47,7 @@ git fetch --all --tags
 Then, you can create the test branch:
 
 ```
-git checkout tags/1.3.1.SNAPSHOT -b test-letsco-1.3.1.SNAPSHOT
+git checkout tags/1.3.1.RELEASE -b test-letsco-1.3.1.RELEASE
 ```
 
 #### 2.3. Run Let's Coordinate
@@ -75,19 +75,24 @@ source ./load_environment.sh
 To start Let's Coordinate, position your self in the "*bin*" directory and execute the following commands:
 
 ```
-./server.sh -f start 
+./server.sh --build start 
 ```
 
-The ```-f``` option (or ```--first-init```, which is equivalent to the options ```--build``` and ```--init``` together) is required while testing the project for the first time.
-It allows to:
-* install the OperatorFabric required dependencies, 
-* build and deploy the Let's Coordinate docker images locally,
-* send bundles and configurations to the OperatorFabric server,
+This command (with ```--build``` or ```-b``` option) allows to:
+* install the OperatorFabric required dependencies
+* build and deploy the Let's Coordinate docker images locally
+
+When the first command is executed correctly, please run the following command:
+
+```
+./server.sh --init start 
+```
+
+This command (with ```--init``` or ```-i``` option) allows to:
+* send bundles and configuration files to the OperatorFabric server,
 * initialize the OperatorFabric database with required data (users, groups, perimeters, entities, ...)
 
-**Please note**: With Ubuntu operation system, it is highly recommended to run the 2 scripts separately (the script ```./server.sh --build start``` and then ```./server.sh --init start```).
-
-For next usage of the *server.sh* script, the *--first-init* option is not necessary.
+For next usage of the ```server.sh``` script, the ```--build``` and ```--init``` options are not necessary.
 
 To be sure that all the services are correctly started, you can try the following command:
 
@@ -95,7 +100,7 @@ To be sure that all the services are correctly started, you can try the followin
 ./server.sh status 
 ```
 
-To see more about the server.sh commands and options, please try:
+To see more about the ```server.sh``` commands and options, please try:
 ```
 ./server.sh --help
 ```
@@ -137,9 +142,9 @@ Feel free to test the other json samples from the directory "*util/messages_mode
 - Click on *POST /letsco/api/v1/upload/save*
 - Click on *Try it out*
 - Copy the previous generated token (see section 3.1) and past it in the *Authorization* field (be sure that the copied text starts with the "Bearer" keyword!)
-- Click the "*Browse...*" button and choose the file "*util/messages_models/json/rsc_kpi_report/kpi_use_cases_service_a.json*".
+- Click on the "*Browse...*" button and choose the file "*util/messages_models/json/rsc_kpi_report/kpi_use_cases_service_a.json*".
 - Click on *Execute*
-- Click the "*Browse...*" button again and choose the file "*util/messages_models/json/rsc_kpi_report/kpi_use_cases_service_b.json*".
+- Click again on the "*Browse...*" button and choose the file "*util/messages_models/json/rsc_kpi_report/kpi_use_cases_service_b.json*".
 - Click on *Execute*
 - Connect to OpFab ([http://localhost/ui/](http://localhost/ui/)) with the username **user.test** and password **test**.
 - Select the *"RSC KPI Report"* menu.

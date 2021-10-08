@@ -41,7 +41,7 @@ public class SwaggerConfig {
         return new ApiInfo(
                 "LETSCO-API",
                 "The backend module for the letscoordinate opensource application",
-                "1.3.1.SNAPSHOT",
+                "1.3.1.RELEASE",
                 "TERMS OF SERVICE URL",
                 new Contact("Rte-France","https://www.rte-france.com/","wyem.oueslati@rte-france.com"),
                 "LICENSE",
