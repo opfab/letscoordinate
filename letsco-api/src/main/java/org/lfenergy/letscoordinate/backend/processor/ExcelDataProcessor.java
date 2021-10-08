@@ -251,7 +251,7 @@ public class ExcelDataProcessor implements DataProcessor {
 
     /**
      * Allows to transform the {@link Sheet}'s data to a map having as keys the dataType (e.g TEXT, LINK, RSC_KPI, TIMESERIE)
-     * and as values an other map grouping the payload data by dataName (e.g GP1 for RSC_KPI dataType, probabilisticResults
+     * and as values an other map grouping the payload data by dataName (e.g GP01 for RSC_KPI dataType, probabilisticResults
      * for RSC_KPI TIMESERIE)
      *
      * @param sheet the data {@link Sheet}
@@ -403,7 +403,7 @@ public class ExcelDataProcessor implements DataProcessor {
     /**
      * Allows to generate the payload for the complex data (extending {@link AbstractPayloadComplexData})
      *
-     * @param payloadDetailsMap map grouping the payload data by dataName (e.g GP1 for RSC_KPI dataType,
+     * @param payloadDetailsMap map grouping the payload data by dataName (e.g GP01 for RSC_KPI dataType,
      *                          probabilisticResults for RSC_KPI TIMESERIE)
      * @param resultType a Class< T exends {@link IPayloadData}> to represent the output type
      * @param dataType a Class< T1 extends AbstractPayloadComplexData> to represent the input data type
@@ -497,7 +497,7 @@ public class ExcelDataProcessor implements DataProcessor {
                 for(KpiDataSubtypeEnum kpiDataSubtypeEnum : subtypeMap.keySet()) {
                     Map<String, List<RscKpiDto.DataDto>> dataList = subtypeMap.get(kpiDataSubtypeEnum);
                     // Create sheet
-                    XSSFSheet sheet = workbook.createSheet(kpiDataSubtypeEnum.name());
+                    XSSFSheet sheet = workbook.createSheet(kpiDataSubtypeEnum.name().replace("_", "."));
                     int lastColumnNumber = 0;
                     // Create first row with the GPx/BPx title
                     int rowCount = 0;
@@ -505,7 +505,7 @@ public class ExcelDataProcessor implements DataProcessor {
                     int columnCount = 0;
                     Cell cell = row.createCell(columnCount++);
                     CoordinationConfig.KpiDataSubtype kpiDataSubtype = rscKpiReportDataDto.getRscKpiSubtypedDataMap().get(kpiDataSubtypeEnum.name());
-                    cell.setCellValue("KPI " + kpiDataSubtypeEnum.name() + (kpiDataSubtype != null ? " - " + kpiDataSubtype.getName() : ""));
+                    cell.setCellValue("KPI " + kpiDataSubtypeEnum.name().replace("_", ".") + (kpiDataSubtype != null ? " - " + kpiDataSubtype.getName() : ""));
                     cell.setCellStyle(COLUMN_TITLE_STYLE);
 
                     if (rscKpiReportDataDto.getSubmittedFormData().getDataGranularity() == DataGranularityEnum.DAILY) { // CASE: DAILY VIEW

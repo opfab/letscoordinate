@@ -7,11 +7,8 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of the Let’s Coordinate project.
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: '*'
+server:
+  forward-headers-strategy: framework
 spring:
   rabbitmq:
     host: rabbitmq
@@ -19,22 +16,56 @@ spring:
     username: guest
     password: guest
   security:
+    provider-url: http://keycloak:8080
+    provider-realm: dev
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://keycloak:8080/auth/realms/dev/protocol/openid-connect/certs
+          jwk-set-uri: ${spring.security.provider-url}/auth/realms/${spring.security.provider-realm}/protocol/openid-connect/certs
   data:
     mongodb:
       database: operator-fabric
       uri: mongodb://root:password@mongodb:27017/operator-fabric?authSource=admin&authMode=scram-sha1
+security:
+  basic:
+    enabled: false
 
 operatorfabric:
-  security:
-    oauth2:
-      client-id: opfab-client
-    jwt:
-      login-claim: preferred_username
-      expire-claim: exp
   businessLogActivated: true
   servicesUrls:
     users: "http://172.19.0.1:2103"
+
+### activate the following if you want to the groups or entities to come from the token and not mongo DB
+#  security:
+#    jwt:
+
+### activate the folLowing if you want the entities of the user to come from the token and not mongoDB
+### entitiesIdClaim is the name of the field in the token
+#      entitiesIdClaim : entitiesId
+#      gettingEntitiesFromToken: true
+###
+
+### activate the following if you want the groups of the user to come from the token and not mongoDB
+#      groups:
+#        mode: JWT
+#        rolesClaim:
+#          rolesClaimStandard:
+#            - path: "ATTR1"
+#            - path: "ATTR2"
+#          rolesClaimStandardArray:
+#            - path: "resource_access/opfab-client/roles"
+#          rolesClaimStandardList:
+#            - path: "groups"
+#              separator: ";"
+#          rolesClaimCheckExistPath:
+#            - path: "resource_access/AAA"
+#              roleValue: "roleAAA"
+#            - path: "resource_access/BBB"
+#              roleValue: "roleBBB"
+###
+message: common message
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

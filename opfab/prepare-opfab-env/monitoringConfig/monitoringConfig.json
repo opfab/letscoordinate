@@ -1,0 +1,59 @@
+{
+  "export": 
+  {
+    "fields":
+    [
+      {
+        "columnName": "TIME",
+        "jsonField" : "card.publishDate",
+        "type": "EPOCHDATE"
+      },
+      {
+        "columnName": "BUSINESS DATE - START",
+        "jsonField" : "card.startDate",
+        "type": "EPOCHDATE"
+      },
+      {
+        "columnName": "BUSINESS DATE - END",
+        "jsonField" : "card.endDate",
+        "type": "EPOCHDATE"
+      },
+      {
+        "columnName": "PROCESS",
+        "jsonField" : "card.processName"
+      },
+      {
+        "columnName": "TITLE",
+        "jsonField" : "card.title"
+      },
+      {
+        "columnName": "SUMMARY",
+        "jsonField" : "card.summary"
+      },
+      {
+        "columnName": "STATUS",
+        "jsonField" : "card.typeOfState"
+      },
+      {
+        "columnName": "SEVERITY",
+        "jsonField" : "card.severity"
+      },
+      {
+        "jsonField" : "childCards",
+        "fields" : [
+          { "columnName": "ACTOR", "jsonField": "publisherName" },
+          {
+            "jsonField" : "data.formData",
+            "fields" : [
+              { "columnName": "RA","jsonField": "remedialAction"},
+              { "columnName": "ANSWER","jsonField": "response"},
+              { "columnName": "EXPLANATION","jsonField": "explanation"},
+              { "columnName": "COMMENT","jsonField": "comment"}
+            ]
+          },
+          { "columnName": "GENERAL COMMENT", "jsonField": "data.generalComment" }
+        ]
+      }
+    ]
+  }
+}

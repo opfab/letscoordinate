@@ -15,12 +15,8 @@ mvn clean package -DskipTests=true
 
 # build docker images for letsco-api
 cd ${LC_HOME}/dockerfiles/back
-./build_docker_image.sh ${LC_VERSION}.snapshot
-
-# build docker images for letsco-data-provider
-cd ${LC_HOME}/dockerfiles/data-provider
-./build_docker_image.sh ${LC_VERSION}.snapshot
+./build_docker_image.sh --tag=${LC_VERSION}
 
 # build docker images for letsco-front
 cd ${LC_HOME}/dockerfiles/front
-./build_docker_image.sh ${LC_VERSION}.snapshot
+./build_docker_image.sh --tag=${LC_VERSION}

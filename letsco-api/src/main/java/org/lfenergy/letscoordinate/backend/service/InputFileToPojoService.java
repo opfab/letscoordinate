@@ -11,7 +11,6 @@
 
 package org.lfenergy.letscoordinate.backend.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.control.Validation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -111,6 +110,7 @@ public class InputFileToPojoService {
     }
 
     public Validation<ResponseErrorDto, EventMessageDto> uploadFileAndSaveGeneratedData(MultipartFile multipartFile) {
+        log.info("Upload file and save data => {}", Optional.ofNullable(multipartFile).map(MultipartFile::getOriginalFilename).orElse(null));
         Validation<ResponseErrorDto, EventMessageDto> validation = uploadedFileToPojo(multipartFile);
         try {
             String fileExtension = StringUtil.getFileExtension(Optional.ofNullable(multipartFile.getOriginalFilename())

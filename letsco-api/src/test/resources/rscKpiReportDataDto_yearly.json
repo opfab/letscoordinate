@@ -12,7 +12,7 @@
   },
   "rscKpiTypedDataMap": {
     "BP": {
-      "BP1": {
+      "BP01": {
         "2025": [
           {
             "timestamp": "2021-01-01",
@@ -110,7 +110,7 @@
           }
         ]
       },
-      "BP2": {
+      "BP02": {
         "2025": [
           {
             "timestamp": "2021-01-01",
@@ -160,11 +160,11 @@
           }
         ]
       },
-      "BP3": {},
-      "BP4": {},
-      "BP5": {},
-      "BP6": {},
-      "BP7": {
+      "BP03": {},
+      "BP04": {},
+      "BP05": {},
+      "BP06": {},
+      "BP07": {
         "2025": [
           {
             "timestamp": "2021-01-01",
@@ -220,7 +220,7 @@
       }
     },
     "GP": {
-      "GP1": {
+      "GP01": {
         "2025": [
           {
             "timestamp": "2021-01-01",
@@ -380,7 +380,7 @@
           }
         ]
       },
-      "GP2": {
+      "GP02": {
         "2025": [
           {
             "timestamp": "2021-01-01",
@@ -495,50 +495,50 @@
     }
   },
   "rscKpiSubtypedDataMap": {
-    "BP3": {
-      "code": "BP3",
+    "BP03": {
+      "code": "BP03",
       "name": "Business Process 3",
       "graphType": "bar"
     },
-    "BP5": {
-      "code": "BP5",
+    "BP05": {
+      "code": "BP05",
       "name": "Business Process 5",
       "graphType": "bar"
     },
-    "BP1": {
-      "code": "BP1",
+    "BP01": {
+      "code": "BP01",
       "name": "Business Process 1",
       "graphType": "bar"
     },
-    "BP2": {
-      "code": "BP2",
+    "BP02": {
+      "code": "BP02",
       "name": "Business Process 2",
       "graphType": "line",
       "joinGraph": false
     },
-    "BP6": {
-      "code": "BP6",
+    "BP06": {
+      "code": "BP06",
       "name": "Business Process 6",
       "graphType": "bar"
     },
-    "BP7": {
-      "code": "BP7",
+    "BP07": {
+      "code": "BP07",
       "name": "Business Process 7",
       "graphType": "bar"
     },
-    "GP2": {
-      "code": "GP2",
+    "GP02": {
+      "code": "GP02",
       "name": "Global Perf 2",
       "graphType": "line"
     },
-    "GP1": {
-      "code": "GP1",
+    "GP01": {
+      "code": "GP01",
       "name": "Global Perf 1",
       "graphType": "bar",
       "joinGraph": true
     },
-    "BP4": {
-      "code": "BP4",
+    "BP04": {
+      "code": "BP04",
       "name": "Business Process 4",
       "graphType": "bar"
     }

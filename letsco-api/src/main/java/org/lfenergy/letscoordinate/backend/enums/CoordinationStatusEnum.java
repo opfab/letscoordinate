@@ -11,6 +11,18 @@
 
 package org.lfenergy.letscoordinate.backend.enums;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+
 public enum CoordinationStatusEnum {
-    CON, REJ, MIX , CAN, NOT;
+    CON ("proposalConfirmed"),
+    REJ ("proposalRejected"),
+    MIX ("differentChoices"),
+    NOT ("noAnswerProvided");
+
+    @Getter
+    private String bundleStateName;
 }

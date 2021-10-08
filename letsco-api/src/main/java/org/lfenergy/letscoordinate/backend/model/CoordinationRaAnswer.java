@@ -13,7 +13,7 @@ package org.lfenergy.letscoordinate.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
-import org.lfenergy.letscoordinate.backend.enums.CoordinationAnswerEnum;
+import org.lfenergy.letscoordinate.backend.enums.CoordinationEntityRaResponseEnum;
 
 import javax.persistence.*;
 
@@ -45,7 +45,7 @@ public class CoordinationRaAnswer implements java.io.Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "answer", nullable = false)
-    private CoordinationAnswerEnum answer;
+    private CoordinationEntityRaResponseEnum answer;
 
     @Column(name = "explanation", length = 500)
     private String explanation;

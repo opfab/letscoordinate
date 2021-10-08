@@ -24,7 +24,7 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.PayloadDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.ValidationMessageDto;
 import org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum;
-import org.lfenergy.letscoordinate.backend.enums.OutputResultAnswerEnum;
+import org.lfenergy.letscoordinate.backend.enums.CoordinationStatusEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 import org.lfenergy.letscoordinate.backend.mapper.EventMessageMapper;
 import org.lfenergy.letscoordinate.backend.model.Coordination;
@@ -32,10 +32,16 @@ import org.lfenergy.letscoordinate.backend.model.EventMessage;
 import org.lfenergy.letscoordinate.backend.model.EventMessageRecipient;
 import org.lfenergy.letscoordinate.backend.model.opfab.ValidationData;
 import org.lfenergy.letscoordinate.backend.service.CoordinationService;
-import org.lfenergy.letscoordinate.backend.util.*;
+import org.lfenergy.letscoordinate.backend.util.DateUtil;
+import org.lfenergy.letscoordinate.backend.util.JacksonUtil;
+import org.lfenergy.letscoordinate.backend.util.OpfabUtil;
+import org.lfenergy.letscoordinate.backend.util.StringUtil;
 import org.opfab.cards.model.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -63,16 +69,19 @@ public class OpfabPublisherComponent {
     private Map<String, CoordinationConfig.Rsc> rscs;
     private LetscoProperties letscoProperties;
     private CoordinationService coordinationService;
+    private RestTemplate restTemplateForOpfab;
 
     public OpfabPublisherComponent(OpfabConfig opfabConfig,
                                    CoordinationConfig coordinationConfig,
                                    LetscoProperties letscoProperties,
-                                   CoordinationService coordinationService) {
+                                   CoordinationService coordinationService,
+                                   RestTemplate restTemplateForOpfab) {
         this.opfabConfig = opfabConfig;
         this.tsos = coordinationConfig.getTsos();
         this.rscs = coordinationConfig.getRscs();
         this.letscoProperties = letscoProperties;
         this.coordinationService = coordinationService;
+        this.restTemplateForOpfab = restTemplateForOpfab;
     }
 
     void setProcessKey(String processKey) {
@@ -85,7 +94,7 @@ public class OpfabPublisherComponent {
         cards.forEach(c -> {
             c.setKeepChildCards(false);
             c.setPublisherType(PublisherTypeEnum.EXTERNAL);
-            HttpUtil.post(opfabConfig.getUrl().getCardsPub(), c);
+            restTemplateForOpfab.exchange(opfabConfig.getUrl().getCardsPub(), HttpMethod.POST, new HttpEntity<>(c), Object.class);
         });
     }
 
@@ -136,7 +145,7 @@ public class OpfabPublisherComponent {
         String source = eventMessageDto.getHeader().getSource();
         BusinessDataIdentifierDto bdi = eventMessageDto.getHeader().getProperties().getBusinessDataIdentifier();
         String messageTypeName = bdi.getMessageTypeName();
-        List<String> tags = Stream.of(source, messageTypeName, processKey, source + "_" + noun, VISIBLE_CARD_TAG)
+        List<String> tags = Stream.of(source, messageTypeName, processKey, source + "_" + noun)
                 .map(String::toLowerCase).distinct().collect(Collectors.toList());
         if (MESSAGE_VALIDATED.getNoun().equals(noun)) {
             Optional<String> filenameOpt = bdi.getFileName();
@@ -428,7 +437,7 @@ public class OpfabPublisherComponent {
     private void coordinationTreatment(Card card, EventMessageDto eventMessageDto, Long cardId) {
         BasicGenericNounEnum basicGenericNounEnum = BasicGenericNounEnum.getByNoun(eventMessageDto.getHeader().getNoun());
         if (basicGenericNounEnum == COORDINATION) {
-            Coordination coordination = coordinationService.initAndSaveCoordination(card, eventMessageDto, cardId);
+            Coordination coordination = coordinationService.initAndSaveCoordination(card, cardId);
             card.setSeverity(SeverityEnum.ACTION);
             card.setState("initial");
 
@@ -445,6 +454,8 @@ public class OpfabPublisherComponent {
             card.setSummary(new I18n().key("cardFeed.summary").parameters(summaryParams));
 
             card.setData(generateCoordinationCardData(coordination, cardId));
+
+            card.setLttd(coordination.getLttd());
 
             coordinationService.sendCoordinationFileCard(card, INPUT);
         }
@@ -631,19 +642,17 @@ public class OpfabPublisherComponent {
     public Card publishOpfabCoordinationResultCard(Coordination coordination) {
         EventMessage eventMessage = coordination.getEventMessage();
         Map<String, List<String>> concernedEntitiesMap = getConcernedEntitiesMap(eventMessage);
-        OutputResultAnswerEnum coordinationStatus = OpfabUtil.getCoordinationStatus(coordination, concernedEntitiesMap.get(ENTITIES_REQUIRED_TO_RESPOND));
 
         Card card = new Card();
-        card.setKeepChildCards(false);
+        card.setKeepChildCards(true);
         card.setPublisherType(PublisherTypeEnum.EXTERNAL);
         card.setTags(createCoordinationCardTags(eventMessage, coordination.getProcessKey()));
         card.setProcess(coordination.getProcessKey());
         card.setProcessInstanceId(generateProcessInstanceId(Optional.ofNullable(eventMessage.getCaseId()), coordination.getProcessKey(), eventMessage.getId()));
         card.setPublisher(opfabConfig.getPublisher());
         card.setProcessVersion("1");
-        card.setSeverity(OpfabUtil.isAgreementFound(coordination, concernedEntitiesMap.get(ENTITIES_REQUIRED_TO_RESPOND))
-                ? SeverityEnum.COMPLIANT : SeverityEnum.ALARM);
-        card.setState(coordinationStatus.getBundleStateName());
+        card.setSeverity(eventMessage.getCoordinationStatus() == CoordinationStatusEnum.CON ? SeverityEnum.COMPLIANT : SeverityEnum.ALARM);
+        card.setState(eventMessage.getCoordinationStatus().getBundleStateName());
         card.setTimeSpans(Arrays.asList(new TimeSpan().start(eventMessage.getTimestamp())));
         card.setPublishDate(coordination.getPublishDate());
         card.setStartDate(coordination.getStartDate());
@@ -666,7 +675,7 @@ public class OpfabPublisherComponent {
         card.setData(generateCoordinationCardData(coordination, coordination.getEventMessage().getId()));
 
         log.info("Result card:\n{}", card.toString());
-        HttpUtil.post(opfabConfig.getUrl().getCardsPub(), card);
+        restTemplateForOpfab.exchange(opfabConfig.getUrl().getCardsPub(), HttpMethod.POST, new HttpEntity<>(card), Object.class);
 
         return card;
     }
@@ -726,7 +735,7 @@ public class OpfabPublisherComponent {
 
     private List<String> createCoordinationCardTags(EventMessage eventMessage, String processKey) {
         List<String> tags = Stream.of(eventMessage.getSource(), eventMessage.getMessageTypeName(), processKey,
-                eventMessage.getSource() + "_" + eventMessage.getNoun(), VISIBLE_CARD_TAG)
+                eventMessage.getSource() + "_" + eventMessage.getNoun())
                 .map(String::toLowerCase).distinct().collect(Collectors.toList());
         opfabConfig.getTags().ifPresent(t -> {
             if (t.containsKey(processKey)) {
@@ -750,7 +759,7 @@ public class OpfabPublisherComponent {
         Map<String, List<String>> concernedEntitiesMap = getConcernedEntitiesMap(eventMessage);
         data.put("coordination", coordination);
         data.put("tsos", concernedEntitiesMap.get(ENTITIES_REQUIRED_TO_RESPOND));
-        data.put("agreementFound", OpfabUtil.isAgreementFound(coordination, concernedEntitiesMap.get(ENTITIES_REQUIRED_TO_RESPOND)));
+        data.put("agreementFound", eventMessage.getCoordinationStatus() == CoordinationStatusEnum.CON);
         return data;
     }
 

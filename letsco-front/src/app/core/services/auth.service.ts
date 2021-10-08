@@ -40,11 +40,6 @@ export class AuthService {
         return this.http.post(this.openidTokenUrl, body, httpOptions);
     }
 
-    login(): Observable<string> {
-        return this.http.post<string>(this.envService.serverUrl + '/v1/auth/login', null, this.tokenHeader);
-    }
-
-
     logUser(datas) {
         localStorage.setItem('token', datas.access_token);
         localStorage.setItem('refresh_token', datas.refresh_token);

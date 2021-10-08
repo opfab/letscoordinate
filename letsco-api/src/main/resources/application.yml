@@ -67,7 +67,13 @@ letsco:
       - http://letsco-front:4200
     clientId: opfab-client
   coordination:
-    coordination-status-calculation-strategy: MAJORITY
+    lttd:
+      scheduler-fixed-delay: 3000
+      apply-default-lttd-if-no-specific-lttd-found: false
+      default-lttd: AT_8_PM
+      specific-lttd:
+        servicea_coordinationa: AFTER_2_HOURS
+    coordination-status-calculation-strategy: WORST_CASE
     coordination-status-calculation-rules:
       WORST_CASE:
         con-con-con: CON
@@ -99,7 +105,7 @@ letsco:
         con-con-mix: CON
         con-rej-mix: MIX
         con-con-not: CON
-    not-answered-default-case: true
+    not-answered-default-case: false
     not-answered-default-case-rules:
       WORST_CASE: REJ
       BEST_CASE: CON
@@ -164,6 +170,9 @@ opfab:
     serviceb_validation_fileb_error:
       title: " Service B File B - negative validation"
       summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
+    serviceb_coordinationb:
+      title: " Service B Coordination B"
+#      summary: "{{businessDayFrom::dateFormat(dd/MM/yyyy)}}-{{businessDayTo::dateFormat(dd/MM/yyyy)}} (${letsco.timezone}) - {{sendingUser::eicToName()}}"
   entityRecipients:
     servicea_coordinationa:
       notAllowed: sendingUser

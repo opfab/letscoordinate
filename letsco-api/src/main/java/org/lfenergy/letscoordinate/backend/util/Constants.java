@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 public final class Constants {
 
     public static final String ROLE_PREFIX = "ROLE_";
-    public static final String SERVICE_PREFIX = ROLE_PREFIX + "SRV_";
 
     public static final String ALL_DATA_TYPE_CODE = "ALL";
     public static final String ALL_RSCS_CODE = "ALL_RSCS";
@@ -46,6 +45,4 @@ public final class Constants {
     public static final String ENTITIES_ALLOWED_TO_RESPOND = "ENTITIES_ALLOWED_TO_RESPOND";
 
     public static final int NBR_EVENTS_TO_DISPLAY_IN_CARD_SUMMARY = 3;
-
-    public static final String VISIBLE_CARD_TAG = "visible_card";
 }

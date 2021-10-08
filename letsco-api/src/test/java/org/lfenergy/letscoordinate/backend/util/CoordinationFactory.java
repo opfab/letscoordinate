@@ -19,7 +19,10 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.EventMessageDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.TimeserieDataDetailsDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.TimeserieDataDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.TimeserieTemporalDataDto;
-import org.lfenergy.letscoordinate.backend.enums.*;
+import org.lfenergy.letscoordinate.backend.enums.CoordinationEntityRaResponseEnum;
+import org.lfenergy.letscoordinate.backend.enums.CoordinationStatusEnum;
+import org.lfenergy.letscoordinate.backend.enums.FileDirectionEnum;
+import org.lfenergy.letscoordinate.backend.enums.FileTypeEnum;
 import org.lfenergy.letscoordinate.backend.model.*;
 
 import java.time.Instant;
@@ -31,6 +34,8 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.lfenergy.letscoordinate.backend.enums.CoordinationEntityGlobalResponseEnum.CON;
+import static org.lfenergy.letscoordinate.backend.enums.CoordinationEntityGlobalResponseEnum.REJ;
 import static org.lfenergy.letscoordinate.backend.util.Constants.*;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -82,6 +87,10 @@ public final class CoordinationFactory {
     }
 
     public static EventMessage initEventMessage(Long id, FileTypeEnum fileTypeEnum) {
+        return initEventMessage(id, fileTypeEnum, false);
+    }
+
+    public static EventMessage initEventMessage(Long id, FileTypeEnum fileTypeEnum, boolean withCoordinationAnswers) {
         return EventMessage.builder()
                 .id(id)
                 .source("Service A")
@@ -99,6 +108,9 @@ public final class CoordinationFactory {
                                 .eicCode("10X1001A1001A345")
                                 .build()
                 ))
+                .eventMessageCoordinationComments(withCoordinationAnswers ?
+                        Arrays.asList(EventMessageCoordinationComment.builder().eicCode("22XCORESO------S").generalComment("No comment").build())
+                        : null)
                 .timeseries(Arrays.asList(
                         Timeserie.builder()
                                 .id(2L)
@@ -111,7 +123,18 @@ public final class CoordinationFactory {
                                                         TimeserieDataDetails.builder().label(EVENT_KEY).value("Event A").build(),
                                                         TimeserieDataDetails.builder().label(CONSTRAINT_KEY).value("Constraint A").build(),
                                                         TimeserieDataDetails.builder().label(REMEDIAL_ACTIONS_KEY).value("RemedialActions A")
-                                                                .timeserieDataDetailsResults(new ArrayList<>()).build()
+                                                                .timeserieDataDetailsResults(withCoordinationAnswers
+                                                                        ? Arrays.asList(
+                                                                                TimeserieDataDetailsResult.builder()
+                                                                                        .eicCode("10XFR-RTE------Q")
+                                                                                        .answer(CON)
+                                                                                        .build(),
+                                                                                TimeserieDataDetailsResult.builder()
+                                                                                        .eicCode("10X1001A1001A345")
+                                                                                        .answer(CON)
+                                                                                        .build())
+                                                                        : new ArrayList<>()
+                                                                ).build()
                                                 ))
                                                 .build(),
                                         TimeserieData.builder()
@@ -121,19 +144,26 @@ public final class CoordinationFactory {
                                                         TimeserieDataDetails.builder().label(EVENT_KEY).value("Event B").build(),
                                                         TimeserieDataDetails.builder().label(CONSTRAINT_KEY).value("Constraint B").build(),
                                                         TimeserieDataDetails.builder().label(REMEDIAL_ACTIONS_KEY).value("RemedialActions B")
-                                                                .timeserieDataDetailsResults(new ArrayList<>()).build()
+                                                                .timeserieDataDetailsResults(withCoordinationAnswers
+                                                                        ? Arrays.asList(
+                                                                                TimeserieDataDetailsResult.builder()
+                                                                                        .eicCode("10XFR-RTE------Q")
+                                                                                        .answer(CON)
+                                                                                        .build(),
+                                                                                TimeserieDataDetailsResult.builder()
+                                                                                        .eicCode("10X1001A1001A345")
+                                                                                        .answer(REJ)
+                                                                                        .explanation("Explanation 1")
+                                                                                        .comment("Not OK!")
+                                                                                        .build())
+                                                                        : new ArrayList<>()
+                                                                ).build()
                                                 ))
                                                 .build()))
                                 .build()
                 ))
                 .eventMessageFiles(Stream.of(fileTypeEnum == FileTypeEnum.EXCEL ? initEventMessageExcelFile(FileDirectionEnum.INPUT)
                         : initEventMessageJsonFile(FileDirectionEnum.INPUT)).collect(Collectors.toList()))
-                .eventMessageCoordinationComments(Arrays.asList(
-                        EventMessageCoordinationComment.builder()
-                                .eicCode("10XFR-RTE------Q")
-                                .generalComment("Not OK!")
-                                .build()
-                ))
                 .build();
     }
 
@@ -146,6 +176,12 @@ public final class CoordinationFactory {
         coordination.setStartDate(Instant.parse("2021-05-31T00:00:00Z"));
         coordination.setEndDate(Instant.parse("2021-05-31T23:59:59Z"));
         coordination.setStatus(null);
+        coordination.setCoordinationGeneralComments(Arrays.asList(
+                CoordinationGeneralComment.builder()
+                        .eicCode("10XFR-RTE------Q")
+                        .generalComment("Not ok!")
+                        .build()
+        ));
         coordination.setCoordinationRas(Arrays.asList(
                 CoordinationRa.builder()
                         .id(2L)
@@ -157,14 +193,14 @@ public final class CoordinationFactory {
                                 CoordinationRaAnswer.builder()
                                         .id(3L)
                                         .eicCode("10XFR-RTE------Q")
-                                        .answer(CoordinationAnswerEnum.NOK)
+                                        .answer(CoordinationEntityRaResponseEnum.NOK)
                                         .explanation("Explanation 1")
                                         .comment("Not ok!")
                                         .build(),
                                 CoordinationRaAnswer.builder()
                                         .id(4L)
                                         .eicCode("10X1001A1001A345")
-                                        .answer(CoordinationAnswerEnum.OK)
+                                        .answer(CoordinationEntityRaResponseEnum.OK)
                                         .build()
                         ))
                         .build(),
@@ -178,14 +214,14 @@ public final class CoordinationFactory {
                                 CoordinationRaAnswer.builder()
                                         .id(6L)
                                         .eicCode("10XFR-RTE------Q")
-                                        .answer(CoordinationAnswerEnum.NOK)
+                                        .answer(CoordinationEntityRaResponseEnum.NOK)
                                         .explanation("Explanation 1")
                                         .comment("Not ok!")
                                         .build(),
                                 CoordinationRaAnswer.builder()
                                         .id(7L)
                                         .eicCode("10X1001A1001A345")
-                                        .answer(CoordinationAnswerEnum.OK)
+                                        .answer(CoordinationEntityRaResponseEnum.OK)
                                         .build()
                         ))
                         .build()

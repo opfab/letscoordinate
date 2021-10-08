@@ -98,7 +98,8 @@
         "display": "PUBLICATION"
       },
       "hideAckFilter": false,
-      "hideAckAllCardsFeature": false
+      "hideAckAllCardsFeature": false,
+      "secondsBeforeLttdForClockDisplay": 1209600
     },
     "notify": false,
     "subscription": {
@@ -172,12 +173,12 @@
       "operatorfabric": {
         "name": "OperatorFabric",
         "rank": 0,
-        "version": "2.8.0.RELEASE"
+        "version": "2.10.0.RELEASE"
       },
       "letscoordinate": {
         "name": "Let's Coordinate OS",
         "rank": 1,
-        "version": "1.3.0.RELEASE"
+        "version": "1.3.1.RELEASE"
       }
     },
     "infos": {

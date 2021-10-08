@@ -12,20 +12,14 @@
 package org.lfenergy.letscoordinate.backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.vavr.control.Validation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.lfenergy.letscoordinate.backend.component.OpfabPublisherComponent;
-import org.lfenergy.letscoordinate.backend.dto.KafkaFileWrapperDto;
 import org.lfenergy.letscoordinate.backend.enums.FileDirectionEnum;
-import org.lfenergy.letscoordinate.backend.kafka.LetscoKafkaProducer;
-import org.lfenergy.letscoordinate.backend.model.Coordination;
 import org.lfenergy.letscoordinate.backend.model.EventMessage;
 import org.lfenergy.letscoordinate.backend.model.EventMessageFile;
 import org.lfenergy.letscoordinate.backend.repository.EventMessageRepository;
 import org.lfenergy.letscoordinate.backend.service.CoordinationService;
-import org.opfab.cards.model.Card;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -64,10 +58,6 @@ public class EventMessageControllerTest {
     EventMessageRepository eventMessageRepository;
     @MockBean
     CoordinationService coordinationService;
-    @MockBean
-    OpfabPublisherComponent opfabPublisherComponent;
-    @MockBean
-    LetscoKafkaProducer letscoKafkaProducer;
 
     MockMultipartFile validMultipartFile;
     MockMultipartFile validMultipartFileWithLowercaseTitles;
@@ -180,32 +170,6 @@ public class EventMessageControllerTest {
                 .andExpect(jsonPath("$.status").value(HttpStatus.INTERNAL_SERVER_ERROR.value()))
                 .andExpect(jsonPath("$.code").value("ERROR"))
                 .andExpect(jsonPath("$.messages", hasSize(1)));
-    }
-
-    @Test
-    @WithMockCustomUser
-    public void coordinationCallback_entitiesTotallyRespond_shouldReturn200() throws Exception {
-        when(coordinationService.saveAnswersAndCheckIfAllTsosHaveAnswered(any(Card.class))).thenReturn(Validation.valid(Coordination.builder().build()));
-        when(coordinationService.generateOutputFile(any(Coordination.class))).thenReturn(true);
-        when(opfabPublisherComponent.publishOpfabCoordinationResultCard(any(Coordination.class))).thenReturn(new Card());
-        mockMvc.perform(post("/letsco/api/v1/coordination")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(objectMapper.writeValueAsString(new Card())))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @WithMockCustomUser
-    public void coordinationCallback_entitiesPartiallyRespond_shouldReturn200() throws Exception {
-        when(coordinationService.saveAnswersAndCheckIfAllTsosHaveAnswered(any(Card.class))).thenReturn(Validation.invalid(Boolean.FALSE));
-        mockMvc.perform(post("/letsco/api/v1/coordination")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(objectMapper.writeValueAsString(new Card())))
-                .andDo(print())
-                .andExpect(status().isOk());
     }
 
     @Test

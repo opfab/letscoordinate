@@ -302,22 +302,6 @@
           "clientRole": true,
           "containerId": "e996aa8b-6b0b-4f27-ac68-56c701ba36f3",
           "attributes": {}
-        },
-        {
-          "id": "ac0704bb-e6ee-4206-862a-66b4f51da06c",
-          "name": "SRV_SERVICE_B",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "e996aa8b-6b0b-4f27-ac68-56c701ba36f3",
-          "attributes": {}
-        },
-        {
-          "id": "b450d907-c415-4be3-8e39-9a0505bd4faa",
-          "name": "SRV_SERVICE_A",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "e996aa8b-6b0b-4f27-ac68-56c701ba36f3",
-          "attributes": {}
         }
       ],
       "security-admin-console": [],
@@ -619,6 +603,21 @@
             "access.token.claim": "true",
             "claim.name": "sub",
             "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "id": "84b6b5f4-96b1-4e99-aca9-1e15544322b2",
+          "name": "Services",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "services",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "services",
+            "jsonType.label": "JSON"
           }
         }
       ],

@@ -11,7 +11,7 @@
 
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {AuthService} from './auth.service';
 import {flatMap, map} from 'rxjs/operators';
 import {environment} from "../../../environments/environment";
@@ -52,14 +52,7 @@ export class AuthGuard implements CanActivate {
             .pipe(
                 flatMap(tokenData => {
                     this.auth.logUser(tokenData);
-                    return this.auth.login();
-                }),
-                map(username => {
-                    if (username !== undefined) {
-                        return true;
-                    } else {
-                        return false;
-                    }
+                    return of(true);
                 })
             );
 

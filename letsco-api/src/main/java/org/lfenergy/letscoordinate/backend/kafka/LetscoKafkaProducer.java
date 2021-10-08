@@ -23,6 +23,7 @@ import org.lfenergy.letscoordinate.backend.dto.KafkaFileWrapperDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.Properties;
 
 @Component
@@ -47,6 +48,7 @@ public class LetscoKafkaProducer {
     }
 
     public void sendFileToKafka(KafkaFileWrapperDto kafkaFileWrapperDto, String topic) throws JsonProcessingException {
+        log.info("Send data to kafka on topic \"{}\" => {}", topic, Optional.ofNullable(kafkaFileWrapperDto).map(KafkaFileWrapperDto::getFileName).orElse(null));
         sendFileToKafka(objectMapper.writeValueAsString(kafkaFileWrapperDto), topic);
     }
 

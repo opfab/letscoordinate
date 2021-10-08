@@ -19,10 +19,10 @@ import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.TimeserieDat
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.TimeserieDataDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.TimeserieOutputResultDto;
 import org.lfenergy.letscoordinate.backend.dto.eventmessage.payload.TimeserieTemporalDataDto;
+import org.lfenergy.letscoordinate.backend.enums.CoordinationEntityGlobalResponseEnum;
 import org.lfenergy.letscoordinate.backend.enums.CoordinationStatusEnum;
 import org.lfenergy.letscoordinate.backend.enums.DataGranularityEnum;
 import org.lfenergy.letscoordinate.backend.enums.FileTypeEnum;
-import org.lfenergy.letscoordinate.backend.enums.OutputResultAnswerEnum;
 import org.lfenergy.letscoordinate.backend.model.*;
 import org.lfenergy.letscoordinate.backend.util.CoordinationFactory;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -67,7 +67,7 @@ public class EventMessageMapperTest {
         timeserieTemporalDataDto_RemedialActions.setResults(Arrays.asList(
                 TimeserieOutputResultDto.builder()
                         .eicCode("10XFR-RTE------Q")
-                        .answer(OutputResultAnswerEnum.CON)
+                        .answer(CoordinationEntityGlobalResponseEnum.CON)
                         .explanation("Explanation 1")
                         .comment("Not ok!")
                         .build()

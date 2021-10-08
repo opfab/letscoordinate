@@ -13,7 +13,6 @@ package org.lfenergy.letscoordinate.backend.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.vavr.control.Validation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,9 +30,7 @@ import org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationSeverityEnum;
 import org.lfenergy.letscoordinate.backend.enums.ValidationTypeEnum;
 import org.lfenergy.letscoordinate.backend.exception.IgnoreProcessException;
-import org.lfenergy.letscoordinate.backend.exception.JsonDataMandatoryFieldNullException;
 import org.lfenergy.letscoordinate.backend.exception.PositiveTechnicalQualityCheckException;
-import org.lfenergy.letscoordinate.backend.mapper.EventMessageMapper;
 import org.lfenergy.letscoordinate.backend.model.EventMessage;
 import org.lfenergy.letscoordinate.backend.processor.ExcelDataProcessor;
 import org.lfenergy.letscoordinate.backend.processor.JsonDataProcessor;
@@ -44,8 +41,8 @@ import org.lfenergy.letscoordinate.backend.util.CoordinationFactory;
 import org.lfenergy.letscoordinate.backend.util.OpfabUtil;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.client.RestTemplate;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +53,6 @@ import static org.lfenergy.letscoordinate.backend.enums.BasicGenericNounEnum.PRO
 import static org.lfenergy.letscoordinate.backend.enums.ChangeJsonDataFromWhichEnum.BUSINESS_DATA_IDENTIFIER;
 import static org.lfenergy.letscoordinate.backend.enums.ChangeJsonDataFromWhichEnum.HEADER;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -78,6 +74,8 @@ public class LetscoKafkaListenerTest {
     EventMessageRepository eventMessageRepository;
     @Mock
     OpfabPublisherComponent opfabPublisherComponent;
+    @Mock
+    RestTemplate restTemplate;
 
     @BeforeEach
     public void beforeEach() {
@@ -96,7 +94,7 @@ public class LetscoKafkaListenerTest {
         jsonDataProcessor = new JsonDataProcessor(objectMapper, eventMessageService);
 
         letscoKafkaListener = new LetscoKafkaListener(jsonDataProcessor, excelDataProcessor, eventMessageRepository,
-                opfabPublisherComponent, letscoProperties, opfabConfig, objectMapper);
+                opfabPublisherComponent, letscoProperties, opfabConfig, objectMapper, restTemplate);
 
         timestamp = Instant.parse("2021-03-17T10:15:30.00Z");
         eventMessageDto = EventMessageDto.builder()
@@ -172,7 +170,7 @@ public class LetscoKafkaListenerTest {
         letscoKafkaListener.verifyData(eventMessageDto);
         assertAll(
                 () -> assertTrue(bdi.getCaseId().isPresent()),
-                () -> assertEquals("source_businessApplication_messageTypeName_2021-08-05T10:00:00Z_2021-08-06T09:59:59Z", bdi.getCaseId().get())
+                () -> assertEquals("source_businessApplication_messageTypeName_1628157600000_1628243999000", bdi.getCaseId().get())
         );
     }
 

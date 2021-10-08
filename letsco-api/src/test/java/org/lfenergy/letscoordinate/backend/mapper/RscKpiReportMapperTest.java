@@ -234,7 +234,7 @@ public class RscKpiReportMapperTest {
         RscKpiDto dto = RscKpiReportMapper.toDto(entity);
         assertAll(
                 () -> assertNotNull(dto),
-                () -> assertEquals("GP1", dto.getName()),
+                () -> assertEquals("GP01", dto.getName()),
                 () -> assertEquals(false, dto.getJoinGraph()),
                 () -> assertEquals(false, dto.getDataMap().isEmpty()),
                 () -> assertEquals(1, dto.getDataMap().size()),

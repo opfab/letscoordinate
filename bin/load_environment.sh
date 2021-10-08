@@ -32,8 +32,8 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 export LC_HOME=$(realpath $DIR/..)
-export LC_VERSION=$(cat "$LC_HOME/LETSCO_SHORT_VERSION")
-export OF_VERSION=$(cat "$LC_HOME/OPFAB_FULL_VERSION")
+export LC_VERSION=$(cat "$LC_HOME/LETSCO_VERSION")
+export OF_VERSION=$(cat "$LC_HOME/OPFAB_VERSION")
 
 echo -e "\033[0;32mPREPARING ENVIRONMENT VARIABLES...\033[0m"
 echo
